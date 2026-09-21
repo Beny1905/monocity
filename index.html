@@ -14796,9 +14796,9 @@ body.mcIso #mcIsoHud{display:block}
 #mcIsoChat .in{display:flex;gap:5px;padding:6px;border-top:1px solid rgba(214,170,92,.25)}
 #mcIsoChat .in input{flex:1;min-width:0;border-radius:9px;border:1px solid #334155;background:#0b1224;color:#fff;padding:7px 9px;font-size:13px}
 #mcIsoChat .in button{border:0;border-radius:9px;background:linear-gradient(180deg,#3b82f6,#1d4ed8);color:#fff;font-weight:1000;padding:0 12px;font-size:12px;cursor:pointer;margin:0;min-height:0}
-#mcIsoEmo{left:clamp(46px,13vh,58px);top:50%;transform:translateY(-50%);display:none;grid-template-columns:repeat(4,clamp(28px,9vh,34px));gap:4px;padding:6px;background:rgba(10,16,34,.96);border:1px solid rgba(214,170,92,.6);border-radius:12px;position:absolute;box-shadow:0 8px 18px rgba(0,0,0,.55)}
+#mcIsoEmo{left:clamp(46px,13vh,58px);top:50%;transform:translateY(-50%);display:none;grid-template-columns:repeat(5,clamp(28px,9vh,34px));gap:4px;padding:6px;background:rgba(10,16,34,.96);border:1px solid rgba(214,170,92,.6);border-radius:12px;position:absolute;box-shadow:0 8px 18px rgba(0,0,0,.55)}
 #mcIsoEmo.show{display:grid}
-#mcIsoEmo button{height:clamp(28px,9vh,34px);border-radius:8px;background:#141d36;border:0;font-size:clamp(16px,5.3vh,21px);cursor:pointer;margin:0;min-height:0;padding:0}
+#mcIsoEmo button{position:relative;height:clamp(28px,9vh,34px);border-radius:8px;background:#141d36;border:0;font-size:clamp(16px,5.3vh,21px);cursor:pointer;margin:0;min-height:0;padding:0}#mcIsoEmo button.lk{filter:grayscale(1) brightness(.55)}#mcIsoEmo button.lk:after{content:'🔒';position:absolute;right:-2px;bottom:-3px;font-size:11px;filter:none}
 .mcBub{position:fixed;z-index:75;background:#fff;color:#111;border-radius:12px;padding:3px 8px;font-size:22px;box-shadow:0 4px 10px rgba(0,0,0,.4);pointer-events:none;animation:mcBubIn .25s ease-out, mcBubOut .35s ease-in 2.4s forwards}
 .mcBub.dn:after,.mcBub.up:after{content:"";position:absolute;left:18px;border:6px solid transparent}
 .mcBub.dn:after{top:-6px;border-bottom-color:#fff;border-top:0}
@@ -14897,7 +14897,12 @@ body.mcIso #mcIsoHud{display:block}
     return { x: G.cx + x, y: G.cy + y };
   }
   G.project = project;
-  function cellCenterScreen(i){ var p = G.pos[i]; if(!p) return null; var s = project(p.x + p.w/2, p.y + p.h/2); return { x: G.tx + G.z*s.x, y: G.ty + G.z*s.y }; }
+  function cellCenterScreen(i){
+    /* karenin ekrandaki gercek yeri (dondurulmus dikdortgenin kutu merkezi = karenin merkezi);
+       sayfa kaysa, adres cubugu acilsa bile piyon karenin tam ortasina oturur */
+    var bd = document.getElementById('board'), c = bd && bd.children[i];
+    if(c){ var r = c.getBoundingClientRect(); if(r.width > 0) return { x: r.left + r.width/2, y: r.top + r.height/2 }; }
+    var p = G.pos[i]; if(!p) return null; var s = project(p.x + p.w/2, p.y + p.h/2); return { x: G.tx + G.z*s.x, y: G.ty + G.z*s.y }; }
   G.cellCenter = cellCenterScreen;
 
   function applyGeometry(){
@@ -14984,7 +14989,7 @@ body.mcIso #mcIsoHud{display:block}
     var want = {}, i, U = G.C*G.z;
     for(i=0;i<G.K.length;i++){ var ki = G.K[i], nm = board[ki], a = CORNA[nm]; if(a) want['c'+ki] = {t:'c', i:ki, a:a}; }
     var LM = window.MONOCITY_LANDMARKS || {};
-    for(i=0;i<board.length;i++){
+    for(i=0;i<0;i++){
       var t = board[i], o = ownerOf(t); if(!o) continue;
       var lv = 0; try{ lv = getLevel(o, t); }catch(e){}
       if((lv & 8) && LM[t]) continue;               /* tapu: simge (piyon katmani ciziyor) */
@@ -15109,10 +15114,17 @@ body.mcIso #mcIsoHud{display:block}
       '<div id="mcIsoPP"></div>';
     document.body.appendChild(hud);
     var $ = function(id){ return document.getElementById(id); };
-    ['😂','😎','😡','😭','👍','🔥','🤝','🎲'].forEach(function(em){ var b = document.createElement('button'); b.type = 'button'; b.textContent = em; b.onclick = function(){ sendEmoji(em); $('mcIsoEmo').classList.remove('show'); }; $('mcIsoEmo').appendChild(b); });
+    window.monocityIsoEmoMenu = function(){
+      var box = $('mcIsoEmo'); box.innerHTML = '';
+      var list = window.MONOCITY_EMOJIS || [];
+      list.forEach(function(it){ var own = window.monocityEmoOwned ? monocityEmoOwned(it.e) : true;
+        var b = document.createElement('button'); b.type = 'button'; b.textContent = it.e; if(!own){ b.className = 'lk'; b.title = 'Kilitli'; }
+        b.onclick = function(){ box.classList.remove('show'); if(!own){ if(window.monocityEmoLocked) monocityEmoLocked(it); return; } sendEmoji(it.e); };
+        box.appendChild(b); });
+    };
     $('mcIsoChatB').onclick = function(){ togglePop('mcIsoChat'); };
     $('mcIsoLogB').onclick = function(){ togglePop('mcIsoLog'); };
-    $('mcIsoEmoB').onclick = function(){ closePops(); $('mcIsoEmo').classList.toggle('show'); };
+    $('mcIsoEmoB').onclick = function(){ closePops(); var box = $('mcIsoEmo'); if(!box.classList.contains('show') && window.monocityIsoEmoMenu) monocityIsoEmoMenu(); box.classList.toggle('show'); };
     $('mcIsoLisB').onclick = function(){ toast('🔊 Sesli sohbet yakında geliyor!'); };
     $('mcIsoMicB').onclick = function(){ toast('🎤 Sesli sohbet yakında geliyor!'); };
     $('mcIsoZoom').onclick = function(){ window.monocityToggleAutoCam(); };
@@ -15324,9 +15336,20 @@ body.mcIso #mcIsoHud{display:block}
     var want = gameOn();
     if(want && !on) enter(); else if(!want && on) leave();
     if(!on) return;
-    if(innerWidth !== lastW || innerHeight !== lastH || board.length !== lastN){ lastW = innerWidth; lastH = innerHeight; lastN = board.length; layout(); applyGeometry(); CAM.manual = null; }
+    var ae = document.activeElement, typing = !!(ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA') && !ae.readOnly);
+    if(!typing && (innerWidth !== lastW || innerHeight !== lastH || board.length !== lastN)){ lastW = innerWidth; lastH = innerHeight; lastN = board.length; layout(); applyGeometry(); CAM.manual = null; }
+    kbFit(typing);
     liveZoom();
     drawObjs();
+  }
+  var kbLast = -1;
+  function kbFit(typing){
+    var pop = document.getElementById('mcIsoChat'); if(!pop) return;
+    var vv = window.visualViewport, kb = 0;
+    if(typing && vv && document.activeElement && document.activeElement.id === 'mcIsoChatIn') kb = Math.max(0, innerHeight - vv.height - (vv.offsetTop||0));
+    if(kb === kbLast) return; kbLast = kb;
+    if(kb > 60){ pop.style.top = Math.max(4, (vv.offsetTop||0) + 4)+'px'; pop.style.bottom = (kb + 6)+'px'; }
+    else { pop.style.top = ''; pop.style.bottom = ''; }
   }
   requestAnimationFrame(frame);
   setInterval(function(){
@@ -16567,3 +16590,218 @@ body.mcIso #mcIsoHud{display:block}
 
 (function(){ var L = window.MONOCITY_LANDMARKS || (window.MONOCITY_LANDMARKS = {}), N = window.__LMNEW || {}; Object.keys(N).forEach(function(k){ L[k] = { n: N[k].n || (L[k] && L[k].n) || k, svg: N[k].svg }; }); })();
 </script>
+<style id="monocity-iso2-css">
+/* ---- sehir / kare bilgi paneli ---- */
+#mcCityBack{position:fixed;inset:0;z-index:74;display:none;background:rgba(0,0,0,.35)}
+#mcCityBack.show{display:block}
+#mcCity{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:75;width:min(470px,94vw);max-height:96vh;overflow:auto;border-radius:16px;background:linear-gradient(180deg,#1b2437,#0e1528);border:1.5px solid var(--cc,#ffd23d);
+ box-shadow:0 0 18px color-mix(in srgb,var(--cc,#ffd23d) 40%,transparent),0 14px 30px rgba(0,0,0,.7);font-family:Arial,Helvetica,sans-serif;color:#fff;display:none}
+#mcCity.show{display:block;animation:mcCityIn .16s ease-out}
+@keyframes mcCityIn{from{opacity:0;transform:translate(-50%,-46%) scale(.96)}to{opacity:1;transform:translate(-50%,-50%)}}
+#mcCity .hd{display:flex;align-items:center;gap:10px;padding:7px 12px;background:linear-gradient(90deg,var(--cc,#475569),var(--cd,#1e293b))}
+#mcCity .hd b{font-size:clamp(14px,4.6vh,18px);letter-spacing:.5px}#mcCity .hd small{display:block;font-size:11px;opacity:.92;font-weight:700}
+#mcCity .hd .x{margin-left:auto;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-weight:900;cursor:pointer;flex:0 0 auto}
+#mcCity .bd{display:flex;gap:10px;padding:8px 12px}
+#mcCity .lm{width:clamp(70px,22vh,92px);flex:0 0 auto;background:radial-gradient(circle at 50% 70%,#2a3a5e,#0e1528);border-radius:12px;border:1px solid #2b3a5c;display:flex;align-items:flex-end;justify-content:center;padding-top:4px}
+#mcCity .lm svg{width:92%;height:auto;aspect-ratio:100/124}
+#mcCity .lm .ic{font-size:44px;align-self:center;padding:10px 0}
+#mcCity table{width:100%;border-collapse:collapse;font-size:clamp(10.5px,3.2vh,12px)}
+#mcCity th{color:#9fb0cf;font-size:10px;text-align:right;font-weight:800;padding:2px 4px}#mcCity th:first-child{text-align:left}
+#mcCity td{padding:3px 4px;text-align:right;border-top:1px solid rgba(255,255,255,.07);font-weight:800;white-space:nowrap}#mcCity td:first-child{text-align:left}
+#mcCity tr.own td{color:#86efac}
+#mcCity .ow{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;margin-bottom:5px;flex-wrap:wrap}
+#mcCity .ow i{width:10px;height:10px;border-radius:50%;display:inline-block}
+#mcCity .ow em{font-style:normal;color:#ffe08a}
+#mcCity .cb{padding:0 12px 6px}
+#mcCity .cb h6{margin:0 0 4px;font-size:10.5px;color:#9fb0cf;letter-spacing:.3px}
+#mcCity .cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:4px}
+#mcCity .cg div{display:flex;justify-content:space-between;gap:6px;background:#0a1122;border:1px solid #1e2a44;border-radius:7px;padding:3px 7px;font-size:11px;font-weight:800}
+#mcCity .cg div b{color:#ffe08a}
+#mcCity .cg div.on{border-color:#ffd23d;background:rgba(255,210,61,.12)}
+#mcCity .rg{padding:2px 12px 10px;font-size:11px;color:#c7d2fe}
+#mcCity .rg .ch{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+#mcCity .rg span{border-radius:7px;padding:2px 7px;font-weight:800;font-size:10.5px;color:#fff;border:1.5px solid #475569;background:#0a1122}
+#mcCity .tx{padding:10px 14px 12px;font-size:13px;line-height:1.45;color:#dbe4ff}
+#mcCity .tx b{color:#ffe08a}
+/* ---- emoji magazasi ---- */
+.mcEmoDemo{font-size:52px;line-height:1;filter:drop-shadow(0 6px 8px rgba(0,0,0,.45));display:flex;align-items:center;justify-content:center;height:100%}
+</style>
+<script id="monocity-iso2-js">
+(function(){
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function toast(m){ try{ if(typeof window.toast==='function') return window.toast(m); if(window.MONOCITY_PROFILE && window.MONOCITY_PROFILE.toast) return window.MONOCITY_PROFILE.toast(m); }catch(e){} }
+  function fmt(v){ try{ return money(v); }catch(e){ return Number(v||0).toLocaleString('tr-TR'); } }
+  var GROUPC = {"#795548":"#8d5a3b","#111":"#2b2f3a","#2e7d32":"#2e9d45","#ef6c00":"#f07b12","#1976d2":"#1f7ae0","#fbc02d":"#e8b20c","#d32f2f":"#d8342c"};
+  function seatCol(o){ try{ var s = window.monocityRealSeat ? monocityRealSeat(o.id) : o.id; return (window.playerColors||[])[s] || '#888'; }catch(e){ return '#888'; } }
+  function dark(h){ var n=parseInt(String(h).replace('#','').replace(/^(.)(.)(.)$/,'$1$1$2$2$3$3'),16); var r=(n>>16)*.45|0,g=(n>>8&255)*.45|0,b=(n&255)*.45|0; return 'rgb('+r+','+g+','+b+')'; }
+
+  /* ================= EMOJI KATALOGU + MAGAZA ================= */
+  window.MONOCITY_EMOJIS = [
+    { e:'👍', name:'BEĞENİ',   price:0,     currency:'diamond' },
+    { e:'😂', name:'KAHKAHA',  price:0,     currency:'diamond' },
+    { e:'🎲', name:'ZAR',      price:10000, currency:'metro' },
+    { e:'🤝', name:'DOSTLUK',  price:20000, currency:'metro' },
+    { e:'😭', name:'AĞLAMA',   price:30000, currency:'metro' },
+    { e:'😡', name:'KIZGIN',   price:5,     currency:'ticket' },
+    { e:'🔥', name:'ATEŞ',     price:10,    currency:'ticket' },
+    { e:'😎', name:'HAVALI',   price:15,    currency:'ticket' },
+    { e:'😍', name:'AŞIK',     price:100,   currency:'diamond' },
+    { e:'🥳', name:'PARTİ',    price:200,   currency:'diamond' }
+  ];
+  var CUR_EL = {diamond:'shopDiamond', ticket:'shopTicket', metro:'shopMetro'}, CUR_NAME = {diamond:'Elmas', ticket:'Bilet', metro:'Metro'};
+  var PKEY = {diamond:'diamonds', ticket:'tickets', metro:'metro'};
+  function wallet(){ try{ return window.MONOCITY_PROFILE.get(); }catch(e){ return null; } }
+  function bal(c){ var w = wallet(); if(w) return Number(w[PKEY[c]])||0; var el = document.getElementById(CUR_EL[c]); return el ? (parseInt((el.textContent||'0').replace(/\D/g,''))||0) : 0; }
+  function spend(c, v){
+    var w = wallet(); if(!w) return false; if((Number(w[PKEY[c]])||0) < v) return false;
+    w[PKEY[c]] = (Number(w[PKEY[c]])||0) - v;
+    try{ window.MONOCITY_PROFILE.save(); window.MONOCITY_PROFILE.syncLobby(); if(window.monocitySyncShopWallet) monocitySyncShopWallet(); if(window.monocityLobbyTick) monocityLobbyTick(); }catch(e){}
+    return true;
+  }
+  function loadOwned(){ try{ var a = JSON.parse(localStorage.getItem('mc_owned_emo')||'[]'); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
+  var ownedEmo = loadOwned();
+  function saveOwned(push){
+    try{ localStorage.setItem('mc_owned_emo', JSON.stringify(ownedEmo)); }catch(e){}
+    if(push){ try{ var A = window.MONOCITY_AUTH, db = window.MONOCITY_DB; if(A && A.uid && db) db.ref('users/'+A.uid+'/emo').set(ownedEmo.slice()); }catch(e){} }
+  }
+  window.monocityEmoOwned = function(e){ var it = (window.MONOCITY_EMOJIS||[]).filter(function(x){ return x.e === e; })[0]; return !!it && (it.price === 0 || ownedEmo.indexOf(e) !== -1); };
+  window.monocityEmoLocked = function(it){
+    toast('🔒 '+it.e+' '+it.name+' kilitli — mağazada '+Number(it.price).toLocaleString('tr-TR')+' '+CUR_NAME[it.currency]);
+    try{ if(typeof window.openMonocityShop === 'function'){ window.openMonocityShop(); if(window.selectCat) window.selectCat('emoji'); } }catch(e){}
+  };
+  /* oyundan acilan magaza kapaninca lobi dugmeleri oyunun ustune cikmasin */
+  (function hookClose(){
+    if(typeof window.closeMonocityShop !== 'function' || window.closeMonocityShop.__iso){ return setTimeout(hookClose, 500); }
+    var o = window.closeMonocityShop;
+    var w = function(){ var r = o.apply(this, arguments); if(document.body.classList.contains('mcIso') && typeof setLobbyHitLayerVisible === 'function') setLobbyHitLayerVisible(false); return r; };
+    w.__iso = true; window.closeMonocityShop = w;
+  })();
+  function renderEmoGrid(){
+    var grid = document.getElementById('shopGrid'); if(!grid) return;
+    grid.innerHTML = '';
+    (window.MONOCITY_EMOJIS||[]).forEach(function(it){
+      var own = it.price === 0 || ownedEmo.indexOf(it.e) !== -1;
+      var card = document.createElement('div'); card.className = 'shopItem';
+      card.innerHTML = '<div class="shopItemName">'+it.name+'</div>' +
+        '<div class="shopItemVisual"><div class="mcEmoDemo">'+it.e+'</div></div>' +
+        '<div class="shopItemStatus'+(own?' owned':'')+'">'+(own ? (it.price === 0 ? 'Ücretsiz' : 'Sahipsin') : (window.monocityCurIcon ? monocityCurIcon(it.currency) : '')+Number(it.price).toLocaleString('tr-TR'))+'</div>' +
+        '<button class="shopBuy '+(own?'equipped':'')+'">'+(own ? '✓ SAHİPSİN' : 'SATIN AL')+'</button>';
+      card.querySelector('.shopBuy').addEventListener('click', function(){ buyEmo(it); });
+      grid.appendChild(card);
+    });
+    var t = document.querySelector('#monocityShop .shopContentHead h2, #monocityShop .shopContentTitle');
+  }
+  function buyEmo(it){
+    if(it.price === 0 || ownedEmo.indexOf(it.e) !== -1){ toast(it.e+' bu emoji zaten sende. Oyunda 😀 butonundan kullanabilirsin.'); return; }
+    var c = it.currency, b = bal(c);
+    if(b < it.price){ alert('Yetersiz ' + CUR_NAME[c].toLowerCase() + '!'); return; }
+    var doBuy = function(){
+      if(!spend(c, it.price)){ alert('Yetersiz ' + CUR_NAME[c].toLowerCase() + '!'); return; }
+      if(ownedEmo.indexOf(it.e) === -1) ownedEmo.push(it.e);
+      saveOwned(true); renderEmoGrid(); toast('✅ '+it.e+' '+it.name+' emojisi alındı!');
+    };
+    if(typeof window.openShopPurchaseConfirm === 'function') window.openShopPurchaseConfirm({ name: it.e+' '+it.name+' EMOJİ', price: it.price, currency: c, balance: b, onConfirm: doBuy });
+    else doBuy();
+  }
+  window.monocityRenderEmoShop = renderEmoGrid;
+  (function hookShop(){
+    if(typeof window.selectCat !== 'function'){ return setTimeout(hookShop, 400); }
+    if(window.selectCat.__emoHooked) return;
+    var orig = window.selectCat;
+    var w = function(cat){ var r = orig.apply(this, arguments); if(cat === 'emoji') renderEmoGrid(); return r; };
+    for(var k in orig) try{ w[k] = orig[k]; }catch(e){}
+    w.__emoHooked = true; window.selectCat = w;
+    setTimeout(hookShop, 1500);   /* baska bir kanca ustune yazarsa tekrar bagla */
+  })();
+  /* hesapla senkron: giriste sunucudaki emojileri birlestir */
+  (function(){
+    var A = window.MONOCITY_AUTH, db = window.MONOCITY_DB; if(!(A && A.available && db)) return;
+    function pull(u){ if(!u) return; db.ref('users/'+u.uid+'/emo').once('value').then(function(s){ var v = s && s.val(); var arr = Array.isArray(v) ? v : (v && typeof v === 'object' ? Object.keys(v).map(function(k){ return v[k]; }) : []);
+      var changed = false; arr.forEach(function(e){ if(typeof e === 'string' && ownedEmo.indexOf(e) === -1){ ownedEmo.push(e); changed = true; } });
+      if(changed) saveOwned(false); if(ownedEmo.length > arr.length) saveOwned(true); }).catch(function(){}); }
+    A.onChange(pull); A.ready.then(pull);
+  })();
+
+  /* ================= KARE BILGI PANELI ================= */
+  var SPINFO = {
+    'BAŞLANGIÇ': ['🏁','Başlangıç','Başlangıçtan her geçtiğinde <b>tur ödülü</b> alırsın.'],
+    'ŞANS': ['❓','Şans','Bir <b>şans kartı</b> çekersin: para kazanabilir ya da kaybedebilir, Dünya Turu, Mülk Koruma ya da Hapisten Çıkış kartı alabilirsin.'],
+    'VERGİ %15': ['💸','Vergi %15','Elindeki paranın <b>%15</b>\'ini vergi olarak ödersin.'],
+    'HAPİSHANE': ['🚔','Hapishane','Paranın <b>%10</b>\'unu ödeyip hemen çıkabilir ya da <b>2 tur</b> bekleyebilirsin. <b>Hapisten Çıkış</b> kartın varsa ücretsiz çıkarsın.'],
+    'PARK CEZASI': ['🚗','Park Cezası','<b>300.000</b> ödeyip beklemeden devam edersin ya da <b>150.000</b> ödeyip <b>1 tur</b> beklersin.'],
+    'DÜNYA TURU': ['✈️','Dünya Turu','Tahtada <b>istediğin kareye</b> gidersin. Kareyi tahtadan seçip onaylarsın.'],
+    'ŞEHİR TURU': ['🗺️','Şehir Turu','Tahtada <b>istediğin kareye</b> gidersin. Kareyi tahtadan seçip onaylarsın.'],
+    'MÜZAYEDE ÖZEL': ['🔨','Özel Müzayede','Tapusu olmayan bir şehir için <b>müzayede</b> başlar. En yüksek teklifi veren şehri alır.'],
+    'MÜZAYEDE': ['🔨','Müzayede','Tapusu olmayan bir şehir için <b>müzayede</b> başlar. En yüksek teklifi veren şehri alır.'],
+    'MÜZAYEDE GENEL': ['🏛️','Genel Müzayede','Herkesin <b>gizli teklif</b> verdiği müzayede. Kimse diğerinin teklifini görmez; en yüksek teklif kazanır.'],
+    'AÇIK ARTIRMA': ['🔨','Açık Artırma','Herkesin katıldığı <b>açık artırma</b>. Teklifler herkese görünür, en son en yüksek teklifi veren kazanır.'],
+    'GELİŞTİRME': ['🏗️','Geliştirme','Mülklerini geliştirme karesi.']
+  };
+  var SPREG = {"OTOGAR":"🚌","YHT":"🚄","FERİBOT":"⛴️","HAVALİMANI":"🛫"};
+  var back = null, box = null;
+  function build(){
+    if(box) return;
+    back = document.createElement('div'); back.id = 'mcCityBack'; document.body.appendChild(back);
+    box = document.createElement('div'); box.id = 'mcCity'; document.body.appendChild(box);
+    back.addEventListener('click', close);
+    box.addEventListener('click', function(e){ if(e.target.closest('.x')) close(); });
+  }
+  function close(){ if(box){ box.classList.remove('show'); back.classList.remove('show'); } var bd = document.getElementById('board'); if(bd) [].forEach.call(bd.querySelectorAll('.cell.mcCitySel'), function(c){ c.classList.remove('mcCitySel','isoHl'); }); }
+  window.monocityCloseCityInfo = close;
+  function regionChips(reg){
+    return (window.REGIONS && REGIONS[reg] || []).map(function(n){ var o = null; try{ o = getOwner(n); }catch(e){} var col = o ? seatCol(o) : '#475569';
+      return '<span style="border-color:'+col+';background:'+(o ? col+'33' : '#0a1122')+'">'+esc(n)+(o ? ' · '+esc(o.name) : '')+'</span>'; }).join('');
+  }
+  function openCity(i){
+    var t = board[i]; if(!t) return;
+    build();
+    var html = '', cc = '#475569', c = window.cities && cities[t];
+    if(c){
+      var gc = GROUPC[c.color] || c.color; cc = gc;
+      var o = null; try{ o = getOwner(t); }catch(e){}
+      var mask = 0; try{ mask = o ? getLevel(o, t) : 0; }catch(e){}
+      var reg = (typeof getRegion === 'function') ? getRegion(t) : null;
+      var bonus = !!(o && reg && typeof playerOwnsRegion === 'function' && playerOwnsRegion(o, reg));
+      var pr = function(m){ var r = Math.floor(c.price*((m&1?.15:0)+(m&2?.05:0)+(m&4?.10:0)+(m&8?.25:0))); return bonus ? r*2 : r; };
+      var rows = [ ['🏡 Ev', c.house, 2], ['🏨 Otel', c.hotel, 4], ['🏠 Arsa', c.land, 1], ['📜 Tapu', c.deed, 8] ];
+      var LM = window.MONOCITY_LANDMARKS && MONOCITY_LANDMARKS[t];
+      var combos = [ ['Ev + Otel', 2|4], ['Ev + Arsa', 2|1], ['Otel + Arsa', 4|1], ['Ev + Otel + Arsa', 2|4|1], ['Hepsi + Tapu', 15] ];
+      html = '<div class="hd"><div><b>🏙️ '+esc(t.toLocaleUpperCase('tr-TR'))+'</b><small>'+(reg ? esc(reg)+' bölgesi · ' : '')+'Değer '+fmt(c.price)+(LM ? ' · '+esc(LM.n) : '')+'</small></div><div class="x">✕</div></div>' +
+        '<div class="bd"><div class="lm">'+(LM ? '<svg viewBox="0 -4 100 124">'+LM.svg+'</svg>' : '<span class="ic">'+(c.icon||'🏙️')+'</span>')+'</div><div style="flex:1;min-width:0">' +
+        '<div class="ow">'+(o ? '<i style="background:'+seatCol(o)+'"></i>Sahibi: '+esc(o.name)+' · <em>Şu anki kira '+fmt(pr(mask))+'</em>' : '<i style="background:#475569"></i>Sahipsiz — satın alınabilir')+'</div>' +
+        '<table><tr><th>YAPI</th><th>ALIŞ</th><th>KİRA</th></tr>' + rows.map(function(r){ var own = !!(mask & r[2]); return '<tr class="'+(own?'own':'')+'"><td>'+r[0]+(own?' ✓':'')+'</td><td>'+fmt(r[1])+'</td><td>'+fmt(pr(r[2]))+'</td></tr>'; }).join('') + '</table>' +
+        '</div></div>' +
+        '<div class="cb"><h6>📊 KİRA KOMBİNASYONLARI'+(bonus ? ' · 🌍 BÖLGE 2×' : '')+'</h6><div class="cg">'+combos.map(function(k){ return '<div class="'+(mask && mask === k[1] ? 'on' : '')+'"><span>'+k[0]+'</span><b>'+fmt(pr(k[1]))+'</b></div>'; }).join('')+'</div></div>' +
+        (reg ? '<div class="rg">🌍 <b>'+esc(reg)+'</b>: 4 şehrin hepsi aynı oyuncudaysa kiralar <b>2 katı</b><div class="ch">'+regionChips(reg)+'</div></div>' : '');
+    } else if(SPREG[t]){
+      cc = '#64748b';
+      var so = null; try{ so = getOwner(t); }catch(e){}
+      var sp = window.MONOCITY_SPECIAL_PRICE ? MONOCITY_SPECIAL_PRICE[t] : 0;
+      var all = !!(so && typeof window.ownsAllSpecialRegions === 'function' && ownsAllSpecialRegions(so));
+      html = '<div class="hd"><div><b>'+SPREG[t]+' '+esc(t)+'</b><small>Özel bölge'+(sp ? ' · Fiyat '+fmt(sp) : '')+'</small></div><div class="x">✕</div></div>' +
+        '<div class="tx">'+(so ? 'Sahibi: <b>'+esc(so.name)+'</b><br>' : 'Sahipsiz — satın alınabilir.<br>')+
+        'Buraya gelen rakipler <b>'+fmt(50000)+'</b> kira öder. 4 özel bölgenin (🚌 🚄 ⛴️ 🛫) hepsi aynı oyuncudaysa kira <b>'+fmt(100000)+'</b> olur ve başlangıç ödülü 2 katına çıkar.'+(all ? '<br>🌍 <b>'+esc(so.name)+' dördüne de sahip!</b>' : '')+'</div>';
+    } else {
+      var inf = SPINFO[t] || ['⭐', t, 'Özel kare.'];
+      html = '<div class="hd"><div><b>'+inf[0]+' '+esc(inf[1].toLocaleUpperCase('tr-TR'))+'</b><small>Özel kare</small></div><div class="x">✕</div></div><div class="tx">'+inf[2]+'</div>';
+    }
+    box.style.setProperty('--cc', cc); box.style.setProperty('--cd', dark(cc));
+    box.innerHTML = html;
+    close(); var bd = document.getElementById('board'); if(bd && bd.children[i]) bd.children[i].classList.add('mcCitySel','isoHl');
+    back.classList.add('show'); box.classList.add('show');
+  }
+  window.monocityOpenCityInfo = openCity;
+  /* tahtadaki kareye dokununca (kare secme modu disinda) */
+  var down = null;
+  document.addEventListener('pointerdown', function(e){ down = { x:e.clientX, y:e.clientY, t:Date.now() }; }, true);
+  document.addEventListener('click', function(e){
+    if(!document.body.classList.contains('mcIso') || document.body.classList.contains('mcWtMode')) return;
+    var cell = e.target && e.target.closest && e.target.closest('#board > .cell'); if(!cell) return;
+    if(down && (Math.abs(e.clientX-down.x) > 12 || Math.abs(e.clientY-down.y) > 12)) return;   /* kaydirma/yakinlastirma */
+    var i = Array.prototype.indexOf.call(cell.parentNode.children, cell); if(i < 0) return;
+    if(window.monocityIsoClosePanel) monocityIsoClosePanel();
+    openCity(i);
+  });
+})();
+</script>
+
