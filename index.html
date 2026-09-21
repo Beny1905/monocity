@@ -8887,12 +8887,17 @@ mportant;}
       var hostName = (document.getElementById('coopNameInput').value || '').trim() || 'Host';
       setCoopName(hostName);
       var st0 = document.getElementById('coopCreateStatus');
-      withAuth(st0, function(){
+      withAuth(st0, function(){ coopDoCreate(hostName); });
+    };
+  }
+  function coopDoCreate(hostName, onDone){
       coopLeave(); // önceki bir odadan kalan durum varsa temizle
       var code = genCode();
       coop.code = code; coop.role = 'host';
       var sess = coopSession;
-      var mset = db.ref('rooms/'+code+'/meta').set({hostName: hostName, status:'waiting', createdAt: Date.now()});
+      var myUid = (window.MONOCITY_AUTH && window.MONOCITY_AUTH.uid) || null;
+      coop.meta = {hostName: hostName, hostUid: myUid, status:'waiting'};
+      var mset = db.ref('rooms/'+code+'/meta').set({hostName: hostName, hostUid: myUid, status:'waiting', createdAt: Date.now()});
       if(mset && mset.catch) mset.catch(function(err){
         console.warn('MONOCITY: oda kurulamadi', err);
         var b = box(); if(b) b.innerHTML = '<h2>🤝 Arkadaşınla Oyna</h2><div class="coopStatus err">❌ Sunucu odayı kabul etmedi. Bağlantı kurallarını kontrol etmen gerekebilir.</div><button class="coopBtn coopClose" onclick="window.closeCoopLobby()">Kapat</button>';
@@ -8902,9 +8907,10 @@ mportant;}
       db.ref('rooms/'+code+'/guests').on('value', function(snap){
         if(sess !== coopSession) return;
         renderHostLobby(code, snap.val() || {});
+        lobbyNotify();
       });
-      });
-    };
+      lobbyNotify();
+      if(onDone) onDone(null, code);
   }
 
   /* guestsObj: { <pushKey>: {name, joinedAt} } — Firebase push key'leri
@@ -8958,23 +8964,19 @@ mportant;}
       var st = document.getElementById('coopJoinStatus');
       if(!code){ st.className='coopStatus err'; st.textContent='Kod gir.'; return; }
       st.className='coopStatus'; st.textContent='Kontrol ediliyor…';
-      withAuth(st, function(){
+      withAuth(st, function(){ coopDoJoin(code, guestName, function(err){ if(err){ st.className='coopStatus err'; st.textContent='❌ '+err; } }); });
+    };
+  }
+  function coopDoJoin(code, guestName, done){
+      done = done || function(){};
       db.ref('rooms/'+code+'/meta').once('value').then(function(snap){
-        if(!snap.exists()){
-          st.className='coopStatus err'; st.textContent='❌ Böyle bir oda yok. Kodu kontrol et.';
-          return;
-        }
+        if(!snap.exists()){ done('Böyle bir oda yok. Kodu kontrol et.'); return; }
         var meta = snap.val();
-        if(meta && meta.status==='playing'){
-          st.className='coopStatus err'; st.textContent='❌ Bu oyun zaten başladı.';
-          return;
-        }
+        if(meta && meta.status==='playing'){ done('Bu oyun zaten başladı.'); return; }
+        if(meta && meta.status==='closed'){ done('Bu lobi kapatılmış.'); return; }
         db.ref('rooms/'+code+'/guests').once('value').then(function(gsnap){
           var guestsObj = gsnap.val() || {};
-          if(Object.keys(guestsObj).length >= MAX_COOP_GUESTS){
-            st.className='coopStatus err'; st.textContent='❌ Oda dolu (en fazla ' + MAX_COOP_GUESTS + ' misafir).';
-            return;
-          }
+          if(Object.keys(guestsObj).length >= MAX_COOP_GUESTS){ done('Oda dolu (en fazla ' + MAX_COOP_GUESTS + ' misafir).'); return; }
           setCoopName(guestName);
           coopLeave(); // önceki bir odadan kalan durum varsa temizle
           coop.code = code; coop.role = 'guest';
@@ -8982,19 +8984,19 @@ mportant;}
           // böylece anahtarı yazmadan ÖNCE biliyoruz (host'un bize atayacağı
           // koltuğu daha sonra bu anahtar altında okuyabilmemiz için).
           coop.myGuestKey = genCode() + Math.floor(Math.random()*1000);
-          db.ref('rooms/'+code+'/guests/'+coop.myGuestKey).set({name: guestName, joinedAt: Date.now(), ready: false, cos: (window.monocityMyCos ? window.monocityMyCos() : null)});
+          coop.meta = meta || {};
+          db.ref('rooms/'+code+'/guests/'+coop.myGuestKey).set({name: guestName, joinedAt: Date.now(), ready: false, uid: ((window.MONOCITY_AUTH && window.MONOCITY_AUTH.uid) || null), cos: (window.monocityMyCos ? window.monocityMyCos() : null)});
           coopAttachChatListener();
           renderGuestWaiting(code);
+          var gsess = coopSession;
+          db.ref('rooms/'+code+'/guests').on('value', function(s2){ if(gsess !== coopSession) return; coop.guests = s2.val() || {}; lobbyNotify(); });
+          lobbyNotify();
+          done(null, code);
         });
       }).catch(function(err){
         var m = String((err && err.message) || err);
-        st.className='coopStatus err';
-        st.textContent = (m.toLowerCase().indexOf('permission') !== -1)
-          ? '❌ Sunucu bağlantıyı reddetti. Giriş yapılamamış olabilir, tekrar dene.'
-          : '❌ Hata: ' + m;
+        done((m.toLowerCase().indexOf('permission') !== -1) ? 'Sunucu bağlantıyı reddetti. Giriş yapılamamış olabilir, tekrar dene.' : 'Hata: ' + m);
       });
-      });
-    };
   }
 
   function renderGuestWaiting(code){
@@ -9009,20 +9011,19 @@ mportant;}
         (ready ? '↩️ Hazır Değilim' : '✅ HAZIRIM') + '</button>' +
       '<button class="coopBtn coopClose" onclick="window.closeCoopLobby()">Kapat</button>';
     var rb = document.getElementById('coopReadyBtn');
-    if(rb) rb.onclick = function(){
-      coop.ready = !coop.ready;
-      if(db && coop.code && coop.myGuestKey){
-        db.ref('rooms/'+coop.code+'/guests/'+coop.myGuestKey+'/ready').set(!!coop.ready);
-        if(window.monocityMyCos) db.ref('rooms/'+coop.code+'/guests/'+coop.myGuestKey+'/cos').set(window.monocityMyCos());
-      }
-      renderGuestWaiting(code);
-    };
+    if(rb) rb.onclick = function(){ coopSetReady(!coop.ready); renderGuestWaiting(code); };
     if(coop.metaListenerAttached) return;   // hazır/değilim ile ekran yeniden çizilince 2. dinleyici eklenmesin
     coop.metaListenerAttached = true;
     var sess = coopSession;
     db.ref('rooms/'+code+'/meta').on('value', function(snap){
       if(sess !== coopSession) return;
       var meta = snap.val();
+      if(meta) coop.meta = meta;
+      if(meta && meta.status==='closed' && !coop.entered){
+        coopLeave(); lobbyNotify('closed');
+        return;
+      }
+      lobbyNotify();
       if(meta && meta.status==='playing' && !coop.entered){
         coop.entered = true;
         window.closeCoopLobby();
@@ -9050,6 +9051,37 @@ mportant;}
   // yerel dizinin 0. sırasına gelecek şekilde) mevcut currentPlayer==0
   // varsayımlarının (buton aktif/pasiflik vs.) doğru çalışmasını sağlar.
   // ---------------------------------------------------------------
+
+  function coopSetReady(v){
+    coop.ready = !!v;
+    if(db && coop.code && coop.myGuestKey){
+      db.ref('rooms/'+coop.code+'/guests/'+coop.myGuestKey+'/ready').set(!!coop.ready);
+      if(window.monocityMyCos) db.ref('rooms/'+coop.code+'/guests/'+coop.myGuestKey+'/cos').set(window.monocityMyCos());
+    }
+    lobbyNotify();
+  }
+  var lobbyListeners = [];
+  function lobbyNotify(ev){ lobbyListeners.forEach(function(f){ try{ f(ev||'change'); }catch(e){} }); }
+  window.MONOCITY_LOBBY_API = {
+    available: function(){ return !!db; },
+    create: function(done){ withAuth(null, function(){ coopDoCreate(getCoopName() || 'Host', done); }); },
+    join: function(code, done){ withAuth(null, function(){ coopDoJoin(String(code||'').toUpperCase(), getCoopName() || 'Misafir', done); }); },
+    leave: function(){
+      if(coop.role === 'guest' && coop.code && coop.myGuestKey && db && !coop.entered){ try{ db.ref('rooms/'+coop.code+'/guests/'+coop.myGuestKey).remove(); }catch(e){} }
+      coopLeave(); lobbyNotify('left');
+    },
+    setReady: coopSetReady,
+    start: function(){ coopHostStartGame(); },
+    onChange: function(fn){ lobbyListeners.push(fn); },
+    state: function(){
+      var entries = sortedGuestEntries(coop.guests || {}).slice(0, MAX_COOP_GUESTS).map(function(e){
+        var g = (coop.guests||{})[e.key] || {}; e.uid = g.uid || null; e.cos = g.cos || null; e.me = (e.key === coop.myGuestKey); return e; });
+      return { code: coop.code, role: coop.role, entered: !!coop.entered, ready: !!coop.ready,
+        hostName: (coop.meta && coop.meta.hostName) || (coop.role==='host' ? getCoopName() : 'Host'),
+        hostUid: (coop.meta && coop.meta.hostUid) || (coop.role==='host' && window.MONOCITY_AUTH ? window.MONOCITY_AUTH.uid : null),
+        guests: entries, max: MAX_COOP_GUESTS + 1, status: (coop.meta && coop.meta.status) || null };
+    }
+  };
 
   function coopHostStartGame(){
     if(!coop.code || coop.role !== 'host') return;
@@ -11237,6 +11269,7 @@ mportant;}
   function call(fn){ return function(e){ if(e){ e.preventDefault(); e.stopPropagation(); } try{ fn(); }catch(err){ console && console.warn && console.warn(err); } }; }
   function panel(name){ return function(){
     if(name === 'ARKADAŞLAR' && typeof window.monocityOpenSocial === 'function') return window.monocityOpenSocial('friends');
+    if(name === 'TOPLULUK' && typeof window.monocityOpenBigChat === 'function' && window.monocityOpenBigChat()) return;
     if(typeof window.openLobbyPanel === 'function') window.openLobbyPanel(name); }; }
   function fmt(n){ return Number(n||0).toLocaleString('tr-TR'); }
   function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
@@ -11352,8 +11385,8 @@ mportant;}
 
     /* OYNA / HIZLI BASLA */
     var play = place(el('button','mcl mclBig mclPlay mclTap'), [29.036, 83.792, 20.247, 13.603]);
-    play.innerHTML = '<img alt="" src="'+A.dice+'"><div class="tx"><b>OYNA</b><small>HEMEN BAŞLA</small></div>';
-    play.addEventListener('click', call(function(){ if(typeof openGameNameSetup==='function') openGameNameSetup(); }));
+    play.innerHTML = '<img alt="" src="'+A.dice+'"><div class="tx"><b>OYNA</b><small id="mclPlaySub">LOBİ KUR</small></div>';
+    play.addEventListener('click', call(function(){ if(typeof window.monocityOpenLobby==='function' && window.monocityOpenLobby()) return; if(typeof openGameNameSetup==='function') openGameNameSetup(); }));
     ui.appendChild(play);
     var quick = place(el('button','mcl mclBig mclQuick mclTap'), [49.935, 83.792, 20.898, 13.603]);
     quick.innerHTML = '<img alt="" src="'+A.bolt+'"><div class="tx"><b>HIZLI BAŞLA</b><small>HEMEN OYUNA KATIL</small></div>';
@@ -11756,7 +11789,7 @@ mportant;}
     el = document.createElement('div');
     el.id = 'mcProfileScreen';
     el.setAttribute('aria-hidden','true');
-    var tabs = [['tProfil','Profil'],['tAlbum','Albüm'],['tKoleksiyon','Koleksiyon'],['tGecmis','Geçmiş'],['tIstatistik','İstatistik'],['tYayinci','Yayıncı Bilgisi'],['tYakinlik','Yakınlık']];
+    var tabs = [['tProfil','Profil'],['tAlbum','Albüm'],['tKoleksiyon','Koleksiyon'],['tGecmis','Geçmiş'],['tIstatistik','İstatistik'],['tYayinci','Yayıncı Bilgisi'],['ates','Popülerlik'],['tYakinlik','Yakınlık']];
     el.innerHTML =
       '<div class="ppBg" style="background-image:url(\''+PA.bg+'\')"></div><div class="ppShade"></div>' +
       '<div class="ppWrap">' +
@@ -12033,6 +12066,7 @@ mportant;}
         var online = !!(window.MONOCITY_COOP && window.MONOCITY_COOP.code);
         if(a.addHistory) a.addHistory({ t:Date.now(), r: won ? 'win' : 'lose', rank: rank, n: players.length, c: pc,
           m: online ? 'online' : 'bot', w: alive[0] ? String(alive[0].name||'') : '' });
+        try{ if(typeof window.monocityOnMatchEnd === 'function') window.monocityOnMatchEnd({ online: online, won: won }); }catch(e){}
       }
     }catch(e){}
   }
@@ -12465,6 +12499,10 @@ mportant;}
     });
   }
   S.follow = follow; S.unfollow = unfollow;
+  S.getUser = function(u, f){ return getUser(u, f); };
+  S.status = function(u){ return status(u); };
+  S.friends = function(){ return friendsList(); };
+  S.onChange = function(fn){ (S.__cbs = S.__cbs || []).push(fn); };
 
   function friendsList(){ return vals(S.following).filter(function(u){ return S.followers[u]; }); }
   function newFollowers(){ return vals(S.followers).filter(function(u){ return !S.following[u]; }); }
@@ -12508,7 +12546,7 @@ mportant;}
 
   /* ---------- lobi arkadas paneli ---------- */
   var chg = null;
-  function changed(){ clearTimeout(chg); chg = setTimeout(function(){ renderLobbyFriends(); renderSocial(); refreshProfileButtons(); updateOnline(); }, 30); }
+  function changed(){ clearTimeout(chg); chg = setTimeout(function(){ renderLobbyFriends(); renderSocial(); refreshProfileButtons(); updateOnline(); (S.__cbs||[]).forEach(function(f){ try{ f(); }catch(e){} }); }, 30); }
   function renderLobbyFriends(){
     var list = document.getElementById('mclFrList'), cnt = document.getElementById('mclFrCount'), all = document.getElementById('mclFrAll');
     if(!list) return;
@@ -12542,7 +12580,7 @@ mportant;}
     e.stopPropagation(); e.preventDefault();
     if(t.closest('[data-login]')){ if(window.monocityOpenAuth) window.monocityOpenAuth('login'); return; }
     if(t.closest('[data-add]')){ if(window.monocityOpenAddFriend) window.monocityOpenAddFriend(''); return; }
-    var inv = t.closest('[data-invite]'); if(inv){ toast('🎮 Arkadaşını odaya davet etme bir sonraki güncellemede geliyor. Şimdilik oda kodunu paylaş.'); return; }
+    var inv = t.closest('[data-invite]'); if(inv){ if(window.monocityInviteFriend) window.monocityInviteFriend(inv.getAttribute('data-invite')); return; }
     var row = t.closest('[data-uid]'); if(row){ openUser(row.getAttribute('data-uid')); return; }
     window.monocityOpenSocial('friends');
   }, true);
@@ -12737,7 +12775,7 @@ mportant;}
   }
   var NAMECOL = ['#7be36b','#5fd4ff','#ff6b5e','#ff7ad9','#ffd66e','#c4a1ff','#ffb057'];
   function colFor(u){ var h=0; u=String(u||''); for(var i=0;i<u.length;i++) h=(h*31+u.charCodeAt(i))>>>0; return NAMECOL[h%NAMECOL.length]; }
-  function renderChatBox(){ if(typeof window.monocityLobbyRenderChat === 'function') window.monocityLobbyRenderChat(); }
+  function renderChatBox(){ if(typeof window.monocityLobbyRenderChat === 'function') window.monocityLobbyRenderChat(); if(typeof window.monocityBigChatRender === 'function') window.monocityBigChatRender(); }
   if(ONLINE){
     window.monocityChatRender = function(list){
       var inp = document.getElementById('mclChatInput');
@@ -12784,6 +12822,636 @@ mportant;}
     setInterval(function(){ try{ if(me() && window.MONOCITY_ACCOUNT_SYNC && acc().raw) window.MONOCITY_ACCOUNT_SYNC(acc().raw()); }catch(e){} }, 30000);
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(boot, 50); }); else setTimeout(boot, 50);
+})();
+</script>
+<style id="monocity-lobby2-css">
+#mcLobby2{position:fixed;inset:0;z-index:1100000;display:none;font-family:Arial,Helvetica,sans-serif;color:#fff;
+  background:radial-gradient(ellipse at 30% 0%, rgba(90,50,180,.55), transparent 60%), radial-gradient(ellipse at 70% 100%, rgba(10,90,200,.45), transparent 60%), #070b18}
+#mcLobby2.show{display:block}
+#mcLobby2 *{box-sizing:border-box}
+#mcLobby2 .lbTop{position:absolute;left:1.5%;right:1.5%;top:2%;height:10%;display:flex;align-items:center;gap:calc(1.4*var(--mcu,1vh))}
+#mcLobby2 .lbTop button{border:0;border-radius:calc(1.4*var(--mcu,1vh));height:100%;padding:0 calc(2*var(--mcu,1vh));font-weight:1000;font-size:clamp(11px,calc(2.6*var(--mcu,1vh)),15px);color:#fff;cursor:pointer;margin:0;min-height:0;white-space:nowrap}
+#mcLobby2 .lbMin{background:#1f2a44}
+#mcLobby2 .lbExit{background:#7f1d1d}
+#mcLobby2 .lbTitle{flex:1;text-align:center;font-weight:1000;font-size:clamp(14px,calc(3.8*var(--mcu,1vh)),24px);letter-spacing:1px}
+#mcLobby2 .lbCode{display:inline-flex;align-items:center;gap:6px;margin-left:10px;background:#0a1122;border:1px dashed #3b5bdb;border-radius:9px;padding:3px 10px;font-size:.7em;color:#ffd23d;cursor:pointer}
+#mcLobby2 .lbSeats{position:absolute;left:1.5%;width:66%;top:15%;height:62%;display:grid;grid-template-columns:repeat(4,1fr);gap:calc(1.4*var(--mcu,1vh))}
+#mcLobby2 .lbSeat{position:relative;border-radius:calc(2*var(--mcu,1vh));background:linear-gradient(180deg,#18223a,#0c1426);border:2px solid #26345a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(1*var(--mcu,1vh));padding:8px;overflow:hidden;--sc:#26345a}
+#mcLobby2 .lbSeat.filled{border-color:var(--sc);box-shadow:0 0 calc(2*var(--mcu,1vh)) color-mix(in srgb,var(--sc) 55%,transparent) inset}
+#mcLobby2 .lbSeat .av{width:62%;aspect-ratio:1;border-radius:22%;overflow:hidden;background:#0a1122;box-shadow:0 0 0 3px var(--sc)}
+#mcLobby2 .lbSeat .av img{width:100%;height:100%;object-fit:cover}
+#mcLobby2 .lbSeat b{font-size:clamp(11px,calc(2.8*var(--mcu,1vh)),16px);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mcLobby2 .lbSeat small{font-size:clamp(9px,calc(2.1*var(--mcu,1vh)),12px);color:#9fb0cf;font-weight:800}
+#mcLobby2 .lbSeat .tag{position:absolute;top:6px;left:6px;font-size:clamp(9px,calc(2*var(--mcu,1vh)),12px);font-weight:1000;padding:2px 7px;border-radius:8px;background:#0a1122}
+#mcLobby2 .lbSeat .tag.host{color:#ffd23d}
+#mcLobby2 .lbSeat .tag.ok{color:#4ade80}
+#mcLobby2 .lbSeat .tag.wait{color:#fbbf24}
+#mcLobby2 .lbSeat.empty{border-style:dashed;cursor:pointer}
+#mcLobby2 .lbSeat.empty .plus{width:46%;aspect-ratio:1;border-radius:50%;border:2px dashed #3b5bdb;display:flex;align-items:center;justify-content:center;font-size:clamp(20px,calc(7*var(--mcu,1vh)),44px);color:#6d8cff}
+#mcLobby2 .lbBottom{position:absolute;left:1.5%;width:66%;bottom:4%;height:15%;display:flex;gap:calc(1.6*var(--mcu,1vh));align-items:stretch}
+#mcLobby2 .lbBottom .info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;font-size:clamp(10px,calc(2.4*var(--mcu,1vh)),14px);color:#b9c6e4;line-height:1.35}
+#mcLobby2 .lbGo{flex:0 0 38%;border:0;border-radius:calc(2*var(--mcu,1vh));font-weight:1000;font-size:clamp(15px,calc(4.4*var(--mcu,1vh)),26px);color:#241600;background:linear-gradient(180deg,#ffd23d,#e79a00);cursor:pointer;margin:0;min-height:0;box-shadow:0 6px 0 #8a5700}
+#mcLobby2 .lbGo.ready{background:linear-gradient(180deg,#22c55e,#15803d);color:#fff;box-shadow:0 6px 0 #0b4d24}
+#mcLobby2 .lbGo.unready{background:#374151;color:#e5e7eb;box-shadow:0 6px 0 #1f2937}
+#mcLobby2 .lbFr{position:absolute;right:1.5%;width:29%;top:15%;bottom:4%;border-radius:calc(2*var(--mcu,1vh));background:rgba(10,16,32,.9);border:1.5px solid #26345a;display:flex;flex-direction:column;overflow:hidden}
+#mcLobby2 .lbFr h4{margin:0;padding:calc(1.4*var(--mcu,1vh)) calc(1.8*var(--mcu,1vh));font-size:clamp(12px,calc(2.8*var(--mcu,1vh)),16px);border-bottom:1px solid #1e2a44}
+#mcLobby2 .lbFr h4 small{color:#4ade80;font-size:.75em;margin-left:6px}
+#mcLobby2 .lbFrList{flex:1;overflow:auto;padding:calc(1*var(--mcu,1vh));display:flex;flex-direction:column;gap:calc(.8*var(--mcu,1vh))}
+#mcLobby2 .lbFrRow{display:flex;align-items:center;gap:8px;background:#0a1122;border-radius:10px;padding:6px 8px;cursor:pointer}
+#mcLobby2 .lbFrRow .nm{flex:1;min-width:0}
+#mcLobby2 .lbFrRow .nm b{display:block;font-size:clamp(11px,calc(2.5*var(--mcu,1vh)),14px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mcLobby2 .lbFrRow .nm small{font-size:clamp(9px,calc(2*var(--mcu,1vh)),11px);font-weight:900}
+#mcLobby2 .lbFrRow .nm small.on{color:#4ade80}#mcLobby2 .lbFrRow .nm small.play{color:#fbbf24}#mcLobby2 .lbFrRow .nm small.off{color:#6b7280}
+#mcLobby2 .lbFrRow button{border:0;border-radius:9px;width:clamp(28px,calc(6*var(--mcu,1vh)),38px);height:clamp(28px,calc(6*var(--mcu,1vh)),38px);font-weight:1000;font-size:18px;color:#fff;background:linear-gradient(180deg,#22c55e,#15803d);cursor:pointer;margin:0;min-height:0;padding:0}
+#mcLobby2 .lbFrRow button.sent{background:#374151;font-size:11px}
+#mcLobby2 .lbFrRow button.in{background:#1e3a8a;font-size:10px;width:auto!important;padding:0 8px!important}
+#mcLobby2 .lbFrEmpty{color:#9fb0cf;text-align:center;font-size:12px;padding:16px 8px;line-height:1.5}
+#mcLobby2 .lbFr.flash{animation:mcLbFlash .8s ease 2}
+@keyframes mcLbFlash{50%{border-color:#ffd23d;box-shadow:0 0 18px rgba(255,210,61,.5)}}
+#mcLobbyPill{position:fixed;left:50%;top:calc(11.5*var(--mcu,1vh));transform:translateX(-50%);z-index:1000500;display:none;align-items:center;gap:8px;border:0;border-radius:30px;padding:7px 16px;font-weight:1000;font-size:clamp(11px,calc(2.6*var(--mcu,1vh)),15px);color:#fff;background:linear-gradient(180deg,#7c3aed,#4c1d95);box-shadow:0 0 16px rgba(124,58,237,.6);cursor:pointer;font-family:Arial,Helvetica,sans-serif;animation:mcPillPulse 1.6s ease-in-out infinite}
+#mcLobbyPill.show{display:flex}
+@keyframes mcPillPulse{50%{box-shadow:0 0 26px rgba(167,139,250,.9)}}
+#mcInvite{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:1300000;display:none;align-items:center;gap:10px;background:linear-gradient(180deg,#1b2437,#0e1528);border:2px solid #7c3aed;border-radius:14px;padding:10px 12px;color:#fff;font-family:Arial,Helvetica,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.6);max-width:94vw}
+#mcInvite.show{display:flex}
+#mcInvite .tx{font-size:14px;font-weight:800;line-height:1.3}
+#mcInvite .tx small{display:block;color:#9fb0cf;font-weight:700;font-size:11px}
+#mcInvite button{border:0;border-radius:9px;padding:8px 12px;font-weight:1000;color:#fff;cursor:pointer;margin:0;min-height:0;white-space:nowrap}
+#mcInvite .yes{background:linear-gradient(180deg,#22c55e,#15803d)}
+#mcInvite .no{background:#374151}
+/* buyuk sohbet */
+#mcChatBig{position:fixed;left:0;top:0;bottom:0;width:min(560px,58vw);z-index:1100020;display:none;flex-direction:column;background:rgba(8,12,24,.97);border-right:2px solid #3b5bdb;box-shadow:10px 0 40px rgba(0,0,0,.6);font-family:Arial,Helvetica,sans-serif;color:#fff}
+#mcChatBig.show{display:flex}
+#mcChatBig *{box-sizing:border-box}
+#mcChatBig .cbHead{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #1e2a44;font-weight:1000;font-size:16px}
+#mcChatBig .cbHead span{flex:1}
+#mcChatBig .cbHead em{font-style:normal;color:#4ade80;font-size:12px;margin-right:6px}
+#mcChatBig .cbHead button{border:0;background:#7f1d1d;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;margin:0;min-height:0;padding:0;font-size:15px}
+#mcChatBig .mclChatList{flex:1;overflow:auto;padding:8px 12px;display:flex;flex-direction:column;gap:7px}
+#mcChatBig .mclMsg{display:flex;gap:8px;font-size:15px;line-height:1.35}
+#mcChatBig .mclMsg .t{flex:1;word-break:break-word}
+#mcChatBig .mclMsg .h{color:#6b7a99;font-size:11px;white-space:nowrap}
+#mcChatBig .mclMsg .who{cursor:pointer}
+#mcChatBig .cbIn{display:flex;gap:8px;padding:10px 12px;border-top:1px solid #1e2a44}
+#mcChatBig .cbIn input{flex:1;min-width:0;background:#0a1122;border:1.5px solid #2c3b5e;border-radius:10px;color:#fff;font-size:15px;padding:10px 12px;outline:none}
+#mcChatBig .cbIn button{border:0;border-radius:10px;padding:0 14px;font-weight:1000;color:#fff;background:linear-gradient(180deg,#3b82f6,#1d4ed8);cursor:pointer;margin:0;min-height:0}
+#mcChatBig .cbEmo{display:flex;gap:4px;flex-wrap:wrap;padding:0 12px 8px}
+#mcChatBig .cbEmo button{border:0;background:#111a2e;border-radius:8px;font-size:18px;padding:3px 6px;cursor:pointer;margin:0;min-height:0}
+#mcLobbyUI .mclChatHead{cursor:pointer}
+</style>
+<script id="monocity-lobby2-js">
+(function(){
+  var API = window.MONOCITY_LOBBY_API, A = window.MONOCITY_AUTH, db = window.MONOCITY_DB;
+  var ONLINE = !!(API && API.available() && A && A.available && db);
+  function S(){ return window.MONOCITY_SOCIAL; }
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function toast(m){ try{ if(window.MONOCITY_PROFILE && window.MONOCITY_PROFILE.toast) return window.MONOCITY_PROFILE.toast(m); }catch(e){} }
+  function me(){ return (A && A.uid) || null; }
+  function myName(){ try{ return window.MONOCITY_ACCOUNT.getName(); }catch(e){ return 'Oyuncu'; } }
+  function avatar(){ return window.MONOCITY_DEFAULT_AVATAR || ''; }
+  function myLevel(){ try{ return (window.MONOCITY_PROFILE && window.MONOCITY_PROFILE.get().level) || 1; }catch(e){ return 1; } }
+  var FRC = {white:'#dfe6ef',red:'#ef3b2d',yellow:'#ffd23d',green:'#34c759',purple:'#9b45ef',pink:'#ff6fb5',blue:'#2f86ff',orange:'#ff8a1f',black:'#93a1b4',brown:'#9a6434'};
+  var SEATC = ['#ff3b30','#ffd60a','#34c759','#0a84ff'];
+  function inGame(){ var g=document.getElementById('game'), mm=document.getElementById('mainMenu');
+    return !!(g && getComputedStyle(g).display!=='none' && (!mm || getComputedStyle(mm).display==='none')); }
+
+  /* ---------- Lobi ekrani ---------- */
+  var el = null, pill = null, minimized = false, sent = {};
+  function build(){
+    if(el) return el;
+    el = document.createElement('div'); el.id = 'mcLobby2';
+    el.innerHTML =
+      '<div class="lbTop"><button type="button" class="lbMin" id="lbMin">▾ KÜÇÜLT</button>' +
+        '<div class="lbTitle">🎮 LOBİ <span class="lbCode" id="lbCode" title="Kodu kopyala"></span></div>' +
+        '<button type="button" class="lbExit" id="lbExit">🚪 LOBİDEN ÇIK</button></div>' +
+      '<div class="lbSeats" id="lbSeats"></div>' +
+      '<div class="lbBottom"><div class="info" id="lbInfo"></div><button type="button" class="lbGo" id="lbGo">BAŞLAT</button></div>' +
+      '<div class="lbFr" id="lbFr"><h4>ARKADAŞLAR <small id="lbFrOn"></small></h4><div class="lbFrList" id="lbFrList"></div></div>';
+    document.body.appendChild(el);
+    el.querySelector('#lbMin').onclick = function(){ minimize(); };
+    el.querySelector('#lbExit').onclick = function(){ leave(); };
+    el.querySelector('#lbCode').onclick = function(){ var c = API.state().code; try{ navigator.clipboard.writeText(c); toast('📋 Lobi kodu kopyalandı: '+c); }catch(e){ toast('Lobi kodu: '+c); } };
+    el.querySelector('#lbGo').onclick = function(){
+      var st = API.state();
+      if(st.role === 'host'){ hideAll(); API.start(); }
+      else if(st.role === 'guest'){ API.setReady(!st.ready); }
+    };
+    el.querySelector('#lbSeats').addEventListener('click', function(e){
+      var s = e.target.closest('.lbSeat'); if(!s) return;
+      if(s.classList.contains('empty')){ var f = el.querySelector('#lbFr'); f.classList.remove('flash'); void f.offsetWidth; f.classList.add('flash');
+        if(!(S() && S().friends().length)) toast('Arkadaş listen boş. Lobi kodunu paylaşabilirsin: '+API.state().code); return; }
+      var u = s.getAttribute('data-uid'); if(u && window.monocityOpenUserProfile) window.monocityOpenUserProfile(u);
+    });
+    el.querySelector('#lbFrList').addEventListener('click', function(e){
+      var b = e.target.closest('button[data-inv]'); if(b){ e.stopPropagation(); invite(b.getAttribute('data-inv')); return; }
+      var r = e.target.closest('[data-uid]'); if(r && window.monocityOpenUserProfile) window.monocityOpenUserProfile(r.getAttribute('data-uid'));
+    });
+    return el;
+  }
+  function buildPill(){
+    if(pill) return pill;
+    pill = document.createElement('button'); pill.type = 'button'; pill.id = 'mcLobbyPill';
+    pill.onclick = function(){ show(); };
+    document.body.appendChild(pill);
+    return pill;
+  }
+  function inLobby(){ var st = API && API.state(); return !!(st && st.code && !st.entered && st.status !== 'playing'); }
+  function show(){ build(); minimized = false; el.classList.add('show'); render(); }
+  function minimize(){ minimized = true; if(el) el.classList.remove('show'); render(); toast('Lobi küçültüldü. Üstteki mor butondan geri dönebilirsin.'); }
+  function hideAll(){ minimized = true; if(el) el.classList.remove('show'); if(pill) pill.classList.remove('show'); }
+  function leave(){ API.leave(); sent = {}; if(el) el.classList.remove('show'); if(pill) pill.classList.remove('show'); toast('Lobiden çıktın.'); }
+
+  function seatCard(i, p){
+    if(!p) return '<div class="lbSeat empty"><div class="plus">+</div><small>Davet et</small><small style="font-weight:700">Boş kalırsa bot oynar</small></div>';
+    var d = (p.uid && S() && S().users && S().users[p.uid]) || {};
+    if(p.uid && S() && !S().users[p.uid] && S().getUser) S().getUser(p.uid).then(function(){ render(); });
+    var fr = (p.cos && p.cos.frame) || (d.cos && d.cos.frame) || 'white';
+    var col = fr !== 'white' ? (FRC[fr] || SEATC[i]) : SEATC[i];
+    var tag = p.host ? '<span class="tag host">👑 KURUCU</span>' : (p.ready ? '<span class="tag ok">✓ HAZIR</span>' : '<span class="tag wait">⏳ BEKLİYOR</span>');
+    return '<div class="lbSeat filled" style="--sc:'+col+'"'+(p.uid?' data-uid="'+esc(p.uid)+'"':'')+'>'+tag+'<div class="av"><img alt="" src="'+avatar()+'"></div>' +
+      '<b>'+esc(p.name)+(p.me?' (Sen)':'')+'</b><small>⭐ Seviye '+esc(p.me ? myLevel() : (d.level||1))+'</small></div>';
+  }
+  function render(){
+    var st = API ? API.state() : null;
+    var active = !!(st && st.code && !st.entered && st.status !== 'playing');
+    buildPill();
+    /* oyun basladiysa her seyi gizle */
+    if(!active){ if(el) el.classList.remove('show'); pill.classList.remove('show'); updatePlayBtn(null); return; }
+    var n = 1 + st.guests.length;
+    pill.innerHTML = '🎮 LOBİ '+n+'/'+st.max+' · '+esc(st.code)+' <span style="opacity:.8">▴</span>';
+    var mm = document.getElementById('mainMenu');
+    var menuVisible = !inGame() && (!mm || getComputedStyle(mm).display !== 'none');
+    pill.classList.toggle('show', minimized && menuVisible);
+    updatePlayBtn(st);
+    if(!el || !el.classList.contains('show')) return;
+    el.querySelector('#lbCode').textContent = '📋 '+st.code;
+    var seats = [{name:st.hostName, uid:st.hostUid, host:true, me:st.role==='host', cos:(st.role==='host' && window.monocityMyCos) ? window.monocityMyCos() : null}]
+      .concat(st.guests.map(function(g){ return {name:g.name, uid:g.uid, ready:g.ready, me:g.me, cos:g.cos}; }));
+    var html = ''; for(var i=0;i<st.max;i++) html += seatCard(i, seats[i]);
+    el.querySelector('#lbSeats').innerHTML = html;
+    var go = el.querySelector('#lbGo'), info = el.querySelector('#lbInfo');
+    if(st.role === 'host'){
+      var nr = st.guests.filter(function(g){ return !g.ready; }).length;
+      go.className = 'lbGo'; go.textContent = '▶ BAŞLAT';
+      info.innerHTML = (st.guests.length ? (nr ? '⏳ '+nr+' oyuncu henüz hazır değil. Yine de başlatabilirsin.' : '✅ Herkes hazır!') : 'Arkadaşlarını sağdaki listeden davet et ya da kodu paylaş.') + '<br>Boş koltuklara bot oturur.';
+    }else{
+      go.className = 'lbGo ' + (st.ready ? 'unready' : 'ready'); go.textContent = st.ready ? '↩ HAZIR DEĞİLİM' : '✓ HAZIRIM';
+      info.innerHTML = st.ready ? '✅ Hazırsın. Kurucu başlatınca oyun açılacak.' : 'Hazır olduğunda butona bas.';
+    }
+    renderFriends(st);
+  }
+  function renderFriends(st){
+    var list = el.querySelector('#lbFrList'), on = el.querySelector('#lbFrOn');
+    var so = S(); if(!so || !so.friends){ list.innerHTML = '<div class="lbFrEmpty">Arkadaş listesi yüklenemedi.</div>'; return; }
+    var fr = so.friends();
+    var inRoom = {}; if(st.hostUid) inRoom[st.hostUid] = 1; st.guests.forEach(function(g){ if(g.uid) inRoom[g.uid] = 1; });
+    var ord = {play:1,on:0,off:2};
+    fr.sort(function(a,b){ return ord[so.status(a).c]-ord[so.status(b).c]; });
+    on.textContent = fr.filter(function(u){ return so.status(u).c !== 'off'; }).length + ' çevrimiçi';
+    if(!fr.length){ list.innerHTML = '<div class="lbFrEmpty">Henüz arkadaşın yok.<br>Lobi kodunu paylaşarak da arkadaşını çağırabilirsin: <b style="color:#ffd23d">'+esc(st.code)+'</b></div>'; return; }
+    list.innerHTML = fr.map(function(u){
+      var d = so.users[u] || {}, s2 = so.status(u);
+      var btn = inRoom[u] ? '<button type="button" class="in" disabled>LOBİDE</button>' :
+        (sent[u] && Date.now()-sent[u] < 30000 ? '<button type="button" class="sent" disabled>✓</button>' : '<button type="button" data-inv="'+esc(u)+'" title="Davet et">+</button>');
+      return '<div class="lbFrRow" data-uid="'+esc(u)+'"><div class="nm"><b>'+esc(d.nickname||'…')+'</b><small class="'+s2.c+'">'+s2.t+'</small></div>'+btn+'</div>';
+    }).join('');
+  }
+  function updatePlayBtn(st){
+    var sub = document.getElementById('mclPlaySub'); if(!sub) return;
+    sub.textContent = (st && st.code) ? ('LOBİYE DÖN ('+(1+st.guests.length)+'/'+st.max+')') : 'LOBİ KUR';
+  }
+
+  /* ---------- Acma / davet ---------- */
+  function ensureLobby(cb){
+    if(inLobby()){ cb && cb(null); return; }
+    API.create(function(err){ if(err){ toast('❌ Lobi kurulamadı: '+err); return; } cb && cb(null); });
+  }
+  window.monocityOpenLobby = function(){
+    if(!ONLINE) return false;
+    if(!me()){
+      if(window.MONOCITY_GUEST) { toast('👤 Misafir modunda botlarla oynuyorsun. Lobi kurmak için giriş yap.'); return false; }
+      if(window.monocityOpenAuth) window.monocityOpenAuth('login', 'Lobi kurmak için hesabına giriş yap.'); return true;
+    }
+    ensureLobby(function(){ show(); });
+    return true;
+  };
+  function invite(uid){
+    if(!ONLINE || !me()){ if(window.monocityOpenAuth) window.monocityOpenAuth('login','Davet için giriş yap.'); return; }
+    ensureLobby(function(){
+      var st = API.state();
+      if(1 + st.guests.length >= st.max){ toast('Lobi dolu.'); return; }
+      db.ref('invites/'+uid+'/'+me()).set({ code: st.code, n: myName(), t: Date.now() }).then(function(){
+        sent[uid] = Date.now(); var d = S() && S().users[uid];
+        toast('📨 '+((d&&d.nickname)||'Arkadaşın')+' lobiye davet edildi.');
+        if(!el || !el.classList.contains('show')) show(); else render();
+      }).catch(function(){ toast('❌ Davet gönderilemedi.'); });
+    });
+  }
+  window.monocityInviteFriend = invite;
+
+  /* ---------- Gelen davetler ---------- */
+  var invEl = null, invOff = null, handled = {}, invTimer = null;
+  function showInvite(from, v){
+    if(!invEl){ invEl = document.createElement('div'); invEl.id = 'mcInvite'; document.body.appendChild(invEl); }
+    invEl.innerHTML = '<div class="tx">🎮 '+esc(v.n||'Arkadaşın')+' seni lobisine davet ediyor<small>Lobi kodu: '+esc(v.code)+'</small></div>' +
+      '<button type="button" class="yes">KATIL</button><button type="button" class="no">REDDET</button>';
+    invEl.classList.add('show');
+    var done = function(){ invEl.classList.remove('show'); try{ db.ref('invites/'+me()+'/'+from).remove(); }catch(e){} clearTimeout(invTimer); };
+    invEl.querySelector('.no').onclick = done;
+    invEl.querySelector('.yes').onclick = function(){
+      done();
+      if(inGame()){ toast('Önce oyunu bitir.'); return; }
+      if(inLobby()) API.leave();
+      API.join(v.code, function(err){ if(err){ toast('❌ '+err); return; } show(); toast('✅ Lobiye katıldın!'); });
+    };
+    clearTimeout(invTimer); invTimer = setTimeout(function(){ invEl.classList.remove('show'); }, 30000);
+  }
+  function attachInvites(uid){
+    if(invOff){ invOff(); invOff = null; }
+    if(!uid) return;
+    var r = db.ref('invites/'+uid);
+    var cb = function(s){
+      var v = (s && s.val()) || {};
+      Object.keys(v).forEach(function(from){
+        var x = v[from]; if(!x || !x.code) return;
+        var key = from+':'+x.t;
+        if(handled[key]) return; handled[key] = 1;
+        if(Date.now() - (x.t||0) > 3*60*1000){ try{ db.ref('invites/'+uid+'/'+from).remove(); }catch(e){} return; }
+        showInvite(from, x);
+      });
+    };
+    r.on('value', cb);
+    invOff = function(){ try{ r.off('value', cb); }catch(e){} };
+  }
+
+  /* ---------- Buyuk sohbet ---------- */
+  var cb = null;
+  function buildBig(){
+    if(cb) return cb;
+    cb = document.createElement('div'); cb.id = 'mcChatBig';
+    cb.innerHTML = '<div class="cbHead"><span>🌍 GLOBAL SOHBET</span><em id="cbOn"></em><button type="button" id="cbX">✕</button></div>' +
+      '<div class="mclChatList" id="cbList"></div>' +
+      '<div class="cbEmo" id="cbEmo"></div>' +
+      '<div class="cbIn"><input id="cbInput" maxlength="120" placeholder="Mesaj yaz..." autocomplete="off"><button type="button" id="cbSend">GÖNDER</button></div>';
+    document.body.appendChild(cb);
+    cb.querySelector('#cbX').onclick = function(){ cb.classList.remove('show'); };
+    var inp = cb.querySelector('#cbInput');
+    var send = function(){ var v = inp.value.trim(); if(!v) return; if(window.monocityChatSend && window.monocityChatSend(v) !== false) inp.value=''; };
+    cb.querySelector('#cbSend').onclick = send;
+    inp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); send(); } });
+    ['😀','😂','😍','👍','🎲','🔥','👏','😎','🏙️','💰','🤝','🎉'].forEach(function(em){ var b=document.createElement('button'); b.type='button'; b.textContent=em; b.onclick=function(){ inp.value+=em; inp.focus(); }; cb.querySelector('#cbEmo').appendChild(b); });
+    cb.querySelector('#cbList').addEventListener('click', function(e){ var w = e.target.closest('.who'); if(w && window.monocityOpenUserProfile){ window.monocityOpenUserProfile(w.getAttribute('data-u')); } });
+    return cb;
+  }
+  window.monocityOpenBigChat = function(){
+    if(!ONLINE || typeof window.monocityChatRender !== 'function') return false;
+    buildBig(); cb.classList.add('show'); window.monocityBigChatRender();
+    var list = cb.querySelector('#cbList'); list.scrollTop = list.scrollHeight;
+    return true;
+  };
+  window.monocityBigChatRender = function(){
+    if(!cb || !cb.classList.contains('show')) return;
+    window.monocityChatRender(cb.querySelector('#cbList'));
+    var n = document.getElementById('mclOnlineN'); cb.querySelector('#cbOn').textContent = n ? ('● '+n.textContent+' çevrimiçi') : '';
+    var inp = cb.querySelector('#cbInput'); inp.placeholder = me() ? 'Mesaj yaz...' : 'Sohbet için giriş yap';
+  };
+  /* kucuk sohbetin basligina ya da mesajlarina dokununca buyut */
+  document.addEventListener('click', function(e){
+    var t = e.target; if(!t || !t.closest) return;
+    var chat = t.closest('#mcLobbyUI .mclChat'); if(!chat) return;
+    if(t.closest('input,button,.who,#mclEmoPop')) return;
+    if(!t.closest('.mclChatHead,.mclChatList')) return;
+    if(window.monocityOpenBigChat()) { e.stopPropagation(); }
+  });
+
+  /* ---------- baslat ---------- */
+  if(API) API.onChange(function(ev){
+    if(ev === 'closed'){ toast('🚪 Lobi kurucu tarafından kapatıldı.'); minimized = false; }
+    render();
+  });
+  if(ONLINE){
+    A.onChange(function(u){ attachInvites(u ? u.uid : null); });
+    A.ready.then(function(u){ if(u) attachInvites(u.uid); });
+    var so0 = setInterval(function(){ if(S() && S().onChange){ clearInterval(so0); S().onChange(function(){ if(el && el.classList.contains('show')) render(); }); } }, 200);
+  }
+  setInterval(render, 1500);
+})();
+</script>
+<style id="monocity-profile2-css">
+.mcPT .bx{width:min(640px,95vw)!important;max-height:94dvh!important}
+.mcPT .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:8px 0}
+.mcPT .cell{background:#0a1122;border:1px solid #1e2a44;border-radius:10px;padding:9px;text-align:center}
+.mcPT .cell b{display:block;font-size:20px;color:#ffd23d}
+.mcPT .cell small{color:#9fb0cf;font-size:11px}
+.mcPT .sec{margin:10px 0 6px;font-weight:1000;color:#93c5fd;font-size:13px}
+.mcPT .links{display:flex;flex-wrap:wrap;gap:8px}
+.mcPT .links a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:#fff;font-weight:900;font-size:13px;border-radius:10px;padding:8px 12px;background:#1f2a44}
+.mcPT .links a.yt{background:#c4302b}.mcPT .links a.tw{background:#6441a5}.mcPT .links a.kick{background:#1a7f37}.mcPT .links a.tt{background:#111;border:1px solid #444}.mcPT .links a.ig{background:linear-gradient(45deg,#f58529,#dd2a7b,#8134af)}
+.mcPT .frm{display:grid;grid-template-columns:auto 1fr;gap:6px 8px;align-items:center}
+.mcPT .frm label{font-size:12px;font-weight:900;color:#c9d6ee}
+.mcPT .frm input{background:#0a1122;border:1.5px solid #2c3b5e;border-radius:8px;color:#fff;padding:7px 9px;font-size:13px;min-width:0}
+.mcPT .big{font-size:34px!important}
+.mcPT .likeBtn{display:block;width:100%;border:0;border-radius:12px;padding:12px;font-weight:1000;font-size:16px;color:#fff;background:linear-gradient(180deg,#ff3d6e,#c0123f);cursor:pointer;margin:6px 0}
+.mcPT .likeBtn:disabled{filter:grayscale(.6) brightness(.8);cursor:default}
+.mcPT .who{display:flex;flex-wrap:wrap;gap:6px}
+.mcPT .who span{background:#0a1122;border:1px solid #1e2a44;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:800}
+.mcPT .alb{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.mcPT .alb .ph{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:#0a1122;border:1px solid #1e2a44;cursor:pointer}
+.mcPT .alb .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.mcPT .alb .ph .del{position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:50%;border:0;background:rgba(127,29,29,.9);color:#fff;font-weight:1000;cursor:pointer;padding:0;margin:0;min-height:0}
+.mcPT .alb .add{aspect-ratio:1;border-radius:10px;border:2px dashed #3b5bdb;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#6d8cff;font-weight:1000;cursor:pointer;font-size:12px;gap:4px}
+.mcPT .alb .add b{font-size:30px}
+.mcPT .irow{display:flex;align-items:center;gap:8px;background:#0a1122;border:1px solid #1e2a44;border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.mcPT .irow .nm{flex:1;min-width:0}
+.mcPT .irow .nm b{font-size:14px}
+.mcPT .irow .bar{height:7px;border-radius:5px;background:#1f2937;margin-top:4px;overflow:hidden}
+.mcPT .irow .bar i{display:block;height:100%;background:linear-gradient(90deg,#ff6fb5,#ffd23d)}
+.mcPT .irow small{color:#9fb0cf;font-size:11px}
+.mcPT .irow button{border:0;border-radius:9px;padding:7px 9px;font-weight:1000;font-size:11px;color:#fff;cursor:pointer;margin:0;min-height:0;white-space:nowrap;background:linear-gradient(180deg,#9b45ef,#5b21b6)}
+.mcPT .irow button.ok{background:linear-gradient(180deg,#22c55e,#15803d)}
+.mcPT .irow button.no{background:#374151}
+.mcPT .rel{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:8px;background:#4c1d95;color:#e9d5ff;font-size:11px;font-weight:900}
+.mcPT .types{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.mcPT .types button{border:1.5px solid #3b5bdb;background:#0a1122;color:#fff;border-radius:12px;padding:12px 8px;font-weight:1000;font-size:14px;cursor:pointer;margin:0}
+#mcPhotoView{position:fixed;inset:0;z-index:1100070;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;cursor:zoom-out}
+#mcPhotoView.show{display:flex}
+#mcPhotoView img{max-width:94vw;max-height:94vh;border-radius:10px}
+#mcProfileScreen .ppStat.likable{cursor:pointer}
+</style>
+<script id="monocity-profile2-js">
+(function(){
+  var A = window.MONOCITY_AUTH, db = window.MONOCITY_DB;
+  var ONLINE = !!(A && A.available && db);
+  var INTIMACY_NEED = 100, PER_MATCH = 10;
+  var REL = { kanka:'🤜🤛 Kanka', kardes:'👬 Kardeş', sevgili:'💞 Sevgili', usta:'🎓 Usta-Çırak' };
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function toast(m){ try{ if(window.MONOCITY_PROFILE && window.MONOCITY_PROFILE.toast) return window.MONOCITY_PROFILE.toast(m); }catch(e){} }
+  function me(){ return (A && A.uid) || null; }
+  function S(){ return window.MONOCITY_SOCIAL; }
+  function vals(o){ return o && typeof o==='object' ? Object.keys(o) : []; }
+  function pair(a,b){ return [a,b].sort().join('_'); }
+  function today(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+  function once(p){ return db.ref(p).once('value').then(function(s){ return s && s.val(); }); }
+  function nameOf(u){ var so=S(); var d = so && so.users && so.users[u]; return (d && d.nickname) || '…'; }
+  function needLogin(){ if(!ONLINE){ toast('İnternet bağlantısı gerekiyor.'); return true; } if(!me()){ if(window.monocityOpenAuth) window.monocityOpenAuth('login'); return true; } return false; }
+
+  var m = null;
+  function modal(title, html){
+    if(!m){ m = document.createElement('div'); m.id = 'mcPTab2'; m.className = 'mcPModal mcPT'; document.body.appendChild(m);
+      m.addEventListener('click', function(e){ if(e.target===m || e.target.closest('[data-close]')) m.classList.remove('show'); }); }
+    m.innerHTML = '<div class="bx"><h3>'+title+'</h3><div class="pbody">'+html+'</div><div class="btns"><button type="button" class="ok" data-close="1">KAPAT</button></div></div>';
+    m.classList.add('show');
+    return m;
+  }
+  function body(){ return m && m.querySelector('.pbody'); }
+
+  /* ---------- Yayinci Bilgisi ---------- */
+  var LINKS = [['yt','▶ YouTube'],['tw','🟣 Twitch'],['kick','🟢 Kick'],['tt','🎵 TikTok'],['ig','📷 Instagram']];
+  function okUrl(u){ return /^https:\/\/[^\s"'<>]{3,150}$/.test(String(u||'')); }
+  function streamer(data, isMe){
+    var uid = data.uid;
+    modal('🎙️ YAYINCI BİLGİSİ — '+esc(data.name||''), '<div class="grid"><div class="cell"><b id="stFo">…</b><small>Takipçi</small></div><div class="cell"><b id="stFi">…</b><small>Takip</small></div><div class="cell"><b id="stFr">…</b><small>Arkadaş</small></div></div><div class="sec">📡 Yayın Kanalları</div><div id="stLinks">…</div>');
+    if(!ONLINE || !uid){ body().querySelector('#stLinks').innerHTML = '<div class="note">Bu bilgiler için giriş yapılmış olmalı.</div>'; return; }
+    Promise.all([once('followers/'+uid), once('follows/'+uid), once('users/'+uid+'/stream')]).then(function(r){
+      var fo = r[0]||{}, fi = r[1]||{}, st = r[2]||{};
+      var b = body(); if(!b) return;
+      b.querySelector('#stFo').textContent = vals(fo).length;
+      b.querySelector('#stFi').textContent = vals(fi).length;
+      b.querySelector('#stFr').textContent = vals(fi).filter(function(u){ return fo[u]; }).length;
+      var box = b.querySelector('#stLinks');
+      if(isMe){
+        box.innerHTML = '<div class="note">Yayın yapıyorsan kanal linklerini ekle; profiline bakanlar tek dokunuşla açabilir.</div><div class="frm">' +
+          LINKS.map(function(l){ return '<label>'+l[1]+'</label><input data-k="'+l[0]+'" placeholder="https://..." value="'+esc(st[l[0]]||'')+'">'; }).join('') +
+          '</div><div class="err" id="stErr"></div><button type="button" class="likeBtn" id="stSave" style="background:linear-gradient(180deg,#3b82f6,#1d4ed8)">KAYDET</button>';
+        box.querySelector('#stSave').onclick = function(){
+          var o = {}, bad = null;
+          box.querySelectorAll('input[data-k]').forEach(function(i){ var v = i.value.trim(); if(!v) return; if(!okUrl(v)) bad = i.previousElementSibling.textContent; else o[i.getAttribute('data-k')] = v; });
+          if(bad){ box.querySelector('#stErr').textContent = bad+' linki https:// ile başlamalı.'; return; }
+          db.ref('users/'+uid+'/stream').set(Object.keys(o).length ? o : null).then(function(){ toast('✅ Yayın bilgileri kaydedildi.'); m.classList.remove('show'); });
+        };
+      }else{
+        var ks = LINKS.filter(function(l){ return okUrl(st[l[0]]); });
+        box.innerHTML = ks.length ? '<div class="links">'+ks.map(function(l){ return '<a class="'+l[0]+'" href="'+esc(st[l[0]])+'" target="_blank" rel="noopener noreferrer">'+l[1]+'</a>'; }).join('')+'</div>' : '<div class="note">Bu oyuncu yayın kanalı eklememiş.</div>';
+      }
+    });
+  }
+
+  /* ---------- Populerlik (begeni + hediye) ---------- */
+  function likeInfo(uid){
+    return once('likes/'+uid).then(function(v){
+      v = v || {}; var total = 0; vals(v).forEach(function(k){ total += Number(v[k] && v[k].n) || 0; });
+      return { total: total, map: v, gifts: 0, pop: total /* + hediye puani (yakinda) */ };
+    });
+  }
+  function likeUser(uid){
+    if(needLogin()) return Promise.resolve(false);
+    if(uid === me()){ toast('❤️ Kendini beğenemezsin 🙂'); return Promise.resolve(false); }
+    return once('likes/'+uid+'/'+me()).then(function(cur){
+      cur = cur || {n:0, d:''};
+      if(cur.d === today()){ toast('❤️ Bugün bu oyuncuyu zaten beğendin. Yarın tekrar beğenebilirsin.'); return false; }
+      return db.ref('likes/'+uid+'/'+me()).set({ n:(Number(cur.n)||0)+1, d:today(), t:Date.now() }).then(function(){ toast('❤️ Beğenildi!'); return true; });
+    });
+  }
+  window.monocityLikeUser = likeUser;
+  function popularity(data, isMe){
+    var uid = data.uid;
+    modal('🔥 POPÜLERLİK — '+esc(data.name||''), '<div class="grid"><div class="cell"><b class="big" id="poP">…</b><small>Popülerlik</small></div><div class="cell"><b id="poL">…</b><small>Beğeni</small></div><div class="cell"><b id="poG">0</b><small>Hediye</small></div></div>' +
+      (isMe ? '' : '<button type="button" class="likeBtn" id="poLike">❤️ BEĞEN</button>') +
+      '<div class="note">Popülerlik = beğeniler + hediyeler. Herkes bir oyuncuyu günde 1 kez beğenebilir. 🎁 Hediye sistemi yakında.</div>' +
+      '<div class="sec">❤️ Seni beğenenler</div><div class="who" id="poWho">…</div>');
+    if(!ONLINE || !uid){ body().querySelector('#poWho').textContent = 'Giriş yapılmalı.'; return; }
+    var load = function(){
+      likeInfo(uid).then(function(li){
+        var b = body(); if(!b) return;
+        b.querySelector('#poP').textContent = li.pop; b.querySelector('#poL').textContent = li.total;
+        var ks = vals(li.map).sort(function(a,c){ return (li.map[c].n||0)-(li.map[a].n||0); }).slice(0,12);
+        var so = S();
+        Promise.all(ks.map(function(k){ return so && so.getUser ? so.getUser(k) : null; })).then(function(){
+          var w = b.querySelector('#poWho'); if(!w) return;
+          w.innerHTML = ks.length ? ks.map(function(k){ return '<span>'+esc(nameOf(k))+' · ❤️'+(li.map[k].n||0)+'</span>'; }).join('') : '<span>Henüz beğeni yok</span>';
+        });
+        var btn = b.querySelector('#poLike');
+        if(btn && me() && li.map[me()] && li.map[me()].d === today()){ btn.disabled = true; btn.textContent = '❤️ BUGÜN BEĞENDİN'; }
+      });
+    };
+    load();
+    var lb = body().querySelector('#poLike');
+    if(lb) lb.onclick = function(){ lb.disabled = true; likeUser(uid).then(function(ok){ load(); refreshStats(); if(!ok) lb.disabled = false; }); };
+  }
+
+  /* ---------- Album ---------- */
+  var MAX_PH = 6;
+  function shrink(file){
+    return new Promise(function(res, rej){
+      var fr = new FileReader();
+      fr.onload = function(){ var im = new Image(); im.onload = function(){
+        var s = Math.min(1, 720/Math.max(im.width, im.height)), c = document.createElement('canvas');
+        c.width = Math.round(im.width*s); c.height = Math.round(im.height*s);
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+        var q = .72, out = c.toDataURL('image/jpeg', q);
+        while(out.length > 280000 && q > .35){ q -= .1; out = c.toDataURL('image/jpeg', q); }
+        res(out);
+      }; im.onerror = rej; im.src = fr.result; };
+      fr.onerror = rej; fr.readAsDataURL(file);
+    });
+  }
+  function viewPhoto(src){
+    var v = document.getElementById('mcPhotoView');
+    if(!v){ v = document.createElement('div'); v.id = 'mcPhotoView'; v.innerHTML = '<img alt="">'; v.onclick = function(){ v.classList.remove('show'); }; document.body.appendChild(v); }
+    v.querySelector('img').src = src; v.classList.add('show');
+  }
+  function album(data, isMe){
+    var uid = data.uid;
+    modal('🖼️ ALBÜM — '+esc(data.name||''), '<div class="alb" id="alGrid">…</div><div class="note" id="alNote"></div><input type="file" id="alFile" accept="image/*" style="display:none">');
+    if(!ONLINE || !uid){ body().querySelector('#alGrid').innerHTML = ''; body().querySelector('#alNote').textContent = 'Albüm için giriş yapılmış olmalı.'; return; }
+    var load = function(){
+      once('album/'+uid).then(function(v){
+        v = v || {}; var ks = vals(v).sort(function(a,c){ return (v[c].t||0)-(v[a].t||0); });
+        var b = body(); if(!b) return;
+        var html = ks.map(function(k){ return '<div class="ph" data-k="'+esc(k)+'"><img alt="" src="'+esc(v[k].img)+'">'+(isMe?'<button type="button" class="del" data-del="'+esc(k)+'">✕</button>':'')+'</div>'; }).join('');
+        if(isMe && ks.length < MAX_PH) html += '<div class="add" id="alAdd"><b>+</b>FOTOĞRAF EKLE</div>';
+        b.querySelector('#alGrid').innerHTML = html || '<div class="note" style="grid-column:1/-1">Albümde henüz fotoğraf yok.</div>';
+        b.querySelector('#alNote').textContent = isMe ? ('En fazla '+MAX_PH+' fotoğraf ('+ks.length+'/'+MAX_PH+'). Fotoğraflar küçültülerek kaydedilir; profiline bakan herkes görebilir.') : '';
+        b.querySelector('#alGrid').onclick = function(e){
+          var d = e.target.closest('[data-del]');
+          if(d){ e.stopPropagation(); if(confirm('Bu fotoğraf silinsin mi?')) db.ref('album/'+uid+'/'+d.getAttribute('data-del')).remove().then(load); return; }
+          if(e.target.closest('#alAdd')){ b.querySelector('#alFile').click(); return; }
+          var p = e.target.closest('.ph'); if(p) viewPhoto(p.querySelector('img').src);
+        };
+      });
+    };
+    body().querySelector('#alFile').onchange = function(){
+      var f = this.files && this.files[0]; this.value = ''; if(!f) return;
+      if(!/^image\//.test(f.type)){ toast('Sadece fotoğraf yükleyebilirsin.'); return; }
+      body().querySelector('#alNote').textContent = 'Yükleniyor…';
+      shrink(f).then(function(img){ return db.ref('album/'+uid).push({ img:img, t:Date.now() }); }).then(function(){ toast('✅ Fotoğraf eklendi.'); load(); })
+        .catch(function(){ toast('❌ Fotoğraf yüklenemedi.'); load(); });
+    };
+    load();
+  }
+  window.monocityAlbumAddDataUrl = function(img){ if(!me()) return Promise.reject(); return db.ref('album/'+me()).push({img:img, t:Date.now()}); };
+
+  /* ---------- Yakinlik ---------- */
+  function intimacyOf(a, b){ return once('intimacy/'+pair(a,b)).then(function(v){ return Number(v)||0; }); }
+  function relsOf(uid){ return once('rel/'+uid).then(function(v){ return v || {}; }); }
+  function intimacy(data, isMe){
+    var uid = data.uid;
+    modal('💞 YAKINLIK — '+esc(data.name||''), '<div id="inBody">…</div>');
+    if(!ONLINE || !uid){ body().querySelector('#inBody').innerHTML = '<div class="note">Yakınlık için giriş yapılmış olmalı.</div>'; return; }
+    var render = function(){
+      var so = S(); var friends = isMe && so && so.friends ? so.friends() : [];
+      Promise.all([relsOf(uid), isMe ? once('relReq/'+uid) : Promise.resolve(null), isMe ? Promise.resolve(0) : (me() ? intimacyOf(me(), uid) : Promise.resolve(0))]).then(function(r){
+        var rels = r[0], reqs = r[1] || {}, ours = r[2];
+        var b = body(); if(!b) return; var box = b.querySelector('#inBody'); if(!box) return;
+        var html = '';
+        var rk = vals(rels);
+        html += '<div class="sec">💞 İlişkiler</div>' + (rk.length ? rk.map(function(u){ return '<div class="irow"><div class="nm"><b>'+esc(nameOf(u))+'</b><span class="rel">'+esc(REL[rels[u].type]||rels[u].type)+'</span></div>'+(isMe?'<button type="button" class="no" data-end="'+esc(u)+'">BİTİR</button>':'')+'</div>'; }).join('') : '<div class="note">Henüz özel bir ilişki yok.</div>');
+        if(!isMe){
+          html += '<div class="sec">Aranızdaki yakınlık</div><div class="irow"><div class="nm"><b>'+ours+' puan</b><div class="bar"><i style="width:'+Math.min(100,ours*100/INTIMACY_NEED)+'%"></i></div><small>Birlikte oynadığınız her online maç +'+PER_MATCH+' puan. '+INTIMACY_NEED+' puanda ilişki kurabilirsiniz.</small></div></div>';
+        }else{
+          var rq = vals(reqs);
+          if(rq.length) html += '<div class="sec">📨 Gelen istekler</div>' + rq.map(function(u){ return '<div class="irow"><div class="nm"><b>'+esc(nameOf(u))+'</b><small> seninle '+esc(REL[reqs[u].type]||'')+' olmak istiyor</small></div><button type="button" class="ok" data-acc="'+esc(u)+'" data-type="'+esc(reqs[u].type)+'">KABUL</button><button type="button" class="no" data-rej="'+esc(u)+'">RED</button></div>'; }).join('');
+          html += '<div class="sec">👥 Arkadaşlarınla yakınlığın</div>';
+          if(!friends.length) html += '<div class="note">Arkadaşlarınla birlikte online maç oynadıkça yakınlık puanınız artar (her maç +'+PER_MATCH+').</div>';
+          html += '<div id="inList"></div>';
+        }
+        box.innerHTML = html;
+        if(isMe && friends.length){
+          Promise.all(friends.map(function(u){ return intimacyOf(uid, u).then(function(p){ return [u,p]; }); })).then(function(list){
+            list.sort(function(a,c){ return c[1]-a[1]; });
+            var l = box.querySelector('#inList'); if(!l) return;
+            l.innerHTML = list.map(function(x){ var u=x[0], p=x[1], has = rels[u];
+              var btn = has ? '<span class="rel">'+esc(REL[has.type]||'')+'</span>' : (p >= INTIMACY_NEED ? '<button type="button" data-ask="'+esc(u)+'">İLİŞKİ KUR</button>' : '<small>'+(INTIMACY_NEED-p)+' puan kaldı</small>');
+              return '<div class="irow"><div class="nm"><b>'+esc(nameOf(u))+'</b> <small>'+p+' puan</small><div class="bar"><i style="width:'+Math.min(100,p*100/INTIMACY_NEED)+'%"></i></div></div>'+btn+'</div>'; }).join('');
+          });
+        }
+        box.onclick = function(e){
+          var t = e.target.closest('button'); if(!t) return;
+          if(t.dataset.ask){ askType(t.dataset.ask); return; }
+          if(t.dataset.acc){ var u = t.dataset.acc, ty = t.dataset.type, now = Date.now();
+            Promise.all([db.ref('rel/'+me()+'/'+u).set({type:ty, since:now}), db.ref('rel/'+u+'/'+me()).set({type:ty, since:now}), db.ref('relReq/'+me()+'/'+u).remove()])
+              .then(function(){ toast('💞 Artık '+nameOf(u)+' ile '+(REL[ty]||'')+'!'); render(); }); return; }
+          if(t.dataset.rej){ db.ref('relReq/'+me()+'/'+t.dataset.rej).remove().then(render); return; }
+          if(t.dataset.end){ var u2 = t.dataset.end; if(!confirm('Bu ilişki bitirilsin mi?')) return;
+            Promise.all([db.ref('rel/'+me()+'/'+u2).remove(), db.ref('rel/'+u2+'/'+me()).remove()]).then(render); }
+        };
+      });
+    };
+    var askType = function(u){
+      var b = body(); var box = b.querySelector('#inBody');
+      box.innerHTML = '<div class="note">'+esc(nameOf(u))+' ile nasıl bir ilişki kurmak istiyorsun? O kabul edince profilinizde görünür.</div><div class="types">'+
+        Object.keys(REL).map(function(k){ return '<button type="button" data-t="'+k+'">'+REL[k]+'</button>'; }).join('')+'</div>';
+      box.onclick = function(e){ var t = e.target.closest('button[data-t]'); if(!t) return;
+        db.ref('relReq/'+u+'/'+me()).set({type:t.dataset.t, t:Date.now()}).then(function(){ toast('📨 İstek gönderildi.'); render(); }); };
+    };
+    render();
+  }
+  /* Online mac bitince, odadaki diger gercek oyuncularla yakinlik +10 (cift sayim olmasin diye cifti kucuk uid yazar). */
+  window.monocityOnMatchEnd = function(info){
+    if(!ONLINE || !me() || !info || !info.online) return;
+    var st = window.MONOCITY_LOBBY_API && window.MONOCITY_LOBBY_API.state(); if(!st) return;
+    var uids = [st.hostUid].concat(st.guests.map(function(g){ return g.uid; })).filter(function(u){ return u && u !== me(); });
+    uids.forEach(function(u){ if(me() < u) db.ref('intimacy/'+pair(me(), u)).transaction(function(cur){ return (Number(cur)||0) + PER_MATCH; }); });
+  };
+  /* gelen iliski istekleri bildirimi */
+  var seenReq = {}, reqUid = null;
+  function attachReq(uid){
+    if(!uid || reqUid === uid) return; reqUid = uid;
+    db.ref('relReq/'+uid).on('value', function(s){
+      var v = (s && s.val()) || {};
+      vals(v).forEach(function(u){ var k = u+':'+v[u].t; if(seenReq[k]) return; seenReq[k] = 1;
+        var so = S(); (so && so.getUser ? so.getUser(u) : Promise.resolve()).then(function(){ toast('💞 '+nameOf(u)+' seninle '+(REL[v[u].type]||'')+' olmak istiyor! Profil → Yakınlık'); }); });
+    });
+  }
+
+  /* ---------- Istatistik (sosyal sayilar Yayinci Bilgisi'ne tasindi) ---------- */
+  function fmtDate(t){ try{ var d=new Date(t); return ('0'+d.getDate()).slice(-2)+'.'+('0'+(d.getMonth()+1)).slice(-2)+'.'+d.getFullYear(); }catch(e){ return ''; } }
+  function stats(data, isMe){
+    var st = data.stats || {}, mm = st.matches||0, w = st.wins||0;
+    if(isMe){ try{ var raw = window.MONOCITY_ACCOUNT.raw(); data.created = raw.created; }catch(e){} }
+    modal('📊 İSTATİSTİK — '+esc(data.name||''), '<div class="grid">'+[['Oynanan Maç',mm],['Kazanılan',w],['Kazanma Oranı',mm?Math.round(w*100/mm)+'%':'—'],['Alınan Şehir',st.cities||0],['Seviye',data.level||1]].map(function(c){ return '<div class="cell"><b>'+esc(c[1])+'</b><small>'+c[0]+'</small></div>'; }).join('')+'</div>' +
+      (data.created ? '<div class="note">📅 Katılım: '+fmtDate(data.created)+'</div>' : ''));
+  }
+
+  var prevTab = window.monocityProfileTab;
+  window.monocityProfileTab = function(tab, data, isMe){
+    data = data || {};
+    if(isMe && !data.uid){ try{ data.uid = window.MONOCITY_ACCOUNT.getUid(); }catch(e){} }
+    if(tab === 'İstatistik'){ stats(data, isMe); return true; }
+    if(tab === 'Yayıncı Bilgisi'){ streamer(data, isMe); return true; }
+    if(tab === 'Popülerlik'){ popularity(data, isMe); return true; }
+    if(tab === 'Albüm'){ album(data, isMe); return true; }
+    if(tab === 'Yakınlık'){ intimacy(data, isMe); return true; }
+    return prevTab ? prevTab(tab, data, isMe) : false;
+  };
+
+  /* ---------- Profil kartindaki BEGENI / POPULERLIK kutulari gercek veri ---------- */
+  var lastP = null;
+  function refreshStats(){
+    if(!lastP || !ONLINE || !lastP.data || !lastP.data.uid) return;
+    var el = lastP.el, uid = lastP.data.uid;
+    likeInfo(uid).then(function(li){
+      if(!lastP || lastP.data.uid !== uid) return;
+      var l = el.querySelector('#psLikes'), p = el.querySelector('#psPop');
+      if(l) l.textContent = li.total; if(p) p.textContent = li.pop;
+    });
+  }
+  var prevRendered = window.monocitySocialProfileRendered;
+  window.monocitySocialProfileRendered = function(data, isMe, el){
+    if(prevRendered) prevRendered(data, isMe, el);
+    if(isMe && data && !data.uid){ try{ data.uid = window.MONOCITY_ACCOUNT.getUid(); }catch(e){} }
+    lastP = { data:data, isMe:isMe, el:el };
+    var box = el.querySelector('#psLikes') && el.querySelector('#psLikes').closest('.ppStat');
+    if(box && !box.__mcLike){ box.__mcLike = true; box.classList.add('likable');
+      box.addEventListener('click', function(){ if(!lastP) return; if(lastP.isMe){ popularity(lastP.data, true); return; } likeUser(lastP.data.uid).then(refreshStats); }); }
+    var pbox = el.querySelector('#psPop') && el.querySelector('#psPop').closest('.ppStat');
+    if(pbox && !pbox.__mcPop){ pbox.__mcPop = true; pbox.classList.add('likable'); pbox.addEventListener('click', function(){ if(lastP) popularity(lastP.data, lastP.isMe); }); }
+    refreshStats();
+  };
+
+  if(ONLINE){
+    A.onChange(function(u){ if(u) attachReq(u.uid); });
+    A.ready.then(function(u){ if(u) attachReq(u.uid); });
+  }
 })();
 </script>
 
