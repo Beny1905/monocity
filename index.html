@@ -8816,6 +8816,7 @@ mportant;}
     try{ delete window.MONOCITY_COOP_REMOTE_SEATS; }catch(e){ window.MONOCITY_COOP_REMOTE_SEATS = undefined; }
     try{ delete window.MONOCITY_COOP_MY_SEAT; }catch(e){ window.MONOCITY_COOP_MY_SEAT = undefined; }
     window.MONOCITY_COOP_LOG_TAIL = [];
+    window.MONOCITY_COOP_LOG_DROP = 0;
     window.MONOCITY_COOP_LOG_SEEN = 0;
     window.MONOCITY_COOP_LAST_TURN_SEQ = -1;
     window.MONOCITY_COOP_LAST_ROLL_SEQ = -1;
@@ -9261,6 +9262,7 @@ mportant;}
       lastDice: (typeof lastDice !== 'undefined') ? lastDice : null,
       turnSeq: window.MONOCITY_COOP_TURN_SEQ || 0,
       log: window.MONOCITY_COOP_LOG_TAIL || [],
+      logBase: window.MONOCITY_COOP_LOG_DROP || 0,
       ts: Date.now()
     });
   }
@@ -9364,7 +9366,8 @@ mportant;}
     roundCount = s.roundCount || 0;
     if(typeof s.lastDice === 'number') lastDice = s.lastDice;
     if(Array.isArray(s.log)){
-      var seen = window.MONOCITY_COOP_LOG_SEEN || 0;
+      var __logBase = s.logBase || 0;
+      var seen = Math.max(0, (window.MONOCITY_COOP_LOG_SEEN || 0) - __logBase);
       var diceLineRe = /^🎲\s+(.+?)\s+(\d+)$/;
       for(var i=seen;i<s.log.length;i++){
         var __line = s.log[i];
@@ -9377,7 +9380,7 @@ mportant;}
         var __m = diceLineRe.exec(__line);
         if(__m && typeof coopDiceFXReveal === 'function') coopDiceFXReveal(__m[1], parseInt(__m[2],10));
       }
-      window.MONOCITY_COOP_LOG_SEEN = s.log.length;
+      window.MONOCITY_COOP_LOG_SEEN = __logBase + s.log.length;
     }
     try{
       if(typeof renderBoard === 'function') renderBoard();
@@ -9681,7 +9684,7 @@ mportant;}
         if(coop.role === 'host'){
           if(!window.MONOCITY_COOP_LOG_TAIL) window.MONOCITY_COOP_LOG_TAIL = [];
           window.MONOCITY_COOP_LOG_TAIL.push(t);
-          if(window.MONOCITY_COOP_LOG_TAIL.length > 200) window.MONOCITY_COOP_LOG_TAIL.shift();
+          if(window.MONOCITY_COOP_LOG_TAIL.length > 200){ window.MONOCITY_COOP_LOG_TAIL.shift(); window.MONOCITY_COOP_LOG_DROP = (window.MONOCITY_COOP_LOG_DROP||0) + 1; }
         }
         return r;
       };
@@ -17422,6 +17425,7 @@ body.mcIso #mcIsoHud{display:block}
 #mcDice2 .res b{color:#ffe08a}
 @keyframes mcD2Bounce{0%{transform:translateY(-14vh)}45%{transform:translateY(0)}62%{transform:translateY(-4vh)}78%{transform:translateY(0)}88%{transform:translateY(-1.2vh)}100%{transform:translateY(0)}}
 body.mcDbl #diceFX{visibility:hidden!important;opacity:0!important}
+#coopMenuHitBtn,#coopMenuBtn{display:none!important}
 
 /* ================= Oyun ici: takim / bos koltuk ================= */
 #mcIsoHud .ipc.mcAbs,.mgPlayer.mcAbs{display:none!important}
@@ -17637,7 +17641,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
   }
   function applyBoard(c){
     try{ selectedGameMode = (c.mod === 'rank') ? 'wide' : 'classic'; if(typeof applyGameBoardMode === 'function') applyGameBoardMode(); }catch(e){}
-    try{ START_MONEY = c.para * 1000000; }catch(e){}
+    try{ START_MONEY = c.para * 1000000; START_REWARD = Math.round(START_MONEY * 0.10); }catch(e){}
   }
   function beginMatch(c, role, code, mySeat){
     M = { cfg:norm(c), mid:(c.mid || ('solo-'+Date.now())), role:role, code:code||null, mySeat:mySeat||0,
@@ -17733,7 +17737,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
   function showDice2(skin, d1, d2, name, cb){
     var el = buildDice2(), cols = (window.DICE_SKIN_COLORS && DICE_SKIN_COLORS[skin]) || ['#ffffff','#c8ced7'];
     el.style.setProperty('--d1', cols[0]); el.style.setProperty('--d2', cols[1]); el.style.setProperty('--pp', DARK_PIP[skin] || !window.DICE_SKIN_COLORS || !DICE_SKIN_COLORS[skin] ? '#1b1b1b' : '#ffffff');
-    var res = el.querySelector('.res'); res.classList.remove('on'); res.innerHTML = '🎲 '+esc(name||'')+' atıyor…';
+    var res = el.querySelector('.res'); res.classList.remove('on'); res.innerHTML = '';
     var cubes = el.querySelectorAll('.cube'), dws = el.querySelectorAll('.dw');
     [d1, d2].forEach(function(v, i){
       var c = cubes[i], f = FACE[v], sx = 360*(3+i) + Math.floor(Math.random()*180), sy = 360*(2+i) + Math.floor(Math.random()*180);
@@ -17744,11 +17748,28 @@ body.mcMatchOn #mcGameOver{display:none!important}
     [d1, d2].forEach(function(v, i){ var c = cubes[i], f = FACE[v]; c.style.transition = ''; c.style.transform = 'rotateX('+(f[0]-14)+'deg) rotateY('+(f[1]+18)+'deg)'; });
     clearTimeout(d2timer);
     d2timer = setTimeout(function(){
-      res.innerHTML = '🎲 '+esc(name||'')+': <b>'+d1+' + '+d2+' = '+(d1+d2)+'</b>'; res.classList.add('on');
+      landedFx(name, d1, d2);
       d2timer = setTimeout(function(){ el.classList.remove('show'); if(cb) cb(); }, 900);
     }, 1050);
   }
   window.monocityShowDice2 = showDice2;
+  /* efekt rengiyle tahtanın üstünde "6+6=12" (mağaza EFEKT rengi) */
+  var fxAllow = 0;
+  function landedFx(name, d1, d2){
+    try{
+      var tp = document.getElementById('diceTurnPlayer'); if(tp && name) tp.textContent = name;
+      if(typeof window.monocityDiceLanded !== 'function') return;
+      fxAllow = Date.now();
+      window.monocityDiceLanded(d1+'+'+d2+'='+(d1+d2));
+      var all = document.querySelectorAll('.mcDiceNum'), el = all[all.length-1];
+      if(el){ var fs = parseFloat(el.style.fontSize) || 60; el.style.fontSize = Math.max(30, Math.round(fs*0.55))+'px'; el.style.whiteSpace = 'nowrap'; el.classList.add('mcD2Num'); }
+    }catch(e){}
+  }
+  /* çift zar modunda tek zarın eski "5" bildirimi (misafirde) çift görünmesin */
+  new MutationObserver(function(ms){
+    if(!dbl()) return;
+    ms.forEach(function(m){ m.addedNodes && Array.prototype.forEach.call(m.addedNodes, function(n){ if(n.classList && n.classList.contains('mcDiceNum') && /^\d+$/.test(n.textContent||'')) n.remove(); }); });
+  }).observe(document.body, {childList:true});
   function wrapDice(){
     var f = window.showDiceAnimation; if(typeof f !== 'function' || f.__mc) return;
     var w = function(done){
@@ -17977,7 +17998,8 @@ body.mcMatchOn #mcGameOver{display:none!important}
       if(t.classList.contains('lk') || t.classList.contains('dis')) { if(k === 'ucr') toast('🔒 Bu giriş için en az '+fmt((+v)*3)+' Metro gerekli.'); else if(k === 'tur') toast('Lobide çok oyuncu var; önce oyuncu sayısını azalt.'); return; }
       if((k === 'para' || k === 'zar') && ST.mod === 'rank') { toast('🔒 Rank maçlarında 4M ve çift zar sabittir.'); return; }
       ST[k] = (k === 'para' || k === 'zar' || k === 'ucr') ? +v : v;
-      if(k === 'mod' && v === 'rank'){ ST.para = 4; ST.zar = 2; }
+      if(k === 'mod' && v === 'rank'){ ST.para = 4; ST.zar = 2; ST._rk = true; }
+      else if(k === 'mod' && ST._rk){ ST.para = null; ST.zar = null; ST._rk = false; }
       paintSetup();
     });
     sEl.querySelector('#mcSuBack').onclick = function(){ closeSetup(true); };
@@ -17987,9 +18009,9 @@ body.mcMatchOn #mcGameOver{display:none!important}
   function maxFee(){ var m = metro(), best = 0; FEES.forEach(function(f){ if(m >= f*3) best = f; }); return best; }
   function lobbyGuestCount(){ try{ var st = API && API.state(); return (st && st.guests) ? st.guests.length : 0; }catch(e){ return 0; } }
   function paintSetup(){
-    var el = sEl, c = norm(ST); ST = c;
+    var el = sEl, c = ST;
     var mf = maxFee();
-    if(c.ucr > mf && mf > 0) ST.ucr = c.ucr = mf;
+    if(c.ucr && metro() < c.ucr*3) ST.ucr = c.ucr = null;
     var gc = flow === 'edit' ? lobbyGuestCount() : 0;
     el.querySelectorAll('.o[data-k]').forEach(function(o){
       var k = o.getAttribute('data-k'), v = o.getAttribute('data-v');
@@ -18001,22 +18023,32 @@ body.mcMatchOn #mcGameOver{display:none!important}
     ['mcSuPara','mcSuZar'].forEach(function(id){ var b = el.querySelector('#'+id); b.classList.toggle('isFixed', rk); b.querySelector('.opts').classList.toggle('fixed', rk); });
     var lockedNext = FEES.filter(function(f){ return metro() < f*3; })[0];
     el.querySelector('#mcSuInfo').innerHTML = mf === 0 ? '🔒 Oynamak için en az <b>'+fmt(3000)+'</b> Metro gerekli' : (lockedNext ? '🔒 '+(lockedNext/1000)+'K için en az <b>'+fmt(lockedNext*3)+'</b> gerekli' : '✅ Tüm girişler açık');
-    var P = pot(c), mi = metroIco(), items = '', cols = ['#ffcc3d','#cfd8e8','#d08a4a','#7a86a8'];
+    var miss = missing(c), mi = metroIco();
+    var go = el.querySelector('#mcSuGo'); go.classList.toggle('off', mf === 0 || !!miss);
+    go.textContent = flow === 'edit' ? 'KAYDET ✓' : (flow === 'quick' ? 'HIZLI BAŞLA ▶' : 'LOBİ KUR ▶');
+    el.querySelector('#mcSuTitle').textContent = flow === 'edit' ? 'LOBİ AYARLARI' : (flow === 'quick' ? 'HIZLI BAŞLA' : 'OYUN KUR');
+    el.querySelector('#mcSuMetro').innerHTML = metroIco()+fmt(metro());
+    var pp0 = prof(); el.querySelector('#mcSuDia').innerHTML = ico('diamond')+fmt(pp0 ? pp0.diamonds : 0);
+    var rv0 = rankView(rankState().r); var rp0 = el.querySelector('#mcSuRank'); rp0.style.color = rv0.c; rp0.innerHTML = '<i></i>'+esc(rv0.t); rp0.title = 'Sezon '+season()+' · '+seasonLeft()+' kaldı';
+    if(!c.tur || !c.mod || !c.ucr){ el.querySelector('#mcSuSum').innerHTML = '<span style="color:#9fb0dd">👆 '+esc(miss || 'Seçimlerini yap')+' — kasa ve ödüller burada görünecek</span>'; return; }
+    var P = pot(c), items = '', cols = ['#ffcc3d','#cfd8e8','#d08a4a','#7a86a8'];
     if(c.tur === '1v1') items = '<span><em style="background:#ffcc3d">1</em>'+mi+fmt(coinFor(c,1,true))+'</span><span style="color:#9fb0dd">Kazanan hepsini alır</span>';
     else if(c.tur === '2v2') items = '<span>Kazanan takım: '+mi+fmt(coinFor(c,1,true))+'<small style="color:#9fb0dd">&nbsp;/kişi</small></span><span>Kaybeden: '+mi+fmt(coinFor(c,3,false))+'<small style="color:#9fb0dd">&nbsp;/kişi</small></span>';
     else for(var i=1;i<=4;i++) items += '<span><em style="background:'+cols[i-1]+'">'+i+'</em>'+mi+fmt(coinFor(c,i))+'</span>';
     el.querySelector('#mcSuSum').innerHTML = 'KASA '+mi+'<b>'+fmt(P.kasa)+'</b><div class="pz">'+items+'</div>'+(rk ? '<span class="tag">%10 kesinti</span>' : '<span class="tag g">kesinti yok</span>');
-    el.querySelector('#mcSuMetro').innerHTML = metroIco()+fmt(metro());
-    var pp = prof(); el.querySelector('#mcSuDia').innerHTML = ico('diamond')+fmt(pp ? pp.diamonds : 0);
-    var rv = rankView(rankState().r); var rp = el.querySelector('#mcSuRank'); rp.style.color = rv.c; rp.innerHTML = '<i></i>'+esc(rv.t);
-    rp.title = 'Sezon '+season()+' · '+seasonLeft()+' kaldı';
-    var go = el.querySelector('#mcSuGo'); go.classList.toggle('off', mf === 0);
-    go.textContent = flow === 'edit' ? 'KAYDET ✓' : (flow === 'quick' ? 'HIZLI BAŞLA ▶' : 'LOBİ KUR ▶');
-    el.querySelector('#mcSuTitle').textContent = flow === 'edit' ? 'LOBİ AYARLARI' : (flow === 'quick' ? 'HIZLI BAŞLA' : 'OYUN KUR');
+  }
+  function missing(c){
+    if(!c.tur) return 'Önce oyun türünü seç';
+    if(!c.mod) return 'Modu seç (Klasik / Rank)';
+    if(!c.para) return 'Başlangıç parasını seç';
+    if(!c.zar) return 'Zar türünü seç';
+    if(!c.ucr) return 'Giriş ücretini seç';
+    return '';
   }
   function openSetup(f){
     flow = f || 'kur';
-    ST = norm(flow === 'edit' ? (roomCfg || CFG) : CFG);
+    if(flow === 'edit'){ ST = norm(roomCfg || CFG); ST._rk = ST.mod === 'rank'; }
+    else ST = {tur:null, mod:null, para:null, zar:null, ucr:null};
     buildSetup(); paintSetup();
     try{ if(typeof setLobbyHitLayerVisible === 'function') setLobbyHitLayerVisible(false); }catch(e){}
     sEl.classList.add('show');
@@ -18028,6 +18060,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
     if(back){ var mm = document.getElementById('mainMenu'); if(mm) mm.style.display = 'block'; try{ if(typeof setLobbyHitLayerVisible === 'function') setLobbyHitLayerVisible(true); }catch(e){} }
   }
   function goSetup(){
+    var ms = missing(ST); if(ms){ toast('👆 '+ms+'.'); return; }
     var c = norm(ST);
     if(metro() < c.ucr*3){ toast('🔒 Bu giriş için en az '+fmt(c.ucr*3)+' Metro gerekli.'); return; }
     if(flow === 'edit'){
@@ -18089,6 +18122,9 @@ body.mcMatchOn #mcGameOver{display:none!important}
   }
   /* ana menü: OYNA → OYUN KUR */
   setInterval(function(){ var b = document.querySelector('#mcLobbyUI .mclPlay .tx b, .mclPlay .tx b'); if(b && b.textContent !== 'OYUN KUR') b.textContent = 'OYUN KUR'; }, 1000);
+  /* eski "ARKADAŞINLA OYNA" butonu artık gerekmiyor (OYUN KUR lobi açıyor) */
+  function hideCoopBtn(){ ['coopMenuHitBtn','coopMenuBtn'].forEach(function(id){ var e = document.getElementById(id); if(e && e.style.getPropertyValue('display') !== 'none') e.style.setProperty('display','none','important'); }); }
+  hideCoopBtn(); setInterval(hideCoopBtn, 800);
 
   /* ============================================================
      LOBİ (1v1 / 2v2 + ayar şeridi)
