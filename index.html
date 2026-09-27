@@ -17557,6 +17557,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
     if(c.mid) o.mid = String(c.mid);
     if(Array.isArray(c.cols)) o.cols = c.cols.slice(0,4);
     if(typeof c.first === 'number') o.first = c.first;
+    if(c.hc === 'B' || c.hc === 'R') o.hc = c.hc;
     return o;
   }
   var CFG = norm(lsGet(CFG_KEY));
@@ -17667,6 +17668,10 @@ body.mcMatchOn #mcGameOver{display:none!important}
   window.MONOCITY_MATCH = function(){ return M; };
   function realSeat(i){ try{ return window.monocityRealSeat ? window.monocityRealSeat(i) : i; }catch(e){ return i; } }
   function teamOfIdx(i){ return realSeat(i) % 2 === 0 ? 'A' : 'B'; }
+  /* kurucunun takımı (A) kırmızı mı mavi mi — lobide seçilir (varsayılan kırmızı) */
+  function isBlue(t, cf){ cf = cf || (M && M.cfg); var hc = (cf && cf.hc === 'B') ? 'B' : 'R'; return (t === 'A') === (hc === 'B'); }
+  function tName(t, cf){ return isBlue(t, cf) ? 'MAVİ' : 'KIRMIZI'; }
+  window.monocityTeamName = function(t){ return tName(t); };
   function absentIdx(i){ return !!(M && M.cfg.tur === '1v1' && realSeat(i) >= 2); }
   function t2(){ return !!(M && !M.settled && M.cfg.tur === '2v2'); }
   function dbl(){ return !!(M && !M.settled && M.cfg.zar === 2); }
@@ -17769,7 +17774,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
     window.gameOver = true; window.waiting = false; window.openAuction = null; window.secretAuction = null;
     ['infoModal','openModal','secretModal'].forEach(function(id){ var m = document.getElementById(id); if(m) m.style.display = 'none'; });
     try{ renderBoard(); }catch(e){}
-    var wt = alive.A ? 'MAVİ' : 'KIRMIZI';
+    var wt = tName(alive.A ? 'A' : 'B');
     try{ log('🏆 OYUN BİTTİ! '+wt+' TAKIM kazandı.'); }catch(e){}
     var ti = document.getElementById('turnInfo'); if(ti) ti.innerHTML = '🏆 OYUN BİTTİ — KAZANAN: '+wt+' TAKIM';
     return true;
@@ -18030,7 +18035,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
     else if(c.tur === '2v2') title = row.win ? '🏆 TAKIMIN KAZANDI!' : '💥 TAKIMIN KAYBETTİ';
     else title = row.place === 1 ? '🏆 KAZANDIN!' : (row.place === 2 && c.tur === '4' ? '🥈 2. OLDUN' : (row.place === 3 ? '🥉 3. OLDUN' : '💥 KAYBETTİN'));
     var list = (res.rows||[]).map(function(r){
-      var tm = r.team ? '<span class="tm '+r.team+'">'+(r.team === 'A' ? 'MAVİ' : 'KIRMIZI')+'</span>' : '';
+      var tm = r.team ? '<span class="tm '+(isBlue(r.team, c) ? 'A' : 'B')+'">'+tName(r.team, c)+'</span>' : '';
       return '<div class="rw'+(row && r.seat === row.seat ? ' me' : '')+'"><em class="p'+r.place+'">'+r.place+'</em><span class="n">'+esc(r.name)+(r.bot ? '<small>🤖</small>' : '')+tm+'</span><span class="cn'+(r.coin ? '' : ' z')+'">'+mi+'+'+fmt(r.coin)+'</span></div>';
     }).join('');
     var right = '';
@@ -18089,9 +18094,10 @@ body.mcMatchOn #mcGameOver{display:none!important}
           var c = hud.querySelector('.ipc.c'+i); if(!c) continue;
           var ab = absentIdx(i), t = (M && M.cfg.tur === '2v2') ? teamOfIdx(i) : '';
           if(c.classList.contains('mcAbs') !== ab) c.classList.toggle('mcAbs', ab);
-          if(c.classList.contains('mcTA') !== (t === 'A')) c.classList.toggle('mcTA', t === 'A');
-          if(c.classList.contains('mcTB') !== (t === 'B')) c.classList.toggle('mcTB', t === 'B');
-          if(t){ var tt = c.querySelector('.mcTT'); if(!tt){ tt = document.createElement('span'); tt.className = 'mcTT'; c.appendChild(tt); } var tx = t === 'A' ? 'MAVİ TAKIM' : 'KIRMIZI TAKIM'; if(tt.textContent !== tx) tt.textContent = tx; }
+          var bl = t ? isBlue(t) : false;
+          if(c.classList.contains('mcTA') !== (!!t && bl)) c.classList.toggle('mcTA', !!t && bl);
+          if(c.classList.contains('mcTB') !== (!!t && !bl)) c.classList.toggle('mcTB', !!t && !bl);
+          if(t){ var tt = c.querySelector('.mcTT'); if(!tt){ tt = document.createElement('span'); tt.className = 'mcTT'; c.appendChild(tt); } var tx = tName(t)+' TAKIM'; if(tt.textContent !== tx) tt.textContent = tx; }
         }
       }
       for(var j=0;j<4;j++){ var mp = document.querySelector('.mgPlayer.p'+j); if(mp){ var ab2 = absentIdx(j); if(mp.classList.contains('mcAbs') !== ab2) mp.classList.toggle('mcAbs', ab2); } }
@@ -18204,11 +18210,12 @@ body.mcMatchOn #mcGameOver{display:none!important}
     var c = norm(ST);
     if(metro() < c.ucr*3){ toast('🔒 Bu giriş için en az '+fmt(c.ucr*3)+' Metro gerekli.'); return; }
     if(flow === 'edit'){
+      if(roomCfg && roomCfg.hc) c.hc = roomCfg.hc;
       if(c.tur === '1v1' && lobbyGuestCount() > 1){ toast('1 vs 1 için lobide en fazla 1 misafir olabilir.'); return; }
       var code = API && API.state().code; if(code && db) db.ref('rooms/'+code+'/cfg').set(strip(c));
       roomCfg = c; CFG = c; saveCfg(); closeSetup(false); toast('✅ Lobi ayarları güncellendi.'); return;
     }
-    CFG = c; saveCfg();
+    delete c.hc; CFG = c; saveCfg();
     if(flow === 'quick'){ if(sEl) sEl.classList.remove('show'); startSolo(c); return; }
     /* OYUN KUR → lobi */
     if(ONLINE && me() && API && API.available()){
@@ -18224,7 +18231,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
     toast('👤 Giriş yapmadığın için botlarla oynuyorsun.');
     startSolo(c);
   }
-  function strip(c){ var o = {mod:c.mod, tur:c.tur, para:c.para, zar:c.zar, ucr:c.ucr}; if(c.mid) o.mid = c.mid; if(c.cols) o.cols = c.cols; if(typeof c.first === 'number') o.first = c.first; return o; }
+  function strip(c){ var o = {mod:c.mod, tur:c.tur, para:c.para, zar:c.zar, ucr:c.ucr}; if(c.mid) o.mid = c.mid; if(c.cols) o.cols = c.cols; if(typeof c.first === 'number') o.first = c.first; if(c.hc === 'B' || c.hc === 'R') o.hc = c.hc; return o; }
   /* kart çekilirken arkada yeni oyunun boş tahtası (piyonlar Yola Çık'ta) */
   var pvShownAt = 0;
   function preview(c, n){
@@ -18377,18 +18384,22 @@ body.mcMatchOn #mcGameOver{display:none!important}
     paintLobby();
   }
   function guestsObj(){ var co = window.MONOCITY_COOP; return (co && co.guests) || {}; }
+  /* 2v2 takımları renkle tutulur: 'red' / 'blue'. Kurucunun rengi cfg.hc ('R' | 'B', varsayılan kırmızı) */
+  function hostCol(){ var c = roomCfg || CFG; return (c && c.hc === 'B') ? 'blue' : 'red'; }
+  function otherCol(t){ return t === 'red' ? 'blue' : 'red'; }
   function ensureTeam(){
     if(!roomCfg || roomCfg.tur !== '2v2') return;
     var co = window.MONOCITY_COOP; if(!co || co.role !== 'guest' || !co.myGuestKey || !db) return;
-    var g = guestsObj(), mine = g[co.myGuestKey]; if(!mine || mine.team) return;
-    var a = Object.keys(g).filter(function(k){ return g[k] && g[k].team === 'A'; }).length;
-    db.ref('rooms/'+co.code+'/guests/'+co.myGuestKey+'/team').set(a < 1 ? 'A' : 'B');
+    var g = guestsObj(), mine = g[co.myGuestKey]; if(!mine || mine.team === 'red' || mine.team === 'blue') return;
+    var hc = hostCol(), inHost = Object.keys(g).filter(function(k){ return k !== co.myGuestKey && g[k] && g[k].team === hc; }).length;
+    db.ref('rooms/'+co.code+'/guests/'+co.myGuestKey+'/team').set(inHost < 1 ? hc : otherCol(hc));
   }
   function teamsOf(){
-    var st = API.state(), g = guestsObj(), A1 = [], B1 = [], rest = [];
-    (st.guests||[]).forEach(function(e){ var t = g[e.key] && g[e.key].team; if(t === 'A' && A1.length < 1) A1.push(e); else if(t === 'B' && B1.length < 2) B1.push(e); else rest.push(e); });
-    rest.forEach(function(e){ if(B1.length < 2) B1.push(e); else if(A1.length < 1) A1.push(e); });
-    return {A:A1, B:B1};
+    var st = API.state(), g = guestsObj(), hc = hostCol(), T = {red:[], blue:[]}, rest = [];
+    T[hc].push({host:true});
+    (st.guests||[]).forEach(function(e){ var t = g[e.key] && g[e.key].team; if((t === 'red' || t === 'blue') && T[t].length < 2) T[t].push(e); else rest.push(e); });
+    rest.forEach(function(e){ if(T[hc].length < 2) T[hc].push(e); else if(T[otherCol(hc)].length < 2) T[otherCol(hc)].push(e); });
+    return T;
   }
   var FRC = {white:'#dfe6ef',red:'#ef3b2d',yellow:'#ffd23d',green:'#34c759',purple:'#9b45ef',pink:'#ff6fb5',blue:'#2f86ff',orange:'#ff8a1f',black:'#93a1b4',brown:'#9a6434'};
   function seatHtml(p, col, emptyHtml){
@@ -18422,19 +18433,20 @@ body.mcMatchOn #mcGameOver{display:none!important}
     if(c.tur === '1v1'){
       out = seatHtml(hostP, '#ff3b30') + '<div class="mcVs">VS</div>' + seatHtml(gp(st.guests[0]), '#0a84ff', EMPTY);
     }else{
-      var T = teamsOf(), co = window.MONOCITY_COOP, myT = null;
-      if(st.role === 'host') myT = 'A'; else T.A.concat(T.B).forEach(function(e){ if(e.me) myT = (T.A.indexOf(e) >= 0) ? 'A' : 'B'; });
-      var emp = function(t){ return (st.role === 'guest' && myT !== t) ? '<div class="lbSeat empty mcSw" data-team="'+t+'"><div class="plus">+</div><small>Boş koltuk</small><em class="mcJoin">BURAYA GEÇ</em></div>' : EMPTY; };
-      var a = [hostP, gp(T.A[0])], b = [gp(T.B[0]), gp(T.B[1])];
-      out = '<div class="mcTeam A"><h5><span>🔵 MAVİ TAKIM</span><span>'+a.filter(Boolean).length+'/2</span></h5><div class="sts">'+seatHtml(a[0],'#3b82f6')+seatHtml(a[1],'#3b82f6',emp('A'))+'</div></div>' +
-            '<div class="mcVs">VS</div>' +
-            '<div class="mcTeam B"><h5><span>🔴 KIRMIZI TAKIM</span><span>'+b.filter(Boolean).length+'/2</span></h5><div class="sts">'+seatHtml(b[0],'#ef4444',emp('B'))+seatHtml(b[1],'#ef4444',emp('B'))+'</div></div>';
+      var T = teamsOf(), myT = null;
+      if(st.role === 'host') myT = hostCol(); else ['red','blue'].forEach(function(t){ T[t].forEach(function(e){ if(e.me) myT = t; }); });
+      var emp = function(t){ return (myT && myT !== t) ? '<div class="lbSeat empty mcSw" data-team="'+t+'"><div class="plus">+</div><small>Boş koltuk</small><em class="mcJoin">BURAYA GEÇ</em></div>' : EMPTY; };
+      var box = function(t){
+        var L = T[t].map(function(e){ return e.host ? hostP : gp(e); }), col = t === 'red' ? '#ef4444' : '#3b82f6';
+        return '<div class="mcTeam '+(t === 'red' ? 'B' : 'A')+'" data-col="'+t+'"><h5><span>'+(t === 'red' ? '🔴 KIRMIZI TAKIM' : '🔵 MAVİ TAKIM')+'</span><span>'+L.length+'/2</span></h5><div class="sts">'+seatHtml(L[0], col, emp(t))+seatHtml(L[1], col, emp(t))+'</div></div>';
+      };
+      out = box('red') + '<div class="mcVs">VS</div>' + box('blue');
     }
     if(seats.__mc !== out || !seats.querySelector('.mcVs')){ painting = true; seats.__mc = out; seats.innerHTML = out; painting = false; }
     paintColors(el);
     var info = el.querySelector('#lbInfo');
-    if(info && st.role === 'host' && c.tur === '2v2' && !st.guests.length) info.innerHTML = 'Davet ettiğin arkadaş senin takımına gelir. Boş koltuklara bot oynar.';
-    if(info && st.role === 'guest' && c.tur === '2v2' && !/Takım/.test(info.innerHTML)) info.innerHTML += '<br><small>Takım değiştirmek için karşı takımdaki boş koltuğa dokun.</small>';
+    if(info && st.role === 'host' && c.tur === '2v2' && !st.guests.length) info.innerHTML = 'Davet ettiğin arkadaş senin takımına gelir. Boş koltuklara bot oynar.<br><small>Takım değiştirmek için karşı takımdaki boş koltuğa dokun.</small>';
+    if(info && st.role === 'guest' && c.tur === '2v2' && !/Takım değiştirmek/.test(info.innerHTML)) info.innerHTML += '<br><small>Takım değiştirmek için karşı takımdaki boş koltuğa dokun.</small>';
     lockFriends(el, c);
   }
   var MB = {}, mbOn = {};
@@ -18461,8 +18473,15 @@ body.mcMatchOn #mcGameOver{display:none!important}
     el.addEventListener('click', function(e){
       var sw = e.target.closest && e.target.closest('.mcSw'); if(!sw) return;
       e.stopPropagation(); e.preventDefault();
-      var co = window.MONOCITY_COOP, t = sw.getAttribute('data-team');
-      if(co && co.role === 'guest' && co.myGuestKey && db){ db.ref('rooms/'+co.code+'/guests/'+co.myGuestKey+'/team').set(t); toast(t === 'A' ? '🔵 Mavi takıma geçtin.' : '🔴 Kırmızı takıma geçtin.'); }
+      var co = window.MONOCITY_COOP, t = sw.getAttribute('data-team'), st = API.state();
+      if(t !== 'red' && t !== 'blue') return;
+      var T = teamsOf(); if(T[t].length >= 2){ toast('Bu takım dolu.'); return; }
+      var msg = t === 'blue' ? '🔵 Mavi takıma geçtin.' : '🔴 Kırmızı takıma geçtin.';
+      if(co && co.role === 'guest' && co.myGuestKey && db){ db.ref('rooms/'+co.code+'/guests/'+co.myGuestKey+'/team').set(t); toast(msg); }
+      else if(st && st.role === 'host' && st.code && db){
+        var hc = t === 'blue' ? 'B' : 'R'; roomCfg = roomCfg || norm(CFG); roomCfg.hc = hc; CFG.hc = hc;
+        db.ref('rooms/'+st.code+'/cfg/hc').set(hc); toast(msg); paintLobby();
+      }
     }, true);
   }
   setInterval(function(){ try{ watchRoom(); hookLobby(); var el = document.getElementById('mcLobby2'); if(el && el.classList.contains('show')) paintLobby(); var co = window.MONOCITY_COOP; if(co && co.role === 'guest' && !co.entered) ensureTeam(); }catch(e){ console.warn('mc lobby', e); } }, 700);
@@ -18551,7 +18570,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
     if(drawShownId !== v.id){
       drawShownId = v.id; preview(roomCfg || CFG, v.n || (v.parts||[]).length || 4); el.classList.add('show');
       el.querySelector('#mcDrH').textContent = '🃏 SIRA BELİRLENİYOR';
-      el.querySelector('#mcDrS').textContent = 'Bir kart seç — kartındaki numara oyundaki sıranı belirler';
+      el.querySelector('#mcDrS').textContent = ((roomCfg || CFG).tur === '2v2') ? 'Bir kart seç — Kart 1\'in takımı başlar · sıra takımlar arasında döner · takımda küçük kart önce oynar' : 'Bir kart seç — kartındaki numara oyundaki sıranı belirler';
       var left = 10, tEl = el.querySelector('#mcDrT');
       clearInterval(drawTick); tEl.textContent = '⏱ '+left;
       drawTick = setInterval(function(){ left--; tEl.textContent = '⏱ '+Math.max(0,left); if(left <= 0) clearInterval(drawTick); }, 1000);
@@ -18571,11 +18590,11 @@ body.mcMatchOn #mcGameOver{display:none!important}
     el.querySelector('#mcDrRow').innerHTML = (v.cards||[]).map(function(num, i){
       var id = byCard[i]; if(!id) return cardHtml(i);
       var P = pn(id) || {}, isMe = id === me();
-      return cardHtml(i, num+'. SIRA', String(num), isMe ? 'Sen' : (P.name || ''), P.col || '#ffcc3d');
+      return cardHtml(i, ((roomCfg || CFG).tur === '2v2') ? 'KART '+num : num+'. SIRA', String(num), isMe ? 'Sen' : (P.name || ''), P.col || '#ffcc3d');
     }).join('');
     el.querySelector('#mcDrLg').innerHTML = parts.map(function(P){
       var ci = pk[P.id], num = ci != null ? v.cards[ci] : null;
-      return '<span style="color:'+(P.col||'#fff')+'">● </span>'+esc(P.id === me() ? 'Sen' : P.name)+': '+(num ? '<b>'+num+'.</b>' : (reveal ? '—' : 'seçiyor…'));
+      return '<span style="color:'+(P.col||'#fff')+'">● </span>'+esc(P.id === me() ? 'Sen' : P.name)+': '+(num ? '<b>'+(((roomCfg || CFG).tur === '2v2') ? 'Kart '+num : num+'.')+'</b>' : (reveal ? '—' : 'seçiyor…'));
     }).join(' &nbsp; ');
     if(reveal) clearInterval(drawTick);
   }
@@ -18625,11 +18644,20 @@ body.mcMatchOn #mcGameOver{display:none!important}
     var co = window.MONOCITY_COOP; if(!co || co.role !== 'host' || !co.code) return;
     var seatP = [null,null,null,null], first = 0;
     if(c.tur === '2v2'){
-      var T = teamsOf(), byKey = function(e){ if(!e) return null; for(var i=0;i<parts.length;i++) if(parts[i].key === e.key) return parts[i]; return null; };
-      seatP[0] = parts[0]; seatP[1] = byKey(T.B[0]); seatP[2] = byKey(T.A[0]); seatP[3] = byKey(T.B[1]);
-      var bots = parts.filter(function(P){ return P.bot; });
-      for(var s1=1;s1<4;s1++) if(!seatP[s1]) seatP[s1] = bots.shift();
-      for(var s2=0;s2<4;s2++) if(seatP[s2] && seatP[s2].num === 1) first = s2;
+      /* Sıra: Kart 1'in takımı başlar, takımlar dönüşümlü oynar, takım içinde küçük kart önce.
+         Kurucu her zaman 0. koltukta; takım arkadaşı 2., rakipler 1. ve 3. koltukta. */
+      var T = teamsOf(), hc = hostCol(), byKey = function(e){ if(!e || e.host) return null; for(var i=0;i<parts.length;i++) if(parts[i].key === e.key) return parts[i]; return null; };
+      var bots = parts.filter(function(P){ return P.bot; }), H = parts[0];
+      var mate = null; T[hc].forEach(function(e){ var P = byKey(e); if(P && !mate) mate = P; });
+      var opp = []; T[otherCol(hc)].forEach(function(e){ var P = byKey(e); if(P) opp.push(P); });
+      if(!mate) mate = bots.shift();
+      while(opp.length < 2) opp.push(bots.shift());
+      var X = [H, mate].sort(function(a, b){ return a.num - b.num; }), Y = opp.sort(function(a, b){ return a.num - b.num; });
+      var order = (X[0].num === 1) ? [X[0], Y[0], X[1], Y[1]] : [Y[0], X[0], Y[1], X[1]];
+      var hi = order.indexOf(H);
+      for(var k2=0;k2<4;k2++) seatP[(k2 - hi + 4) % 4] = order[k2];
+      first = (4 - hi) % 4;
+      c.hc = hc === 'blue' ? 'B' : 'R';
     }else{
       var O = parts.slice().sort(function(a,b){ return a.num - b.num; }), h = O.indexOf(parts[0]);
       for(var k=0;k<n;k++) seatP[k] = O[(h + k) % n];
@@ -19476,9 +19504,10 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
   }
 
   /* ===================== 2) ŞANS: ENERJİ ÇÖKÜŞÜ + GÖKTAŞI ===================== */
-  var CARD_E = {id:'energy', title:'⚡ ENERJİ ÇÖKÜŞÜ', desc:'Rakibinin tapusuz bir şehrini seç: 2 tur elektriksiz kalır, kira toplayamaz.'};
+  var CARD_E = {id:'energy', title:'⚡ ENERJİ ÇÖKÜŞÜ', desc:'Rakibinin bir şehrini seç (tapulu da olur): 2 tur elektriksiz kalır, kira toplayamaz. Mülk Koruma kartı korur.'};
   var CARD_M = {id:'meteor', title:'☄️ GÖKTAŞI', desc:'Rakibinin tapusuz bir şehrini seç: göktaşı düşer, şehir yıkılır ve bankaya döner. Mülk Koruma kartı korur.'};
   try{ if(Array.isArray(window.CHANCE_CARDS) && !CHANCE_CARDS.some(function(c){ return c.id === 'energy'; })) CHANCE_CARDS.push(CARD_E, CARD_M); }catch(e){}
+  try{ (window.CHANCE_CARDS || []).forEach(function(c){ if(c.id === 'propertyProtection') c.desc = 'Kartı elinde tut. Şehrin 1,5× geri satın alma, göktaşı ya da elektrik kesintisi hedefi olursa korur.'; }); }catch(e){}
   function match(){ try{ return window.MONOCITY_MATCH && MONOCITY_MATCH(); }catch(e){ return null; } }
   function rival(p, o){
     if(!p || !o || o === p || o.bankrupt) return false;
@@ -19487,7 +19516,7 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
   }
   function targetsFor(p, kind){
     var out = [], b = window.board || [];
-    for(var i=0;i<b.length;i++){ var t = b[i]; if(!(window.cities && cities[t])) continue; var o = ownerOf(t); if(!rival(p, o)) continue; if(lvl(o, t) & 8) continue; out.push(i); }
+    for(var i=0;i<b.length;i++){ var t = b[i]; if(!(window.cities && cities[t])) continue; var o = ownerOf(t); if(!rival(p, o)) continue; if(kind !== 'energy' && (lvl(o, t) & 8)) continue; out.push(i); }
     if(kind === 'energy'){ var fresh = out.filter(function(i){ return !outOf(b[i]); }); if(fresh.length) out = fresh; }
     return out;
   }
@@ -19501,7 +19530,7 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
     pick = {p:p, card:card, list:list, id:++seq};
     window.waiting = true; window.waitDecisionTile = 'MC_PICK';
     var html = '<i class="mcP2Pk" data-k="'+card.id+'" style="display:none"></i><div class="mcP2D">'+(card.id === 'meteor' ? '☄️ Göktaşının düşeceği rakip şehri seç' : '⚡ Elektriği kesilecek rakip şehri seç')+'</div>' +
-      list.map(function(i){ var o = ownerOf(board[i]); return '<button onclick="chooseChanceTile('+i+')">'+esc(board[i])+' · '+esc(o ? o.name : '')+'</button>'; }).join('');
+      list.map(function(i){ var o = ownerOf(board[i]), dd = o && (lvl(o, board[i]) & 8); return '<button onclick="chooseChanceTile('+i+')">'+(dd ? '🔒 ' : '')+esc(board[i])+' · '+esc(o ? o.name : '')+(dd ? ' (tapulu)' : '')+'</button>'; }).join('');
     showInfo('❓ ŞANS KARTI', html);
     try{ setInfoNavigationVisible(false); }catch(e){}
     startTimer(30, 'action');
@@ -19514,11 +19543,17 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
   }
   function doEnergy(p, i){
     var t = board[i], o = ownerOf(t); if(!o) return finish();
+    if(getPropertyProtectionCards(o) > 0){
+      if(isInteractiveSeat(o)) return askProtect(p, o, t, 'energy');
+      if(Math.random() < 0.75){ usePropertyProtectionCard(o); log('🛡️ '+o.name+' Mülk Koruma kartıyla '+t+' şehrini elektrik kesintisinden korudu!'); return finish(); }
+    }
+    cutPower(p, o, t); finish();
+  }
+  function cutPower(p, o, t){
     try{ ensureChanceState(o); }catch(e){}
     var mo = (o.chanceCards.mcOut && typeof o.chanceCards.mcOut === 'object') ? o.chanceCards.mcOut : {};
     mo[t] = 2; o.chanceCards.mcOut = mo;
     log('⚡ '+p.name+' ENERJİ ÇÖKÜŞÜ: '+t+' ('+o.name+') 2 tur elektriksiz — kira yok');
-    finish();
   }
   function destroy(p, o, t){
     try{ delete o.properties[t]; if(o.chanceCards && o.chanceCards.mcOut) delete o.chanceCards.mcOut[t]; }catch(e){}
@@ -19528,16 +19563,16 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
   function doMeteor(p, i){
     var t = board[i], o = ownerOf(t); if(!o) return finish();
     if(getPropertyProtectionCards(o) > 0){
-      if(isInteractiveSeat(o)) return askProtect(p, o, t);
+      if(isInteractiveSeat(o)) return askProtect(p, o, t, 'meteor');
       if(Math.random() < 0.75){ usePropertyProtectionCard(o); log('🛡️ '+o.name+' Mülk Koruma kartıyla '+t+' şehrini göktaşından korudu!'); return finish(); }
     }
     destroy(p, o, t); finish();
   }
-  function askProtect(p, o, t){
-    var id = ++seq; prot = {p:p, o:o, t:t, id:id};
+  function askProtect(p, o, t, kind){
+    var id = ++seq; prot = {p:p, o:o, t:t, id:id, kind:kind || 'meteor'};
     window.propertyProtectionDecision = {owner:o, buyer:p, city:t, level:lvl(o, t), buyPrice:0, __mc:id};
     window.waiting = true; window.waitDecisionTile = 'MC_PROTECT';
-    var html = '<div class="mcCp"><p>☄️ <b>'+esc(p.name)+'</b> senin <b class="y">'+esc(t)+'</b> şehrine <b>GÖKTAŞI</b> düşürüyor!</p>' +
+    var html = '<div class="mcCp"><p>'+(prot.kind === 'energy' ? '⚡ <b>'+esc(p.name)+'</b> senin <b class="y">'+esc(t)+'</b> şehrinin <b>ELEKTRİĞİNİ KESİYOR</b>! (2 tur kira yok)' : '☄️ <b>'+esc(p.name)+'</b> senin <b class="y">'+esc(t)+'</b> şehrine <b>GÖKTAŞI</b> düşürüyor!')+'</p>' +
       '<div class="bal">🛡️ Mülk Koruma kartın: <b>'+getPropertyProtectionCards(o)+'</b></div>' +
       '<div class="two"><button class="b" onclick=\'continueProtectedPurchase("use")\'>🛡️ KARTI KULLAN — KORU</button><button class="gr" onclick=\'continueProtectedPurchase("decline")\'>KULLANMA</button></div>' +
       '<div class="nt">⏱ Karar vermezsen kart otomatik kullanılır</div></div>';
@@ -19550,7 +19585,8 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
     var pr = prot; if(!pr) return; prot = null; clearTimeout(pr.tm);
     window.propertyProtectionDecision = null;
     try{ stopTimer(); }catch(e){} hideInfo(); window.waitDecisionTile = null;
-    if(use && usePropertyProtectionCard(pr.o)) log('🛡️ '+pr.o.name+' Mülk Koruma kartıyla '+pr.t+' şehrini göktaşından korudu!');
+    if(use && usePropertyProtectionCard(pr.o)) log('🛡️ '+pr.o.name+' Mülk Koruma kartıyla '+pr.t+' şehrini '+(pr.kind === 'energy' ? 'elektrik kesintisinden' : 'göktaşından')+' korudu!');
+    else if(pr.kind === 'energy') cutPower(pr.p, pr.o, pr.t);
     else destroy(pr.p, pr.o, pr.t);
     finish();
   }
@@ -19765,6 +19801,7 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
     var m;
     if((m = /^⚡ (.+?) ENERJİ ÇÖKÜŞÜ: (\S+) \((.+?)\) 2 tur/.exec(s))){ if(!bulk){ addFx('bolt', m[2]); note('⚡', m[1], m[2]+' şehrinin elektriğini kesti!'); sfx('energy'); } miniUpd(m[1], '⚡ ENERJİ ÇÖKÜŞÜ → '+m[2]); return; }
     if((m = /^☄️ (.+?) GÖKTAŞI: (\S+) yıkıldı/.exec(s))){ if(!bulk){ addFx('meteor', m[2]); setTimeout(function(){ note('☄️', m[1], m[2]+' yıkıldı, bankaya döndü!'); }, 700); sfx('meteor'); } miniUpd(m[1], '☄️ GÖKTAŞI → '+m[2]); return; }
+    if((m = /^🛡️ (.+?) Mülk Koruma kartıyla (\S+) şehrini elektrik kesintisinden korudu/.exec(s))){ if(!bulk){ note('🛡️', m[1], m[2]+' şehrini elektrik kesintisinden korudu!'); } miniUpd(m[1], '🛡️ KORUNDU → '+m[2]); return; }
     if((m = /^🛡️ (.+?) Mülk Koruma kartıyla (\S+) şehrini göktaşından korudu/.exec(s))){ if(!bulk){ addFx('meteor', m[2], 'shield'); setTimeout(function(){ note('🛡️', m[1], m[2]+' şehrini korudu!'); }, 700); sfx('meteor'); } return; }
     if((m = /^💡 (\S+) şehrinin elektriği geri geldi \((.+?)\)/.exec(s))){ if(!bulk) note('💡', m[2], m[1]+' şehrinde elektrik geri geldi'); return; }
     if((m = /^⚡ (\S+) elektriksiz — (.+?) kira ödemedi/.exec(s))){ if(!bulk) note('⚡', m[2], m[1]+' elektriksiz · kira yok'); return; }
