@@ -3986,7 +3986,7 @@ if(secretAuction.turn>=secretAuction.order.length)return finishSecretAuction();
 var id=secretAuction.order[secretAuction.turn],p=players[id];
 if(p.money<secretAuction.base){ log("⏭️ "+p.name+" gizli müzayedede yeterli parası olmadığı için otomatik PAS geçti."); secretAuction.turn++; return setTimeout(secretNextPlayer,300); }
 if(isInteractiveSeat(p)){document.getElementById("secretTitle").innerHTML="🔒 GİZLİ TEKLİF";document.getElementById("secretText").innerHTML="<b>"+secretAuction.city+"</b><br><br>💰 Bakiyen: <b>"+money(p.money)+"</b><br><br>Taban teklif: "+money(secretAuction.base)+"<br><br>Teklifin diğer oyuncular tarafından görülmez.<br><br>⏱️ <b>Kalan süre: <span id='secretAuctionTimer'>15</span> saniye</b>";document.getElementById("secretBid").value="";document.getElementById("secretModal").style.display="flex";startTimer(15,"secretAuction");if(window.coopRouteSecretModal)window.coopRouteSecretModal(p)}
-else setTimeout(function(){var bid=0;if(p.money>=secretAuction.base&&Math.random()>.25){var max=Math.min(p.money,Math.floor(secretAuction.base*2));bid=secretAuction.base+Math.floor(Math.random()*Math.max(1,max-secretAuction.base))}if(bid>=secretAuction.base&&bid<=p.money){secretAuction.bids[p.id]=bid;log("🔒 "+p.name+" gizli teklif verdi.")}else log("⏭️ "+p.name+" pas geçti.");secretAuction.turn++;secretNextPlayer()},600)
+else setTimeout(function(){if(!secretAuction)return;var bid=0;if(p.money>=secretAuction.base&&Math.random()>.25){var max=Math.min(p.money,Math.floor(secretAuction.base*2));bid=secretAuction.base+Math.floor(Math.random()*Math.max(1,max-secretAuction.base))}if(bid>=secretAuction.base&&bid<=p.money){secretAuction.bids[p.id]=bid;log("🔒 "+p.name+" gizli teklif verdi.")}else log("⏭️ "+p.name+" pas geçti.");secretAuction.turn++;secretNextPlayer()},600)
 }
 
 function submitGeneralSecret(){
@@ -13191,9 +13191,9 @@ mportant;}
   }
   function inLobby(){ var st = API && API.state(); return !!(st && st.code && !st.entered && st.status !== 'playing'); }
   function show(){ build(); minimized = false; el.classList.add('show'); render(); window.monocityLobbyChatRender(); }
-  function minimize(){ minimized = true; if(el) el.classList.remove('show'); render(); toast('Lobi küçültüldü. Üstteki mor butondan geri dönebilirsin.'); }
+  function minimize(){ minimized = true; if(el) el.classList.remove('show'); render(); if(window.monocityRestoreHome) window.monocityRestoreHome(); toast('Lobi küçültüldü. Üstteki mor butondan geri dönebilirsin.'); }
   function hideAll(){ minimized = true; if(el) el.classList.remove('show'); if(pill) pill.classList.remove('show'); }
-  function leave(){ API.leave(); sent = {}; if(el) el.classList.remove('show'); if(pill) pill.classList.remove('show'); toast('Lobiden çıktın.'); }
+  function leave(){ API.leave(); sent = {}; if(el) el.classList.remove('show'); if(pill) pill.classList.remove('show'); if(window.monocityRestoreHome) window.monocityRestoreHome(); toast('Lobiden çıktın.'); }
 
   function seatCard(i, p){
     if(!p) return '<div class="lbSeat empty"><div class="plus">+</div><small>Davet et</small><small style="font-weight:700">Boş kalırsa bot oynar</small></div>';
@@ -20475,6 +20475,7 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
     }).catch(function(){});
   }
   setInterval(function(){ try{ pruneGlobal(); }catch(e){} }, 20000);
+  window.monocityPruneChatNow = function(){ pruneT = 0; pruneGlobal(); };
   /* lobi sohbeti: kutuda son 3 mesaj, dokununca panel */
   var lbSeen = 0, lbOpen = false;
   function roomChat(){ return window.MONOCITY_ROOM_CHAT || []; }
@@ -21006,6 +21007,33 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
     try{ if(d > 0) log('💰 '+p.name+' vergi -'+money(d)+' (şans kartı)'); }catch(e){}
     return r;
   };
+
+  /* ---------- 1d) Lobiden çıkınca / küçültünce ana ekran geri gelsin (donma) ---------- */
+  function inGame(){
+    try{
+      var ps = window.players || [], g = document.getElementById('game');
+      if(!ps.length || (ps[0] && ps[0].__pv) || window.gameOver) return false;
+      return !!(g && getComputedStyle(g).display !== 'none' && document.getElementById('mainMenu') && getComputedStyle(document.getElementById('mainMenu')).display === 'none');
+    }catch(e){ return false; }
+  }
+  function restoreHome(){
+    if(inGame()) return;
+    var busy = ['mcSetup','monocityShop','v23ImageScreen','modeSelect','mcDraw'].some(function(id){ var e = document.getElementById(id); return e && e.classList.contains('show'); });
+    var ps = document.getElementById('mcProfileScreen'); if(ps && ps.classList.contains('show')) busy = true;
+    if(busy) return;
+    try{ var mm = document.getElementById('mainMenu'); if(mm) mm.style.display = 'block'; }catch(e){}
+    try{ if(typeof setLobbyHitLayerVisible === 'function') setLobbyHitLayerVisible(true); }catch(e){}
+  }
+  window.monocityRestoreHome = restoreHome;
+  /* kurucu lobiyi kapatınca / atılınca da */
+  var lbWas = false;
+  setInterval(function(){
+    try{
+      var API = window.MONOCITY_LOBBY_API, st = API && API.state && API.state(), on = !!(st && st.code && !st.entered);
+      if(lbWas && !on) setTimeout(restoreHome, 300);
+      lbWas = on;
+    }catch(e){}
+  }, 700);
 
   /* ---------- 2) Açık artırma / müzayede: sadece boş şehir ---------- */
   window.getOwnedAuctionCandidates = function(){ return []; };
