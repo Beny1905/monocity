@@ -14104,11 +14104,11 @@ body.mcPawnLayerOn #board .cell.mcStep{animation:mcStepGlow .38s ease-out!import
         }
         lmSeen[tile] = 1;
       }
-      lm.el.style.setProperty('--oc', SEATC[seat] || '#888');
+      lm.el.style.setProperty('--oc', (window.playerColors && playerColors[seat]) || SEATC[seat] || '#888');
       var I = window.MONOCITY_ISO;
       if(document.body.classList.contains('mcIso') && I && I.cellCenter){
         var cc = I.cellCenter(i); if(!cc) return;
-        var U = I.C*I.z, h2 = U*1.35, w2 = h2*0.83, by = cc.y + U*0.2;
+        var U = I.C*I.z, h2 = U*1.05, w2 = h2*0.83, by = cc.y + U*0.04;
         lm.el.style.width = w2+'px'; lm.el.style.height = h2+'px';
         lm.el.style.transform = 'translate('+(cc.x - w2/2)+'px,'+(by - h2)+'px)';
         lm.el.style.zIndex = String(1000 + Math.round(by));
@@ -14855,9 +14855,11 @@ body.mcIso #mcIsoHud{display:block}
 (function(){
   var TILT = 60, COS = Math.cos(TILT*Math.PI/180), R2 = Math.SQRT1_2;
   var GROUPC = {"#795548":"#8d5a3b","#111":"#2b2f3a","#2e7d32":"#2e9d45","#ef6c00":"#f07b12","#1976d2":"#1f7ae0","#fbc02d":"#e8b20c","#d32f2f":"#d8342c"};
-  var SPI = {"ŞANS":"❓","AÇIK ARTIRMA":"🔨","MÜZAYEDE ÖZEL":"🔨","MÜZAYEDE":"🔨","VERGİ %15":"💸","PARK CEZASI":"🚗","OTOGAR":"🚌","YHT":"🚄","FERİBOT":"⛴️","HAVALİMANI":"🛫","GELİŞTİRME":"🏗️"};
-  var SPN = {"MÜZAYEDE ÖZEL":"MÜZAYEDE"};
-  var CORNA = {"BAŞLANGIÇ":["🏁","BAŞLANGIÇ"],"HAPİSHANE":["🚔","HAPİSHANE"],"MÜZAYEDE GENEL":["🏛️","MÜZAYEDE"],"MÜZAYEDE":["🏛️","MÜZAYEDE"],"DÜNYA TURU":["✈️","DÜNYA TURU"],"ŞEHİR TURU":["🗺️","ŞEHİR TURU"]};
+  var SPI = {"ŞANS":"❓","AÇIK ARTIRMA":"🔨","MÜZAYEDE ÖZEL":"🔨","MÜZAYEDE":"🔨","VERGİ %15":"💸","PARK CEZASI":"🚗","OTOGAR":"🚌","YHT":"🚄","FERİBOT":"⛴️","HAVALİMANI":"✈️","GELİŞTİRME":"🏗️"};
+  var SPN = {"MÜZAYEDE ÖZEL":"MÜZAYEDE","OTOGAR":"OTOBÜS","YHT":"TREN","FERİBOT":"GEMİ","HAVALİMANI":"UÇAK"};
+  var DISPN = {"OTOGAR":"OTOBÜS","YHT":"TREN","FERİBOT":"GEMİ","HAVALİMANI":"UÇAK","HAPİSHANE":"CEZA EVİ","BAŞLANGIÇ":"YOLA ÇIK","DÜNYA TURU":"SEYAHAT","ŞEHİR TURU":"SEYAHAT","MÜZAYEDE GENEL":"MÜZAYEDE","MÜZAYEDE ÖZEL":"MÜZAYEDE"};
+  window.monocityTileName = function(t){ return DISPN[t] || t; };
+  var CORNA = {"BAŞLANGIÇ":["🏁","YOLA ÇIK"],"DÜNYA TURU":["✈️","SEYAHAT"],"ŞEHİR TURU":["✈️","SEYAHAT"]};  /* ceza evi + müzayede: 3D (p2) */
   var FRC = {white:'#ffffff',red:'#ef3b2d',yellow:'#ffd23d',green:'#34c759',purple:'#9b45ef',pink:'#ff6fb5',blue:'#2f86ff',orange:'#ff8a1f',black:'#28303d',brown:'#9a6434',cyan:'#22d3ee',gray:'#9ca3af'};
   var SEATC = ['#ff3b30','#ffd60a','#34c759','#0a84ff'];
   function esc(t){ return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
@@ -14886,7 +14888,7 @@ body.mcIso #mcIsoHud{display:block}
     var side = Math.max(44, Math.min(58, H*0.13)) + 4;
     var S = Math.min((W - 2*side)/1.4142, (H - 44)/(1.4142*COS) ) * 0.97;
     S = Math.max(260, Math.floor(S));
-    var C = Math.round(S*0.153);
+    var C = Math.round(S*0.125);
     var K = cornersFor(N), L = S - 2*C, pos = [];
     pos[K[0]] = {x:S-C, y:S-C, w:C, h:C, side:'c'};
     pos[K[1]] = {x:0, y:S-C, w:C, h:C, side:'c'};
@@ -15191,7 +15193,7 @@ body.mcIso #mcIsoHud{display:block}
       c.querySelector('.tx b').textContent = p.name;
       c.querySelector('.tx .m').textContent = '💰 ' + (typeof money === 'function' ? money(p.money) : p.money);
       var n = p.properties ? Object.keys(p.properties).length : 0;
-      c.querySelector('.tx small').textContent = '🏙️ '+n+' mülk · 📍 '+(board[p.pos] || '');
+      c.querySelector('.tx small').textContent = '🏙️ '+n+' mülk · 📍 '+window.monocityTileName(board[p.pos] || '');
       c.querySelector('.rk').textContent = String(window.monocityTurnNo ? window.monocityTurnNo(rs) : rs+1);
       c.classList.toggle('turn', cp === i && !window.gameOver && !p.bankrupt);
       c.classList.toggle('out', !!p.bankrupt);
@@ -16735,20 +16737,20 @@ body.mcIso #mcIsoHud{display:block}
 
   /* ================= KARE BILGI PANELI ================= */
   var SPINFO = {
-    'BAŞLANGIÇ': ['🏁','Başlangıç','Başlangıçtan her geçtiğinde <b>tur ödülü</b> alırsın.'],
+    'BAŞLANGIÇ': ['🏁','Yola Çık','Başlangıçtan her geçtiğinde <b>tur ödülü</b> alırsın.'],
     'ŞANS': ['❓','Şans','Bir <b>şans kartı</b> çekersin: para kazanabilir ya da kaybedebilir, Dünya Turu, Mülk Koruma ya da Hapisten Çıkış kartı alabilirsin.'],
     'VERGİ %15': ['💸','Vergi %15','Elindeki paranın <b>%15</b>\'ini vergi olarak ödersin.'],
-    'HAPİSHANE': ['🚔','Hapishane','Paranın <b>%10</b>\'unu ödeyip hemen çıkabilir ya da <b>2 tur</b> bekleyebilirsin. <b>Hapisten Çıkış</b> kartın varsa ücretsiz çıkarsın.'],
+    'HAPİSHANE': ['🔒','Ceza Evi','Paranın <b>%10</b>\'unu ödeyip hemen çıkabilir ya da <b>2 tur</b> bekleyebilirsin. <b>Hapisten Çıkış</b> kartın varsa ücretsiz çıkarsın.'],
     'PARK CEZASI': ['🚗','Park Cezası','<b>300.000</b> ödeyip beklemeden devam edersin ya da <b>150.000</b> ödeyip <b>1 tur</b> beklersin.'],
-    'DÜNYA TURU': ['✈️','Dünya Turu','Tahtada <b>istediğin kareye</b> gidersin. Kareyi tahtadan seçip onaylarsın.'],
-    'ŞEHİR TURU': ['🗺️','Şehir Turu','Tahtada <b>istediğin kareye</b> gidersin. Kareyi tahtadan seçip onaylarsın.'],
+    'DÜNYA TURU': ['✈️','Seyahat','Tahtada <b>istediğin kareye</b> gidersin. Kareyi tahtadan seçip onaylarsın.'],
+    'ŞEHİR TURU': ['✈️','Seyahat','Tahtada <b>istediğin kareye</b> gidersin. Kareyi tahtadan seçip onaylarsın.'],
     'MÜZAYEDE ÖZEL': ['🔨','Özel Müzayede','Tapusu olmayan bir şehir için <b>müzayede</b> başlar. En yüksek teklifi veren şehri alır.'],
     'MÜZAYEDE': ['🔨','Müzayede','Tapusu olmayan bir şehir için <b>müzayede</b> başlar. En yüksek teklifi veren şehri alır.'],
     'MÜZAYEDE GENEL': ['🏛️','Genel Müzayede','Herkesin <b>gizli teklif</b> verdiği müzayede. Kimse diğerinin teklifini görmez; en yüksek teklif kazanır.'],
     'AÇIK ARTIRMA': ['🔨','Açık Artırma','Herkesin katıldığı <b>açık artırma</b>. Teklifler herkese görünür, en son en yüksek teklifi veren kazanır.'],
     'GELİŞTİRME': ['🏗️','Geliştirme','Mülklerini geliştirme karesi.']
   };
-  var SPREG = {"OTOGAR":"🚌","YHT":"🚄","FERİBOT":"⛴️","HAVALİMANI":"🛫"};
+  var SPREG = {"OTOGAR":"🚌","YHT":"🚄","FERİBOT":"⛴️","HAVALİMANI":"✈️"};
   var back = null, box = null;
   function build(){
     if(box) return;
@@ -16789,7 +16791,7 @@ body.mcIso #mcIsoHud{display:block}
       var so = null; try{ so = getOwner(t); }catch(e){}
       var sp = window.MONOCITY_SPECIAL_PRICE ? MONOCITY_SPECIAL_PRICE[t] : 0;
       var all = !!(so && typeof window.ownsAllSpecialRegions === 'function' && ownsAllSpecialRegions(so));
-      html = '<div class="hd"><div><b>'+SPREG[t]+' '+esc(t)+'</b><small>Özel bölge'+(sp ? ' · Fiyat '+fmt(sp) : '')+'</small></div><div class="x">✕</div></div>' +
+      html = '<div class="hd"><div><b>'+SPREG[t]+' '+esc(window.monocityTileName ? monocityTileName(t) : t)+'</b><small>Özel bölge'+(sp ? ' · Fiyat '+fmt(sp) : '')+'</small></div><div class="x">✕</div></div>' +
         '<div class="tx">'+(so ? 'Sahibi: <b>'+esc(so.name)+'</b><br>' : 'Sahipsiz — satın alınabilir.<br>')+
         'Buraya gelen rakipler <b>'+fmt(50000)+'</b> kira öder. 4 özel bölgenin (🚌 🚄 ⛴️ 🛫) hepsi aynı oyuncudaysa kira <b>'+fmt(100000)+'</b> olur ve başlangıç ödülü 2 katına çıkar.'+(all ? '<br>🌍 <b>'+esc(so.name)+' dördüne de sahip!</b>' : '')+'</div>';
     } else {
@@ -18579,7 +18581,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
 
 <style id="monocity-p1-css">
 /* ===== tahtada bildirimler ===== */
-#mcNotes{position:fixed;left:50%;top:calc(11vh + 6px);transform:translateX(-50%);z-index:1000450;display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none;font-family:Arial,Helvetica,sans-serif}
+#mcNotes{position:fixed;left:50%;top:calc(11vh + 6px);transform:translateX(-50%);z-index:990;display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none;font-family:Arial,Helvetica,sans-serif}
 #mcNotes .nt{display:flex;align-items:center;gap:7px;padding:5px 12px 5px 7px;border-radius:11px;background:rgba(8,12,26,.9);border-left:5px solid var(--c);box-shadow:0 0 14px color-mix(in srgb,var(--c) 40%,transparent);font-size:clamp(10px,3.4vh,13px);font-weight:900;color:#fff;white-space:nowrap;max-width:62vw;overflow:hidden;text-overflow:ellipsis;animation:mcNtIn .25s ease-out}
 #mcNotes .nt.out{opacity:0;transform:translateY(-6px);transition:all .35s}
 #mcNotes .nt .e{font-size:1.25em}
@@ -19008,4 +19010,735 @@ body.mcMatchOn #mcGameOver{display:none!important}
   setInterval(function(){ try{ watchSaleHost(); watchSaleGuest(); watchActs(); hostTick(); guestTick(); bankruptTick(); }catch(e){ console.warn('mc p1', e); } }, 1000);
 })();
 </script>
+
+<style id="monocity-p2-css">
+/* ===== tahtadaki yapılar (çit / ev / otel / ceza evi / banka) ===== */
+.mcP2O{position:fixed;left:0;top:0;width:1px;height:1px;pointer-events:none;will-change:transform;transform-origin:0 0}
+.mcP2O svg{position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible}
+.mcP2O.bld svg{filter:drop-shadow(0 1.5px 1px rgba(0,0,0,.35))}
+.mcP2O.rise svg{animation:mcP2Rise .7s cubic-bezier(.2,1.4,.4,1)}
+@keyframes mcP2Rise{from{transform:scale(.15);opacity:0}to{transform:none;opacity:1}}
+.mcP2O.bank.act svg{filter:drop-shadow(0 0 5px #ffd23d) drop-shadow(0 0 12px rgba(255,210,61,.7))}
+/* elektrik kesintisi */
+.mcP2O.out .sm{position:absolute;border-radius:50%;background:radial-gradient(circle at 40% 35%,#9aa3b0,#5b6472 70%);opacity:0;animation:mcP2Smoke 2.6s linear infinite}
+.mcP2O.out .sm.s1{left:calc(var(--u)*-.16);top:calc(var(--u)*-.28);width:calc(var(--u)*.2);height:calc(var(--u)*.2)}
+.mcP2O.out .sm.s2{left:calc(var(--u)*-.05);top:calc(var(--u)*-.3);width:calc(var(--u)*.24);height:calc(var(--u)*.24);animation-delay:.85s}
+.mcP2O.out .sm.s3{left:calc(var(--u)*-.2);top:calc(var(--u)*-.26);width:calc(var(--u)*.22);height:calc(var(--u)*.22);animation-delay:1.7s}
+@keyframes mcP2Smoke{0%{transform:translate(0,0) scale(.5);opacity:0}15%{opacity:.75}100%{transform:translate(calc(var(--u)*.12),calc(var(--u)*-.75)) scale(1.5);opacity:0}}
+.mcP2O.out .x{position:absolute;left:calc(var(--u)*.05);top:calc(var(--u)*-.78);width:calc(var(--u)*.34);height:calc(var(--u)*.34);border-radius:50%;background:#111827;border:calc(var(--u)*.035) solid #ef4444;box-sizing:border-box;display:grid;place-items:center;color:#ef4444;font:1000 calc(var(--u)*.22)/1 Arial,Helvetica,sans-serif;box-shadow:0 0 calc(var(--u)*.12) rgba(239,68,68,.6)}
+.mcP2O.out .n{position:absolute;left:calc(var(--u)*.02);top:calc(var(--u)*-.4);padding:calc(var(--u)*.02) calc(var(--u)*.07);border-radius:calc(var(--u)*.08);background:#111827;border:calc(var(--u)*.025) solid #facc15;color:#facc15;font:1000 calc(var(--u)*.17)/1.1 Arial,Helvetica,sans-serif;white-space:nowrap}
+html body #board > .cell.mcP2Dark{filter:grayscale(1) brightness(.62)!important}
+/* göktaşı / şimşek / kalkan */
+.mcP2O.met .rock{position:absolute;left:calc(var(--u)*-.16);top:calc(var(--u)*-.16);width:calc(var(--u)*.32);height:calc(var(--u)*.32);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fde68a,#f97316 45%,#7c2d12 75%);box-shadow:0 0 calc(var(--u)*.25) #f97316}
+.mcP2O.met .tr{position:absolute;left:0;top:calc(var(--u)*-.06);height:calc(var(--u)*.12);width:calc(var(--u)*2.4);transform-origin:0 50%;border-radius:calc(var(--u)*.1);background:linear-gradient(90deg,rgba(249,115,22,.95),rgba(253,230,138,0))}
+.mcP2O.crt svg{animation:mcP2Fade 3.8s ease-in forwards}
+@keyframes mcP2Fade{0%,70%{opacity:1}100%{opacity:0}}
+.mcP2O.pop .e{position:absolute;left:0;top:0;transform:translate(-50%,-100%);font-size:calc(var(--u)*.7);line-height:1;animation:mcP2Pop .9s ease-out forwards;filter:drop-shadow(0 0 calc(var(--u)*.15) var(--g,#facc15))}
+@keyframes mcP2Pop{0%{transform:translate(-50%,-60%) scale(.3);opacity:0}25%{transform:translate(-50%,-110%) scale(1.15);opacity:1}70%{opacity:1}100%{transform:translate(-50%,-150%) scale(1);opacity:0}}
+/* ===== mini şans kartı (herkes görür) ===== */
+body.mcWtMode #mcMiniCard{display:none}
+#mcMiniCard{position:fixed;left:50%;top:calc(24vh + 4px);z-index:989;transform:translateX(-50%);pointer-events:none;font-family:Arial,Helvetica,sans-serif}
+#mcMiniCard .mc{display:flex;align-items:center;gap:10px;min-width:min(250px,70vw);max-width:78vw;padding:7px 14px 7px 7px;border-radius:13px;background:#f8fafc;border:3px solid var(--c);box-shadow:0 0 16px color-mix(in srgb,var(--c) 55%,transparent),0 8px 18px rgba(0,0,0,.45);animation:mcMcIn .35s cubic-bezier(.2,1.3,.4,1)}
+#mcMiniCard .mc.out{opacity:0;transform:translateY(-8px) scale(.96);transition:all .35s}
+#mcMiniCard .q{flex:0 0 auto;width:clamp(28px,9vh,38px);height:clamp(36px,11.5vh,48px);border-radius:7px;background:repeating-linear-gradient(45deg,#5b21b6 0 5px,#4c1d95 5px 10px);border:2px solid #a78bfa;display:grid;place-items:center;color:#f43f5e;font:1000 clamp(18px,6vh,26px)/1 Arial,Helvetica,sans-serif;text-shadow:0 1px 0 #fff}
+#mcMiniCard small{display:block;font-size:clamp(9px,3vh,11.5px);font-weight:900;color:var(--c);filter:brightness(.8)}
+#mcMiniCard b{display:block;font-size:clamp(12px,4vh,15px);font-weight:1000;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@keyframes mcMcIn{from{opacity:0;transform:translateY(-10px) scale(.9)}to{opacity:1;transform:none}}
+/* ===== kompakt karar ekranları ===== */
+html body #infoModal.mcCpt .box{width:min(390px,92vw)!important;max-width:92vw!important;min-width:0!important;padding:8px 14px 12px!important;border:2px solid #ffcc3d!important;border-radius:18px!important;background:linear-gradient(180deg,#1b2440,#0d1428)!important;box-shadow:0 18px 40px rgba(0,0,0,.7)!important}
+html body #infoModal.mcCpt #infoTitle{font-size:clamp(16px,5.4vh,21px)!important;line-height:1.15!important;color:#ffe08a!important;margin:2px 0 4px!important;text-align:center!important;font-weight:1000!important}
+html body #infoModal.mcCpt #infoText{max-height:none!important;overflow:visible!important;font-size:clamp(11px,3.7vh,13.5px)!important;line-height:1.3!important;padding:0!important;text-align:center!important}
+html body #infoModal.mcCpt #closeInfo,html body #infoModal.mcCpt #closeInfoTop{display:none!important}
+html body #infoModal.mcCpt .infoTopBar{min-height:0!important;margin:-4px -8px 0 -8px!important;padding:2px 4px!important;background:transparent!important;border:0!important;box-shadow:none!important}
+html body #infoModal.mcCpt .infoTopBar .infoActionTimer{min-height:0!important;height:auto!important;padding:3px 9px!important;font-size:12px!important;border-radius:10px!important}
+.mcCp{font-family:Arial,Helvetica,sans-serif;color:#dfe6ff;text-align:center}
+.mcCp p{margin:2px 0 6px;font-weight:800}
+.mcCp p b{color:#fff}
+.mcCp .y{color:#ffe08a}
+.mcCp .bal{display:inline-block;margin:0 0 4px;padding:3px 10px;border-radius:9px;background:#0b1224;border:1px solid #1e2a44;color:#9fb0dd;font-weight:800;font-size:.92em}
+.mcCp .bal b{color:#fff}
+.mcCp .warn{color:#fca5a5;font-weight:900;font-size:.9em;margin:2px 0 4px}
+.mcCp .nt{margin-top:7px;color:#8fa0d0;font-weight:800;font-size:.85em}
+.mcCp .r2{display:flex;gap:8px;margin:4px 0 6px}
+.mcCp .r2 div{flex:1;background:#0b1224;border:1px solid #1e2a44;border-radius:10px;padding:4px 8px;font-size:.82em;color:#9fb0dd;font-weight:800}
+.mcCp .r2 div b{display:block;font-size:1.2em;color:#fff;margin-top:1px}
+.mcCp .ccd{display:flex;align-items:center;gap:10px;text-align:left;background:#f8fafc;border-radius:12px;padding:7px 10px 7px 7px;border:3px solid #a78bfa;margin:2px 0 6px}
+.mcCp .ccd .q{flex:0 0 auto;width:36px;height:46px;border-radius:7px;background:repeating-linear-gradient(45deg,#5b21b6 0 5px,#4c1d95 5px 10px);border:2px solid #a78bfa;display:grid;place-items:center;color:#f43f5e;font:1000 24px/1 Arial,Helvetica,sans-serif}
+.mcCp .ccd b{display:block;color:#0f172a;font-size:1.12em;font-weight:1000}
+.mcCp .ccd small{display:block;color:#475569;font-weight:800;font-size:.86em;margin-top:2px}
+.mcCp .ex{font-weight:800;margin:2px 0 4px}
+html body #infoModal.mcCpt #infoText .mcCp button{margin:0!important;min-height:0!important;height:auto!important;box-shadow:none!important;text-transform:none!important;letter-spacing:0!important;cursor:pointer!important;font-family:Arial,Helvetica,sans-serif!important}
+html body #infoModal.mcCpt #infoText .mcCp button.op{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;width:100%!important;margin-top:6px!important;padding:9px 12px!important;border-radius:12px!important;background:#0b1224!important;border:1.5px solid #2a3a63!important;color:#fff!important;font-size:clamp(12px,3.9vh,14px)!important;font-weight:900!important;text-align:left!important}
+html body #infoModal.mcCpt #infoText .mcCp button.op:hover{border-color:#ffcc3d!important}
+html body #infoModal.mcCpt #infoText .mcCp button.op em{font-style:normal!important;font-weight:1000!important;color:#fca5a5!important;white-space:nowrap!important}
+html body #infoModal.mcCpt #infoText .mcCp button.op em.f{color:#86efac!important}
+html body #infoModal.mcCpt #infoText .mcCp .two{display:flex!important;gap:8px!important;margin-top:9px!important}
+html body #infoModal.mcCpt #infoText .mcCp .two button,html body #infoModal.mcCpt #infoText .mcCp button.go{flex:1!important;width:100%!important;border:0!important;border-radius:12px!important;padding:10px 12px!important;font-weight:1000!important;font-size:clamp(12px,3.9vh,14.5px)!important;color:#fff!important}
+html body #infoModal.mcCpt #infoText .mcCp button.g{background:linear-gradient(#5fe06a,#1d9a2c)!important;box-shadow:0 4px 0 #0d5a17!important}
+html body #infoModal.mcCpt #infoText .mcCp button.gr{background:#374151!important}
+html body #infoModal.mcCpt #infoText .mcCp button.b{background:linear-gradient(#4f9dff,#1d5fd6)!important;box-shadow:0 4px 0 #0f3a8a!important}
+html body #infoModal.mcCpt #infoText .mcCp button:disabled{filter:grayscale(1)!important;opacity:.55!important;cursor:not-allowed!important}
+html body #infoModal.mcCpt #infoText .mcCp button.go{margin-top:8px!important}
+/* hedef seçme listesi (şans kartı) */
+html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
+/* ayarlar: ses efektleri */
+.mcSfxRow{cursor:pointer}
+.mcSfxRow b.off{color:#fca5a5}
+</style>
+<script id="monocity-p2-js">
+(function(){
+  'use strict';
+  /* =============================================================
+     MONOCITY Paket 2: tahtada çit/ev/otel, 3D Ceza Evi ve Banka,
+     Enerji Çöküşü + Göktaşı şans kartları, kompakt karar ekranları,
+     özel bölge adları, ses efektleri, herkese mini şans kartı.
+     ============================================================= */
+  var R2 = Math.SQRT1_2, COS = 0.5;
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function fm(n){ try{ return money(n); }catch(e){ return String(n); } }
+  function co(){ return window.MONOCITY_COOP || {}; }
+  function isGuest(){ var c = co(); return !!(c.code && c.role === 'guest'); }
+  function seatOf(i){ try{ return window.monocityRealSeat ? monocityRealSeat(i) : i; }catch(e){ return i; } }
+  function colOf(p){ var ps = window.players || [], i = ps.indexOf(p); if(i < 0) return '#888'; var rs = seatOf(i); return (window.playerColors && playerColors[rs]) || ['#ff3b30','#ffd60a','#34c759','#0a84ff'][rs] || '#888'; }
+  function ownerOf(t){ try{ return getOwner(t); }catch(e){ return null; } }
+  function lvl(o, t){ try{ return (o && o.properties && o.properties[t]) || 0; }catch(e){ return 0; } }
+  function DL(){ return (typeof DELAY === 'number') ? DELAY : 900; }
+  function ISO(){ return window.MONOCITY_ISO; }
+  function isoOn(){ var I = ISO(); return document.body.classList.contains('mcIso') && I && I.pos && I.pos.length && (window.players||[]).length > 0; }
+  function tname(t){ return window.monocityTileName ? monocityTileName(t) : t; }
+  function shade(h, a){ var n = parseInt(String(h).replace('#','').replace(/^(.)(.)(.)$/,'$1$1$2$2$3$3'),16), r = n>>16, g = n>>8&255, b = n&255;
+    function f(x){ return Math.max(0,Math.min(255,Math.round(a<0?x*(1+a):x+(255-x)*a))); } return 'rgb('+f(r)+','+f(g)+','+f(b)+')'; }
+
+  /* ===================== 1) TAHTADAKİ YAPILAR ===================== */
+  function Pp(a, b, z){ return [(a-b)*R2, (a+b)*R2*COS - (z||0)]; }
+  function pts(arr){ return arr.map(function(q){ return q[0].toFixed(1)+','+q[1].toFixed(1); }).join(' '); }
+  function poly(arr, fill, st, sw){ return '<polygon points="'+pts(arr)+'" fill="'+fill+'"'+(st ? ' stroke="'+st+'" stroke-width="'+(+sw||1).toFixed(2)+'" stroke-linejoin="round"' : '')+'/>'; }
+  function ln(p, q, c, w){ return '<line x1="'+p[0].toFixed(1)+'" y1="'+p[1].toFixed(1)+'" x2="'+q[0].toFixed(1)+'" y2="'+q[1].toFixed(1)+'" stroke="'+c+'" stroke-width="'+w.toFixed(2)+'" stroke-linecap="round"/>'; }
+  function fenceSvg(hw, hh, col, U, which){
+    var A = hw*0.86, B = hh*0.86, H = U*0.13, dark = shade(col,-0.38), out = '';
+    var edges = which === 'back' ? [[[-A,-B],[A,-B]],[[-A,-B],[-A,B]]] : [[[A,-B],[A,B]],[[-A,B],[A,B]]];
+    edges.forEach(function(e){
+      var len = Math.hypot(e[1][0]-e[0][0], e[1][1]-e[0][1]), n = Math.max(2, Math.round(len/(U*0.16)));
+      [0.42, 0.88].forEach(function(r){ out += ln(Pp(e[0][0],e[0][1],H*r), Pp(e[1][0],e[1][1],H*r), col, U*0.03); });
+      for(var k=0;k<=n;k++){ var a = e[0][0]+(e[1][0]-e[0][0])*k/n, b = e[0][1]+(e[1][1]-e[0][1])*k/n; out += ln(Pp(a,b,0), Pp(a,b,H), dark, U*0.042); }
+    });
+    return out;
+  }
+  function box(a0, b0, wa, wb, h){
+    return { A:Pp(a0+wa/2,b0-wb/2,0), B:Pp(a0+wa/2,b0+wb/2,0), C:Pp(a0-wa/2,b0+wb/2,0),
+      At:Pp(a0+wa/2,b0-wb/2,h), Bt:Pp(a0+wa/2,b0+wb/2,h), Ct:Pp(a0-wa/2,b0+wb/2,h), Dt:Pp(a0-wa/2,b0-wb/2,h) };
+  }
+  /* +b yüzündeki (sol ön) dikdörtgen: a1..a2, z1..z2 */
+  function faceB(b, a1, a2, z1, z2, fill){ return poly([Pp(a1,b,z1),Pp(a2,b,z1),Pp(a2,b,z2),Pp(a1,b,z2)], fill); }
+  /* +a yüzündeki (sağ ön) dikdörtgen: b1..b2 */
+  function faceA(a, b1, b2, z1, z2, fill){ return poly([Pp(a,b1,z1),Pp(a,b2,z1),Pp(a,b2,z2),Pp(a,b1,z2)], fill); }
+  function houseSvg(a0, b0, s, col, U, grey){
+    var wa = s, wb = s*0.92, h = s*0.6, f = box(a0,b0,wa,wb,h);
+    var wall = grey ? '#b7bbc2' : '#f4ecd8', wall2 = grey ? '#9ca1a9' : '#d9ccad', roof = grey ? '#80868f' : col, win = grey ? '#5b6472' : '#7dd3fc', st = grey ? '#555b64' : '#6b5a3e';
+    var ap = Pp(a0, b0, h + s*0.58), sw = U*0.012;
+    var o = poly([f.A,f.B,f.Bt,f.At], wall2, st, sw) + poly([f.B,f.C,f.Ct,f.Bt], wall, st, sw);
+    var bf = b0+wb/2, af = a0+wa/2;
+    o += faceB(bf, a0-wa*0.36, a0-wa*0.1, h*0.38, h*0.72, win) + faceB(bf, a0+wa*0.06, a0+wa*0.3, 0, h*0.62, grey ? '#6b6f76' : '#8b5a2b');
+    o += faceA(af, b0-wb*0.3, b0-wb*0.06, h*0.38, h*0.72, win) + faceA(af, b0+wb*0.08, b0+wb*0.32, h*0.38, h*0.72, win);
+    o += poly([f.Ct,f.Dt,ap], shade(roof,-0.45)) + poly([f.Dt,f.At,ap], shade(roof,-0.45));
+    o += poly([f.At,f.Bt,ap], shade(roof,-0.25), shade(roof,-0.5), sw) + poly([f.Bt,f.Ct,ap], roof, shade(roof,-0.5), sw);
+    return o;
+  }
+  function hotelSvg(a0, b0, s, col, U, grey){
+    var wa = s, wb = s, h = s*1.55, f = box(a0,b0,wa,wb,h), sw = U*0.012;
+    var wall = grey ? '#b7bbc2' : '#eef1f5', wall2 = grey ? '#9ca1a9' : '#cdd4de', win = grey ? '#5b6472' : '#60a5fa', st = grey ? '#555b64' : '#6b7280', roof = grey ? '#80868f' : col;
+    var o = poly([f.A,f.B,f.Bt,f.At], wall2, st, sw) + poly([f.B,f.C,f.Ct,f.Bt], wall, st, sw);
+    var bf = b0+wb/2, af = a0+wa/2;
+    for(var r=0;r<3;r++){ var z1 = h*(0.14+r*0.27), z2 = z1 + h*0.15;
+      o += faceB(bf, a0-wa*0.36, a0-wa*0.08, z1, z2, win) + faceB(bf, a0+wa*0.08, a0+wa*0.36, z1, z2, win);
+      o += faceA(af, b0-wb*0.36, b0-wb*0.08, z1, z2, win) + faceA(af, b0+wb*0.08, b0+wb*0.36, z1, z2, win); }
+    var e = s*0.08, t = s*0.13, g = box(a0,b0,wa+e*2,wb+e*2,h+t), gb = box(a0,b0,wa+e*2,wb+e*2,h);
+    o += poly([gb.At,gb.Bt,g.Bt,g.At], shade(roof,-0.3)) + poly([gb.Bt,gb.Ct,g.Ct,g.Bt], shade(roof,-0.12)) + poly([g.At,g.Bt,g.Ct,g.Dt], roof, shade(roof,-0.45), sw);
+    var sg = Pp(a0, b0, h+t+s*0.05);
+    o += '<rect x="'+(sg[0]-s*0.19).toFixed(1)+'" y="'+(sg[1]-s*0.36).toFixed(1)+'" width="'+(s*0.38).toFixed(1)+'" height="'+(s*0.34).toFixed(1)+'" rx="'+(s*0.07).toFixed(1)+'" fill="#fff" stroke="'+shade(roof,-0.4)+'" stroke-width="'+sw.toFixed(2)+'"/>' +
+      '<text x="'+sg[0].toFixed(1)+'" y="'+(sg[1]-s*0.1).toFixed(1)+'" font-size="'+(s*0.3).toFixed(1)+'" font-weight="900" text-anchor="middle" fill="'+(grey ? '#555' : shade(roof,-0.35))+'" font-family="Arial">H</text>';
+    return o;
+  }
+  /* Ceza Evi (3D kafes): arka ve ön parmaklıklar ayrı katman (piyon arada kalır) */
+  function cageSvg(s, U, part){
+    var H = U*0.64, n = 5, o = '';
+    if(part === 'back'){
+      o += poly([Pp(-s,-s),Pp(s,-s),Pp(s,s),Pp(-s,s)], 'rgba(40,48,64,.16)');
+      for(var i=0;i<=n;i++){ var t = -s + 2*s*i/n; o += ln(Pp(t,-s,0),Pp(t,-s,H),'#6b7483',U*0.026) + ln(Pp(-s,t,0),Pp(-s,t,H),'#6b7483',U*0.026); }
+      o += ln(Pp(-s,-s,H),Pp(s,-s,H),'#3a414c',U*0.05) + ln(Pp(-s,-s,H),Pp(-s,s,H),'#3a414c',U*0.05);
+      return o;
+    }
+    for(var j=0;j<=n;j++){ var u = -s + 2*s*j/n;
+      o += ln(Pp(s,u,0),Pp(s,u,H),'#343a44',U*0.026) + ln(Pp(u,s,0),Pp(u,s,H),'#343a44',U*0.026); }
+    o += ln(Pp(s,-s,H),Pp(s,s,H),'#2b313a',U*0.05) + ln(Pp(-s,s,H),Pp(s,s,H),'#2b313a',U*0.05);
+    o += ln(Pp(s,-s,0.02*U),Pp(s,s,0.02*U),'#2b313a',U*0.035) + ln(Pp(-s,s,0.02*U),Pp(s,s,0.02*U),'#2b313a',U*0.035);
+    o += label(Pp(0,0,H+U*0.16), '🔒 CEZA EVİ', '#ef4444', U);
+    return o;
+  }
+  function label(p, txt, bc, U){
+    var w = U*1.18, hgt = U*0.24;
+    return '<rect x="'+(p[0]-w/2).toFixed(1)+'" y="'+(p[1]-hgt).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+hgt.toFixed(1)+'" rx="'+(hgt*0.3).toFixed(1)+'" fill="#1b2440" stroke="'+bc+'" stroke-width="'+(U*0.025).toFixed(2)+'"/>' +
+      '<text x="'+p[0].toFixed(1)+'" y="'+(p[1]-hgt*0.27).toFixed(1)+'" font-size="'+(U*0.15).toFixed(1)+'" font-weight="900" fill="#fff" text-anchor="middle" font-family="Arial">'+txt+'</text>';
+  }
+  /* Müzayede (3D banka): gövde + çatı arkada, ön sütunlar piyonun önünde; frizde "MÜZAYEDE" */
+  function bankSvg(U, part){
+    var h = U*0.47, o = '', sw = U*0.012;
+    if(part === 'back'){
+      var e = U*0.44, st = box(0, 0, e*2, e*2, U*0.04);
+      o += poly([st.A,st.B,st.Bt,st.At], '#aeb4bf') + poly([st.B,st.C,st.Ct,st.Bt], '#c9ced8') + poly([st.At,st.Bt,st.Ct,st.Dt], '#dfe3ea', '#9aa1ad', sw);
+      var bd = box(0, -0.2*U, 0.76*U, 0.36*U, h), zb = U*0.04;
+      var b2 = { A:Pp(0.38*U,-0.38*U,zb), B:Pp(0.38*U,-0.02*U,zb), C:Pp(-0.38*U,-0.02*U,zb), At:bd.At, Bt:bd.Bt, Ct:bd.Ct };
+      o += poly([b2.A,b2.B,b2.Bt,b2.At], '#cfd4dc', '#7a818c', sw) + poly([b2.B,b2.C,b2.Ct,b2.Bt], '#eef1f5', '#7a818c', sw);
+      o += faceB(-0.02*U, -0.1*U, 0.1*U, zb, U*0.3, '#2b2f3a') + faceB(-0.02*U, -0.1*U, 0.1*U, U*0.3, U*0.34, '#b08d2c');
+      var t = U*0.13, L = -0.44*U, Rr = 0.44*U, F = 0.34*U, K = -0.42*U, top = h + U*0.2;
+      o += poly([Pp(L,F,h),Pp(Rr,F,h),Pp(Rr,K,h),Pp(L,K,h)], '#c9ced8');
+      o += poly([Pp(L,F,h),Pp(0,F,top),Pp(0,K,top),Pp(L,K,h)], '#a3aab6', '#7a818c', sw);
+      o += poly([Pp(0,F,top),Pp(Rr,F,h),Pp(Rr,K,h),Pp(0,K,top)], '#b8bec9', '#7a818c', sw);
+      o += poly([Pp(Rr,F,h-t),Pp(Rr,K,h-t),Pp(Rr,K,h),Pp(Rr,F,h)], '#c3c9d3', '#7a818c', sw);
+      o += poly([Pp(L,F,h-t),Pp(Rr,F,h-t),Pp(Rr,F,h),Pp(L,F,h)], '#1b2440', '#ffcc3d', U*0.018);
+      var fp = Pp(0, F, h - t*0.26);
+      o += '<text transform="matrix('+R2.toFixed(4)+','+(R2*COS).toFixed(4)+',0,1,'+fp[0].toFixed(1)+','+fp[1].toFixed(1)+')" font-size="'+(U*0.1).toFixed(1)+'" font-weight="900" fill="#ffe08a" text-anchor="middle" font-family="Arial">MÜZAYEDE</text>';
+      o += poly([Pp(L,F,h),Pp(Rr,F,h),Pp(0,F,top)], '#f4f6f9', '#7a818c', sw);
+      var c = Pp(0, F, h + U*0.065);
+      o += '<text x="'+c[0].toFixed(1)+'" y="'+(c[1]+U*0.04).toFixed(1)+'" font-size="'+(U*0.11).toFixed(1)+'" text-anchor="middle">🔨</text>';
+      return o;
+    }
+    [-0.37,-0.13,0.13,0.37].forEach(function(a){ var p = Pp(a*U, 0.3*U, U*0.04), q = Pp(a*U, 0.3*U, h - U*0.13);
+      o += ln(p, q, '#9aa1ad', U*0.075) + ln(p, q, '#f4f6f9', U*0.052) + ln([p[0]-U*0.01,p[1]],[q[0]-U*0.01,q[1]], '#ffffff', U*0.014); });
+    return o;
+  }
+
+  var OB = {}, firstPaint = true, holdTile = {}, fxList = [], lastU = 0;
+  function layerEl(){ return document.getElementById('mcPawnLayer'); }
+  function camera(){
+    var area = document.querySelector('#monocityGameUI .mgBoardArea'), z = 1, tx = 0, ty = 0;
+    if(area){ var m = getComputedStyle(area).transform, a = m && /matrix\(([^)]+)\)/.exec(m); if(a){ var v = a[1].split(',').map(Number); z = v[0]; tx = v[4]; ty = v[5]; } }
+    return {z:z, tx:tx, ty:ty};
+  }
+  function outOf(t){ var o = ownerOf(t); if(!o) return 0; var mo = o.chanceCards && o.chanceCards.mcOut; return (mo && +mo[t] > 0) ? +mo[t] : 0; }
+  window.monocityCityOut = outOf;
+  /* fn: yalnızca imza değişince çağrılır → {h: html, z: z-ofseti}; rk: yükselme animasyonu anahtarı (yapı değişince) */
+  function put(key, cls, sig, fn, rk){
+    var ob = OB[key], ly = layerEl(); if(!ly) return null;
+    if(!ob){ var el = document.createElement('div'); el.className = 'mcP2O '+cls; ly.appendChild(el); ob = OB[key] = {el:el, sig:null, rk:null}; }
+    else if(ob.el.parentNode !== ly) ly.appendChild(ob.el);
+    if(ob.sig !== sig){
+      var r = fn(); if(typeof r === 'string') r = {h:r};
+      ob.el.innerHTML = r.h; ob.sig = sig; ob.zo = r.z;
+      if(rk != null && rk !== ob.rk && !firstPaint){ ob.el.classList.remove('rise'); void ob.el.offsetWidth; ob.el.classList.add('rise'); }
+      ob.rk = rk;
+    }
+    ob.seen = true;
+    return ob;
+  }
+  function clearObjs(){ Object.keys(OB).forEach(function(k){ OB[k].el.remove(); }); OB = {}; firstPaint = true; fxList.forEach(function(f){ if(f.el) f.el.remove(); }); fxList = []; }
+  function frame(){
+    requestAnimationFrame(frame);
+    if(!isoOn()){ if(Object.keys(OB).length || fxList.length) clearObjs(); return; }
+    var G = ISO(), U = G.C, cam = camera(), now = performance.now();
+    if(!layerEl()) return;
+    /* ölçek düzeltmesi: 0. karenin gerçek yeri */
+    var corr = {x:0, y:0}, bd = document.getElementById('board');
+    try{ var c0 = bd && bd.children[0], p0 = G.pos[0]; if(c0 && p0){ var r = c0.getBoundingClientRect(); if(r.width > 0){ var s0 = G.project(p0.x+p0.w/2, p0.y+p0.h/2); corr.x = r.left + r.width/2 - (cam.tx + cam.z*s0.x); corr.y = r.top + r.height/2 - (cam.ty + cam.z*s0.y); } } }catch(e){}
+    function scr(i){ var p = G.pos[i], s = G.project(p.x+p.w/2, p.y+p.h/2); return {x: cam.tx + cam.z*s.x + corr.x, y: cam.ty + cam.z*s.y + corr.y}; }
+    function place(ob, i, zo, extra){ if(!ob) return; var s = scr(i); ob.el.style.transform = 'translate('+s.x.toFixed(1)+'px,'+s.y.toFixed(1)+'px) scale('+cam.z.toFixed(4)+')'; ob.el.style.zIndex = String(1000 + Math.round(s.y + zo*cam.z) + (extra||0)); }
+    Object.keys(OB).forEach(function(k){ OB[k].seen = false; });
+    var n = Math.min(board.length, G.pos.length), gap = 1.2;
+    for(var i=0;i<n;i++){
+      var t = board[i], p = G.pos[i]; if(!p) continue;
+      var hw = (p.w - 2*gap)/2, hh = (p.h - 2*gap)/2, key;
+      /* köşeler: Ceza Evi + Müzayede bankası */
+      if(p.side === 'c'){
+        if(t === 'HAPİSHANE'){
+          var cs = Math.min(hw, hh)*0.74, sg = 'cage|'+U.toFixed(1)+'|'+cs.toFixed(1);
+          place(put('cb'+i, 'cage', sg, function(){ return '<svg>'+cageSvg(cs, U, 'back')+'</svg>'; }), i, -cs*0.75);
+          place(put('cf'+i, 'cage', sg, function(){ return '<svg>'+cageSvg(cs, U, 'front')+'</svg>'; }), i, cs*0.8, 6);
+        }else if(t === 'MÜZAYEDE GENEL' || t === 'MÜZAYEDE' || t === 'MÜZAYEDE ÖZEL'){
+          var sb = 'bank|'+U.toFixed(1);
+          place(put('bb'+i, 'bank', sb, function(){ return '<svg>'+bankSvg(U, 'back')+'</svg>'; }), i, -U*0.05);
+          var fr = put('bf'+i, 'bank', sb, function(){ return '<svg>'+bankSvg(U, 'front')+'</svg>'; }); place(fr, i, U*0.36, 6);
+          var act = !!(window.secretAuction || window.openAuction) && (window.players||[]).some(function(q){ return q && !q.bankrupt && q.pos === i; });
+          [OB['bb'+i], fr].forEach(function(ob){ if(ob) ob.el.classList.toggle('act', act); });
+        }
+        continue;
+      }
+      var o = ownerOf(t); if(!o) continue;
+      var m = lvl(o, t), col = colOf(o), out = outOf(t), grey = out > 0, base = (grey ? '#8a8f98' : col);
+      var sigB = [m, base, U.toFixed(1), p.side, hw.toFixed(1), hh.toFixed(1)].join('|');
+      var isCity = !!(window.cities && cities[t]);
+      /* arka çit + binalar (yalnızca değişince çizilir) */
+      var mk = function(hw, hh, m, base, col, grey, isCity, side){ return function(){
+        var inner = fenceSvg(hw, hh, base, U, 'back'), zb = -(hw+hh)*0.86*R2*COS;
+        if(isCity && !(m & 8) && (m & 6)){
+          var s = Math.min(hw, hh)*0.7, long = (side === 'b' || side === 't'), list = [], both = (m & 2) && (m & 4);
+          if(long){ var bb0 = -hh*0.42; if(m & 2) list.push(['h', both ? -hw*0.4 : 0, bb0]); if(m & 4) list.push(['o', both ? hw*0.34 : 0, bb0]); }
+          else { var aa0 = -hw*0.42; if(m & 2) list.push(['h', aa0, both ? hh*0.36 : 0]); if(m & 4) list.push(['o', aa0, both ? -hh*0.4 : 0]); }
+          list.sort(function(x, y){ return (x[1]+x[2]) - (y[1]+y[2]); });
+          list.forEach(function(it){ inner += it[0] === 'h' ? houseSvg(it[1], it[2], s, col, U, grey) : hotelSvg(it[1], it[2], s*0.92, col, U, grey);
+            zb = Math.max(zb, (it[1]+it[2]+s)*R2*COS); });
+        }
+        return {h:'<svg>'+inner+'</svg>', z:zb};
+      }; };
+      var obB = put('p'+i, 'bld', 'b|'+sigB, mk(hw, hh, m, base, col, grey, isCity, p.side), m); place(obB, i, obB ? obB.zo : 0);
+      place(put('q'+i, 'bld fr', 'f|'+sigB, (function(hw, hh, base){ return function(){ return '<svg>'+fenceSvg(hw, hh, base, U, 'front')+'</svg>'; }; })(hw, hh, base), m), i, (hw+hh)*0.86*R2*COS, 2);
+      if(grey){
+        var ob = put('x'+i, 'out', 'x|'+out+'|'+U.toFixed(1), (function(out){ return function(){ return '<div class="sm s1"></div><div class="sm s2"></div><div class="sm s3"></div><div class="x">✕</div><div class="n">⚡'+out+'</div>'; }; })(out));
+        if(ob) ob.el.style.setProperty('--u', U+'px');
+        place(ob, i, U*0.9, 60);
+      }
+    }
+    /* karartma */
+    if(bd) for(var ci=0; ci<bd.children.length && ci<n; ci++){ var dk = outOf(board[ci]) > 0; if(bd.children[ci].classList.contains('mcP2Dark') !== dk) bd.children[ci].classList.toggle('mcP2Dark', dk); }
+    /* efektler (göktaşı, şimşek, kalkan) */
+    fxList = fxList.filter(function(f){ return stepFx(f, now, scr, cam, U); });
+    Object.keys(OB).forEach(function(k){
+      if(OB[k].seen) return;
+      var ti = +k.slice(1); if(holdTile[ti] && holdTile[ti] > now){ var s2 = scr(ti); OB[k].el.style.transform = 'translate('+s2.x.toFixed(1)+'px,'+s2.y.toFixed(1)+'px) scale('+cam.z.toFixed(4)+')'; return; }
+      OB[k].el.remove(); delete OB[k];
+    });
+    firstPaint = false;
+  }
+  requestAnimationFrame(frame);
+
+  function fxEl(cls, html, U){ var ly = layerEl(); if(!ly) return null; var el = document.createElement('div'); el.className = 'mcP2O '+cls; el.innerHTML = html; el.style.setProperty('--u', U+'px'); ly.appendChild(el); return el; }
+  function tileIdx(name){ var b = window.board || []; for(var i=0;i<b.length;i++) if(b[i] === name) return i; return -1; }
+  function addFx(kind, city, extra){
+    var i = tileIdx(city); if(i < 0 || !isoOn()) return;
+    if(kind === 'meteor') holdTile[i] = performance.now() + 760;
+    fxList.push({kind:kind, i:i, t0:performance.now(), extra:extra||null});
+  }
+  window.monocityP2Fx = addFx;
+  function stepFx(f, now, scr, cam, U){
+    var dt = now - f.t0, s = scr(f.i), z = cam.z;
+    function pos(el, dx, dy, zi){ el.style.transform = 'translate('+(s.x+dx*z).toFixed(1)+'px,'+(s.y+dy*z).toFixed(1)+'px) scale('+z.toFixed(4)+')'; el.style.zIndex = String(zi); }
+    if(f.kind === 'meteor'){
+      var T = 720;
+      if(!f.el){ f.el = fxEl('met', '<div class="tr"></div><div class="rock"></div>', U); if(!f.el) return false; var ang = Math.atan2(-3.4, 2.1)*180/Math.PI; f.el.querySelector('.tr').style.transform = 'rotate('+(ang)+'deg)'; }
+      if(dt < T){ var e = dt/T, k = e*e; pos(f.el, U*2.1*(1-k), -U*0.25 - U*3.4*(1-k), 9000); return true; }
+      if(!f.hit){
+        f.hit = true; f.el.remove(); f.el = null;
+        try{ if(window.monocityFxBurst){ monocityFxBurst(s.x, s.y, '#f97316', 22, U*z*0.9); monocityFxBurst(s.x, s.y - U*z*0.1, '#6b7280', 12, U*z*0.6); } }catch(e){}
+        if(f.extra === 'shield'){ f.pop = fxEl('pop', '<div class="e" style="--g:#60a5fa">🛡️</div>', U); }
+        else { f.crt = fxEl('crt', '<svg><ellipse cx="0" cy="0" rx="'+(U*0.34).toFixed(1)+'" ry="'+(U*0.17).toFixed(1)+'" fill="#5b4632"/><ellipse cx="0" cy="'+(U*0.02).toFixed(1)+'" rx="'+(U*0.24).toFixed(1)+'" ry="'+(U*0.11).toFixed(1)+'" fill="#2d2118"/><circle cx="0" cy="'+(-U*0.06).toFixed(1)+'" r="'+(U*0.1).toFixed(1)+'" fill="#fbbf24" opacity=".55"/></svg>', U); }
+        try{ var area = document.querySelector('#monocityGameUI .mgBoardArea'); if(area){ area.classList.remove('mcP2Shake'); void area.offsetWidth; area.classList.add('mcP2Shake'); setTimeout(function(){ area.classList.remove('mcP2Shake'); }, 450); } }catch(e){}
+      }
+      if(f.pop) pos(f.pop, 0, -U*0.1, 9001);
+      if(f.crt) pos(f.crt, 0, 0, 1000 + Math.round(s.y - U*z*0.3));
+      if(dt > T + 3800){ if(f.pop) f.pop.remove(); if(f.crt) f.crt.remove(); return false; }
+      return true;
+    }
+    if(f.kind === 'bolt' || f.kind === 'shield'){
+      if(!f.el){ f.el = fxEl('pop', '<div class="e" style="--g:'+(f.kind === 'bolt' ? '#facc15' : '#60a5fa')+'">'+(f.kind === 'bolt' ? '⚡' : '🛡️')+'</div>', U); if(!f.el) return false;
+        if(f.kind === 'bolt'){ try{ if(window.monocityFxBurst) monocityFxBurst(s.x, s.y, '#facc15', 16, U*z*0.7); }catch(e){} } }
+      pos(f.el, 0, -U*0.1, 9001);
+      if(dt > 950){ f.el.remove(); return false; }
+      return true;
+    }
+    return false;
+  }
+
+  /* ===================== 2) ŞANS: ENERJİ ÇÖKÜŞÜ + GÖKTAŞI ===================== */
+  var CARD_E = {id:'energy', title:'⚡ ENERJİ ÇÖKÜŞÜ', desc:'Rakibinin tapusuz bir şehrini seç: 2 tur elektriksiz kalır, kira toplayamaz.'};
+  var CARD_M = {id:'meteor', title:'☄️ GÖKTAŞI', desc:'Rakibinin tapusuz bir şehrini seç: göktaşı düşer, şehir yıkılır ve bankaya döner. Mülk Koruma kartı korur.'};
+  try{ if(Array.isArray(window.CHANCE_CARDS) && !CHANCE_CARDS.some(function(c){ return c.id === 'energy'; })) CHANCE_CARDS.push(CARD_E, CARD_M); }catch(e){}
+  function match(){ try{ return window.MONOCITY_MATCH && MONOCITY_MATCH(); }catch(e){ return null; } }
+  function rival(p, o){
+    if(!p || !o || o === p || o.bankrupt) return false;
+    var M = match(); if(M && M.cfg && M.cfg.tur === '2v2'){ var ps = window.players || []; return seatOf(ps.indexOf(p)) % 2 !== seatOf(ps.indexOf(o)) % 2; }
+    return true;
+  }
+  function targetsFor(p, kind){
+    var out = [], b = window.board || [];
+    for(var i=0;i<b.length;i++){ var t = b[i]; if(!(window.cities && cities[t])) continue; var o = ownerOf(t); if(!rival(p, o)) continue; if(lvl(o, t) & 8) continue; out.push(i); }
+    if(kind === 'energy'){ var fresh = out.filter(function(i){ return !outOf(b[i]); }); if(fresh.length) out = fresh; }
+    return out;
+  }
+  function worth(i, kind){ var t = board[i], o = ownerOf(t), m = lvl(o, t); try{ return kind === 'energy' ? calculateRentRaw(t, m, o) : (propertySaleValue(t, m) + cities[t].price*0.1); }catch(e){ return 0; } }
+  function best(list, kind){ var bi = list[0], bv = -1; list.forEach(function(i){ var v = worth(i, kind); if(v > bv){ bv = v; bi = i; } }); return bi; }
+  function finish(){ window.waiting = false; window.waitDecisionTile = null; try{ renderBoard(); }catch(e){} setTimeout(nextTurn, DL()); }
+  function hideInfo(){ var m = document.getElementById('infoModal'); if(m) m.style.display = 'none'; try{ setInfoNavigationVisible(true); }catch(e){} }
+
+  var pick = null, prot = null, seq = 0;
+  function startPick(p, card, list){
+    pick = {p:p, card:card, list:list, id:++seq};
+    window.waiting = true; window.waitDecisionTile = 'MC_PICK';
+    var html = '<i class="mcP2Pk" data-k="'+card.id+'" style="display:none"></i><div class="mcP2D">'+(card.id === 'meteor' ? '☄️ Göktaşının düşeceği rakip şehri seç' : '⚡ Elektriği kesilecek rakip şehri seç')+'</div>' +
+      list.map(function(i){ var o = ownerOf(board[i]); return '<button onclick="chooseChanceTile('+i+')">'+esc(board[i])+' · '+esc(o ? o.name : '')+'</button>'; }).join('');
+    showInfo('❓ ŞANS KARTI', html);
+    try{ setInfoNavigationVisible(false); }catch(e){}
+    startTimer(30, 'action');
+  }
+  function resolvePick(i){
+    var pk = pick; if(!pk) return; pick = null;
+    try{ stopTimer(); }catch(e){} hideInfo(); window.waitDecisionTile = null;
+    if(pk.card.id === 'energy') return doEnergy(pk.p, i);
+    return doMeteor(pk.p, i);
+  }
+  function doEnergy(p, i){
+    var t = board[i], o = ownerOf(t); if(!o) return finish();
+    try{ ensureChanceState(o); }catch(e){}
+    var mo = (o.chanceCards.mcOut && typeof o.chanceCards.mcOut === 'object') ? o.chanceCards.mcOut : {};
+    mo[t] = 2; o.chanceCards.mcOut = mo;
+    log('⚡ '+p.name+' ENERJİ ÇÖKÜŞÜ: '+t+' ('+o.name+') 2 tur elektriksiz — kira yok');
+    finish();
+  }
+  function destroy(p, o, t){
+    try{ delete o.properties[t]; if(o.chanceCards && o.chanceCards.mcOut) delete o.chanceCards.mcOut[t]; }catch(e){}
+    try{ checkRegionCompletion(o); }catch(e){}
+    log('☄️ '+p.name+' GÖKTAŞI: '+t+' yıkıldı → BANKAYA döndü ('+o.name+')');
+  }
+  function doMeteor(p, i){
+    var t = board[i], o = ownerOf(t); if(!o) return finish();
+    if(getPropertyProtectionCards(o) > 0){
+      if(isInteractiveSeat(o)) return askProtect(p, o, t);
+      if(Math.random() < 0.75){ usePropertyProtectionCard(o); log('🛡️ '+o.name+' Mülk Koruma kartıyla '+t+' şehrini göktaşından korudu!'); return finish(); }
+    }
+    destroy(p, o, t); finish();
+  }
+  function askProtect(p, o, t){
+    var id = ++seq; prot = {p:p, o:o, t:t, id:id};
+    window.propertyProtectionDecision = {owner:o, buyer:p, city:t, level:lvl(o, t), buyPrice:0, __mc:id};
+    window.waiting = true; window.waitDecisionTile = 'MC_PROTECT';
+    var html = '<div class="mcCp"><p>☄️ <b>'+esc(p.name)+'</b> senin <b class="y">'+esc(t)+'</b> şehrine <b>GÖKTAŞI</b> düşürüyor!</p>' +
+      '<div class="bal">🛡️ Mülk Koruma kartın: <b>'+getPropertyProtectionCards(o)+'</b></div>' +
+      '<div class="two"><button class="b" onclick=\'continueProtectedPurchase("use")\'>🛡️ KARTI KULLAN — KORU</button><button class="gr" onclick=\'continueProtectedPurchase("decline")\'>KULLANMA</button></div>' +
+      '<div class="nt">⏱ Karar vermezsen kart otomatik kullanılır</div></div>';
+    showInfo('🛡️ MÜLK KORUMA', html);
+    try{ setInfoNavigationVisible(false); }catch(e){}
+    try{ startTimer(15, 'action'); }catch(e){}
+    prot.tm = setTimeout(function(){ if(prot && prot.id === id) resolveProtect(true); }, 16500);
+  }
+  function resolveProtect(use){
+    var pr = prot; if(!pr) return; prot = null; clearTimeout(pr.tm);
+    window.propertyProtectionDecision = null;
+    try{ stopTimer(); }catch(e){} hideInfo(); window.waitDecisionTile = null;
+    if(use && usePropertyProtectionCard(pr.o)) log('🛡️ '+pr.o.name+' Mülk Koruma kartıyla '+pr.t+' şehrini göktaşından korudu!');
+    else destroy(pr.p, pr.o, pr.t);
+    finish();
+  }
+  var _cpp = window.continueProtectedPurchase;
+  window.continueProtectedPurchase = function(dec){
+    var pd = window.propertyProtectionDecision;
+    if(pd && pd.__mc){ if(prot && prot.id === pd.__mc) resolveProtect(dec === 'use'); return; }
+    return _cpp.apply(this, arguments);
+  };
+  var _cct = window.chooseChanceTile;
+  window.chooseChanceTile = function(i){
+    if(pick && window.waitDecisionTile === 'MC_PICK'){ i = +i; if(pick.list.indexOf(i) >= 0) resolvePick(i); return; }
+    return _cct.apply(this, arguments);
+  };
+  var _hwt = window.handleWaitDecisionTimeout;
+  window.handleWaitDecisionTimeout = function(){
+    if(window.waitDecisionTile === 'MC_PICK' && pick){ log('⏱️ '+pick.p.name+' süre içinde hedef seçmedi; en değerli şehir otomatik seçildi.'); return resolvePick(best(pick.list, pick.card.id)); }
+    if(window.waitDecisionTile === 'MC_PROTECT' && prot) return resolveProtect(true);
+    return _hwt.apply(this, arguments);
+  };
+  var _acc = window.applyChanceCard;
+  window.applyChanceCard = function(p, card){
+    if(!card || (card.id !== 'energy' && card.id !== 'meteor')) return _acc.apply(this, arguments);
+    try{ ensureChanceState(p); }catch(e){}
+    var list = targetsFor(p, card.id);
+    if(!list.length){
+      log((card.id === 'meteor' ? '☄️ ' : '⚡ ')+p.name+' '+(card.id === 'meteor' ? 'GÖKTAŞI' : 'ENERJİ ÇÖKÜŞÜ')+': hedef yok — kart etkisiz.');
+      try{ renderBoard(); }catch(e){}
+      return showChanceResult(p, card, 'Rakiplerinin tapusuz şehri yok — kart etkisiz kaldı.');
+    }
+    if(isInteractiveSeat(p)) return startPick(p, card, list);
+    var i = best(list, card.id);
+    return card.id === 'energy' ? doEnergy(p, i) : doMeteor(p, i);
+  };
+  var _dcc = window.drawChanceCard;
+  window.drawChanceCard = function(p){
+    var f = window.__MC_FORCE_CARD;
+    if(f){ window.__MC_FORCE_CARD = null; var card = (window.CHANCE_CARDS || []).filter(function(c){ return c.id === f; })[0];
+      if(card){ try{ ensureChanceState(p); }catch(e){} log('❓ '+p.name+' ŞANS kartı çekti: '+card.title); return applyChanceCard(p, card); } }
+    return _dcc.apply(this, arguments);
+  };
+  /* elektrik kesikken kira yok */
+  var _cr = window.calculateRent;
+  function calculateRentRaw(t, m, o){ return _cr(t, m, o); }
+  window.calculateRent = function(cityName, mask, owner){ if(owner && outOf(cityName) && ownerOf(cityName) === owner) return 0; return _cr.apply(this, arguments); };
+  var _hc = window.handleCity;
+  window.handleCity = function(p, cityName){
+    try{ var o = ownerOf(cityName); if(o && o !== p && outOf(cityName)) log('⚡ '+cityName+' elektriksiz — '+p.name+' kira ödemedi.'); }catch(e){}
+    return _hc.apply(this, arguments);
+  };
+  /* sayaç: şehir sahibinin her turunda 1 azalır */
+  var turnNo = 0;
+  var _nt = window.nextTurn;
+  window.nextTurn = function(){ turnNo++; return _nt.apply(this, arguments); };
+  var _pt = window.playTurn;
+  window.playTurn = function(p){
+    try{
+      if(p && p.chanceCards && p.chanceCards.mcOut && p.__mcOutTick !== turnNo && !window.gameOver){
+        p.__mcOutTick = turnNo;
+        var mo = p.chanceCards.mcOut;
+        Object.keys(mo).forEach(function(c){
+          if(!p.properties || p.properties[c] === undefined){ delete mo[c]; return; }
+          mo[c] = (+mo[c] || 0) - 1;
+          if(mo[c] <= 0){ delete mo[c]; log('💡 '+c+' şehrinin elektriği geri geldi ('+p.name+').'); }
+        });
+      }
+    }catch(e){}
+    return _pt.apply(this, arguments);
+  };
+  /* tahta üzerinde hedef seçme yazıları */
+  document.addEventListener('click', function(){
+    var it = document.querySelector('#infoText .mcP2Pk'); if(!it) return;
+    var k = it.getAttribute('data-k'), ask = document.getElementById('mcWtAsk');
+    if(ask && ask.classList.contains('show')){
+      var b = ask.querySelector('.bx b'); if(b && b.textContent.indexOf('🌍') === 0){
+        var nm = b.textContent.replace(/^🌍\s*/, '').replace(/ karesine gidilsin mi\?$/, ''), o = ownerOf(nm);
+        b.textContent = k === 'meteor' ? '☄️ '+nm+(o ? ' ('+o.name+')' : '')+' şehrine göktaşı düşsün mü?' : '⚡ '+nm+(o ? ' ('+o.name+')' : '')+' şehrinin elektriği kesilsin mi?';
+        var y = ask.querySelector('.yes'); if(y) y.textContent = k === 'meteor' ? '☄️ EVET, DÜŞSÜN' : '⚡ EVET, KES';
+      }
+    }
+  }, true);
+  setInterval(function(){
+    var it = document.querySelector('#infoText .mcP2Pk'), bar = document.getElementById('mcWtBar');
+    if(it && bar && bar.classList.contains('show')){ var sp = bar.querySelector('span'), k = it.getAttribute('data-k'), want = k === 'meteor' ? '☄️ Göktaşı düşecek rakip şehre dokun' : '⚡ Elektriği kesilecek rakip şehre dokun'; if(sp && sp.textContent !== want) sp.textContent = want; }
+  }, 120);
+
+  /* ===================== 3) KOMPAKT EKRANLAR + ADLAR ===================== */
+  var HIDE = function(w){ return '<span style="display:none">'+w+'</span>'; };
+  var SPI2 = {"OTOGAR":"🚌","YHT":"🚄","FERİBOT":"⛴️","HAVALİMANI":"✈️"};
+  function btns(d){ return [].slice.call(d.querySelectorAll('button')).map(function(b){ return {on:b.getAttribute('onclick') || '', tx:(b.textContent||'').trim(), dis:b.disabled || b.hasAttribute('disabled')}; }); }
+  function fn(list, re){ for(var i=0;i<list.length;i++) if(re.test(list[i].on)) return list[i]; return null; }
+  function q(s){ return String(s).replace(/'/g, '&#39;'); }
+  function compact(title, html){
+    if(html.indexOf('class="mcCp') >= 0 || html.indexOf("class='mcCp") >= 0) return {title:title, html:html};
+    if(html.indexOf('chooseChanceTile(') >= 0 || html.indexOf('chooseWorldTourIndex(') >= 0) return null;
+    var d = document.createElement('div'); d.innerHTML = html; var B = btns(d), T = title.toLocaleUpperCase('tr-TR'), txt = d.textContent || '';
+    var balM = /BAKİYEN:\s*([\d.]+)/.exec(txt), bal = balM ? balM[1] : null;
+    /* PARK */
+    var pw = fn(B, /^pay(Chance)?ParkWait\(\)$/), pn = fn(B, /^pay(Chance)?ParkNow\(\)$/);
+    if(/PARK/.test(T) && pw && pn){
+      var low = /yetmezse/.test(txt);
+      return {title:'🚗 PARK CEZASI', html:'<div class="mcCp"><p>'+(/ŞANS/.test(txt) ? 'Şans kartından park cezası! ' : '')+'Beklemek istemiyorsan öde.</p>'+(bal ? '<div class="bal">Bakiyen <b>'+bal+'</b></div>' : '')+(low ? '<div class="warn">⚠️ Bakiyen yetmezse mülklerin satılarak ödenir</div>' : '')+
+        '<button class="op" onclick="'+q(pw.on)+'"><span>⏳ <b>1 tur bekle</b></span><em>'+fm(PARK_WAIT_COST)+'</em></button>'+
+        '<button class="op" onclick="'+q(pn.on)+'"><span>⚡ <b>Hemen devam et</b></span><em>'+fm(PARK_NOW_COST)+'</em></button>'+
+        '<div class="nt">⏱ Süre dolarsa '+fm(PARK_WAIT_COST)+' ödenir, 1 tur beklersin</div></div>'};
+    }
+    /* CEZA EVİ */
+    var jp = fn(B, /^payJailFine\(\)$/), jw = fn(B, /^takeWaitTurn\(\)$/), jf = fn(B, /^useJailFreeCard\(\)$/);
+    if(/HAPİSHANE/.test(T) && jf && jw){
+      var cnt = (/Elinde\s*(\d+)/.exec(txt) || [0,1])[1];
+      return {title:'🗝️ ÇIKIŞ KARTI'+HIDE('HAPİSHANE'), html:'<div class="mcCp"><p>Ceza Evi\'ne düştün. Elinde <b class="y">'+cnt+'</b> Çıkış Kartı var.</p>'+
+        '<button class="op" onclick="useJailFreeCard()"><span>🗝️ <b>Kartı kullan, hemen çık</b></span><em class="f">ücretsiz</em></button>'+
+        '<button class="op" onclick="takeWaitTurn()"><span>⏳ <b>Kartı sakla, 2 tur bekle</b></span><em class="f">ücretsiz</em></button></div>'};
+    }
+    if(/HAPİSHANE/.test(T) && jp && jw){
+      var fine = (/([\d.]+)\s*Coin\s*\(%10\)/.exec(txt) || [0,''])[1];
+      return {title:'🔒 CEZA EVİ'+HIDE('HAPİSHANE'), html:'<div class="mcCp"><p>Ceza Evi\'ne düştün!</p>'+(bal ? '<div class="bal">Bakiyen <b>'+bal+'</b></div>' : '')+
+        '<button class="op" onclick="payJailFine()"><span>💰 <b>%10 öde, hemen çık</b></span><em>'+fine+'</em></button>'+
+        '<button class="op" onclick="takeWaitTurn()"><span>⏳ <b>Ödeme, 2 tur bekle</b></span><em class="f">ücretsiz</em></button>'+
+        '<div class="nt">⏱ Süre dolarsa 2 tur beklersin</div></div>'};
+    }
+    /* ŞANS KARTI SONUCU */
+    var cc = fn(B, /^closeChanceAndContinue\(\)$/);
+    if(/ŞANS KARTI/.test(T) && cc && B.length === 1){
+      var divs = [].slice.call(d.children).filter(function(e){ return e.tagName === 'DIV'; });
+      if(divs.length >= 2){
+        var ct = divs[0].innerHTML, cd = divs[1].innerHTML, x = d.cloneNode(true);
+        [].slice.call(x.children).filter(function(e){ return e.tagName === 'DIV'; }).slice(0,2).forEach(function(e){ e.remove(); });
+        [].slice.call(x.querySelectorAll('br,button')).forEach(function(e){ e.remove(); });
+        var ex = x.innerHTML.trim();
+        return {title:'❓ ŞANS KARTI', html:'<div class="mcCp"><div class="ccd"><div class="q">?</div><div><b>'+ct+'</b><small>'+cd+'</small></div></div>'+(ex ? '<div class="ex">'+ex+'</div>' : '')+
+          '<button class="go g" onclick="closeChanceAndContinue()">'+(/DEVAM/.test(cc.tx) ? '➡️ DEVAM ET' : '✓ TAMAM')+'</button></div>'};
+      }
+    }
+    /* ÖZEL BÖLGE */
+    var sb = fn(B, /^buySpecialRegion\(\)$/), sk = fn(B, /^skipSpecialRegion\(\)$/);
+    if(sb && sk){
+      var key = null; Object.keys(SPI2).forEach(function(k){ if(T.indexOf(k) >= 0) key = k; });
+      if(key){
+        var price = window.MONOCITY_SPECIAL_PRICE || 250000, rent = window.MONOCITY_SPECIAL_RENT || 50000, me = (window.players||[])[window.currentPlayer], can = !me || me.money >= price;
+        return {title:SPI2[key]+' '+tname(key)+HIDE(key), html:'<div class="mcCp"><p>Fiyat <b class="y">'+fm(price)+'</b> · Kira <b class="y">'+fm(rent)+'</b></p>'+
+          '<p style="color:#ffe08a;font-size:.9em">4\'ü (🚌 🚄 ⛴️ ✈️) tamamlanırsa kiralar 2× · başlangıç ödülü 2×</p><div class="nt" style="margin-top:0">Direkt tapulu · ev/otel yok · satılamaz</div>'+
+          '<div class="two"><button class="g" onclick="buySpecialRegion()"'+(can ? '' : ' disabled')+'>'+(can ? '✅ SATIN AL' : '🚫 YETERSİZ')+'</button><button class="gr" onclick="skipSpecialRegion()">PAS</button></div></div>'};
+      }
+    }
+    /* MÜLK KORUMA (1,5× alım) */
+    var pu = fn(B, /^continueProtectedPurchase\(["']use["']\)$/), pd = fn(B, /^continueProtectedPurchase\(["']decline["']\)$/);
+    if(pu && pd){
+      var mm = /<b>([^<]+)<\/b>,\s*<b>([^<]+?) MÜLKÜNÜ<\/b>/.exec(html), kc = (/Kalan Mülk Koruma Kartı:\s*(\d+)/.exec(txt) || [0,'?'])[1];
+      if(mm) return {title:'🛡️ MÜLK KORUMA', html:'<div class="mcCp"><p><b>'+mm[1]+'</b>, <b class="y">'+mm[2]+'</b> şehrini 1,5× fiyatla almak istiyor.</p><div class="bal">🛡️ Mülk Koruma kartın: <b>'+kc+'</b></div>'+
+        '<div class="two"><button class="b" onclick=\'continueProtectedPurchase("use")\'>🛡️ KARTI KULLAN</button><button class="gr" onclick=\'continueProtectedPurchase("decline")\'>KULLANMA</button></div></div>'};
+    }
+    /* ŞEHİR TEKLİFİ (başkasının şehri) */
+    var bf = fn(B, /^buyFromPlayer\(\)$/), ca = fn(B, /^continueAfterRent\(\)$/);
+    if(/ŞEHİR TEKLİFİ/.test(T) && ca){
+      var r = /<b>([^<]+)<\/b> — (.+?) oyuncusuna ait\.<br>Kira: <b>([^<]+)<\/b> • Ödenen: <b>([^<]+)<\/b>([\s\S]*?)<br><br>[\s\S]*?BAKİYEN: ([\d.]+) Coin<\/b><br>[\s\S]*?satın alabilirsin: <b>([\d.]+) Coin<\/b><br>[\s\S]*?kalan bakiye: <b>([^<]+)<\/b>/.exec(html);
+      if(r){
+        var outNow = outOf(r[1]) > 0, bonus = /BÖLGE BONUSU/.test(r[5]);
+        return {title:'🏙️ Şehir Teklifi', html:'<div class="mcCp"><p><b class="y">'+r[1]+'</b> · '+r[2]+' oyuncusunun şehri</p>'+
+          '<div class="r2"><div>'+(outNow ? '⚡ Elektrik yok' : 'Ödenen kira'+(bonus ? ' (🌍 2×)' : ''))+'<b>'+r[4]+'</b></div><div>Bakiyen<b>'+r[6]+'</b></div></div>'+
+          '<p>1,5× fiyatla satın al: <b class="y">'+r[7]+'</b>'+(bf ? ' · kalan '+r[8].replace(/ Coin$/,'') : '')+'</p>'+
+          '<div class="two">'+(bf && !bf.dis ? '<button class="g" onclick="buyFromPlayer()">🏙️ 1,5× SATIN AL</button>' : '<button class="g" disabled>🚫 YETERSİZ BAKİYE</button>')+'<button class="gr" onclick="continueAfterRent()">➡️ DEVAM ET</button></div></div>'};
+      }
+    }
+    return null;
+  }
+  window.monocityP2Compact = compact;
+  var _si = window.showInfo;
+  window.showInfo = function(title, html){
+    var c = null; try{ c = compact(String(title == null ? '' : title), String(html == null ? '' : html)); }catch(e){ console.warn('mc p2 compact', e); c = null; }
+    var r = _si.call(this, c ? c.title : title, c ? c.html : html);
+    var m = document.getElementById('infoModal'); if(m) m.classList.toggle('mcCpt', !!c);
+    return r;
+  };
+  /* log: özel bölge / köşe adları + bildirim + ses + mini kart */
+  var SPN2 = {"OTOGAR":"OTOBÜS","YHT":"TREN","FERİBOT":"GEMİ","HAVALİMANI":"UÇAK"};
+  var SPRE = /(^|[^A-Za-zÇĞİÖŞÜçğıöşü])(OTOGAR|YHT|FERİBOT|HAVALİMANI)(?![A-Za-zÇĞİÖŞÜçğıöşü])/g;
+  var PIN = {"📍 HAPİSHANE":"📍 CEZA EVİ","📍 BAŞLANGIÇ":"📍 YOLA ÇIK","📍 DÜNYA TURU":"📍 SEYAHAT","📍 ŞEHİR TURU":"📍 SEYAHAT","📍 MÜZAYEDE GENEL":"📍 MÜZAYEDE","📍 MÜZAYEDE ÖZEL":"📍 MÜZAYEDE"};
+  function rename(s){ if(PIN[s]) return PIN[s]; return s.replace(SPRE, function(_, a, k){ return a + SPN2[k]; }); }
+  var burst = {t:0, n:0};
+  var _lg = window.log;
+  window.log = function(t){
+    var s = t;
+    try{ if(typeof t === 'string') s = rename(t); }catch(e){}
+    var r = _lg.call(this, s);
+    try{
+      var now = Date.now(); if(now - burst.t > 80){ burst.t = now; burst.n = 0; } burst.n++;
+      onLine(String(s), burst.n > 4);
+    }catch(e){ console.warn('mc p2 log', e); }
+    return r;
+  };
+  function note(e, name, text){ try{ if(window.monocityBoardNote) monocityBoardNote(e, name, text); }catch(x){} }
+  function myName(){ var p = (window.players||[])[0]; return p ? p.name : null; }
+  function onLine(s, bulk){
+    var m;
+    if((m = /^⚡ (.+?) ENERJİ ÇÖKÜŞÜ: (\S+) \((.+?)\) 2 tur/.exec(s))){ if(!bulk){ addFx('bolt', m[2]); note('⚡', m[1], m[2]+' şehrinin elektriğini kesti!'); sfx('energy'); } miniUpd(m[1], '⚡ ENERJİ ÇÖKÜŞÜ → '+m[2]); return; }
+    if((m = /^☄️ (.+?) GÖKTAŞI: (\S+) yıkıldı/.exec(s))){ if(!bulk){ addFx('meteor', m[2]); setTimeout(function(){ note('☄️', m[1], m[2]+' yıkıldı, bankaya döndü!'); }, 700); sfx('meteor'); } miniUpd(m[1], '☄️ GÖKTAŞI → '+m[2]); return; }
+    if((m = /^🛡️ (.+?) Mülk Koruma kartıyla (\S+) şehrini göktaşından korudu/.exec(s))){ if(!bulk){ addFx('meteor', m[2], 'shield'); setTimeout(function(){ note('🛡️', m[1], m[2]+' şehrini korudu!'); }, 700); sfx('meteor'); } return; }
+    if((m = /^💡 (\S+) şehrinin elektriği geri geldi \((.+?)\)/.exec(s))){ if(!bulk) note('💡', m[2], m[1]+' şehrinde elektrik geri geldi'); return; }
+    if((m = /^⚡ (\S+) elektriksiz — (.+?) kira ödemedi/.exec(s))){ if(!bulk) note('⚡', m[2], m[1]+' elektriksiz · kira yok'); return; }
+    if((m = /^❓ (.+?) ŞANS kartı çekti: (.+)$/.exec(s))){ mini(m[1], m[2], bulk); if(!bulk){ sfx('card'); if(/HAPİSHANE/.test(m[2])) setTimeout(function(){ sfx('jail'); }, 500); } return; }
+    if(bulk) return;
+    if(/^🛒 /.test(s) || /^🏙️ .+ 1,5× fiyatına aldı/.test(s)) return sfx('buy');
+    if(/^💸 .+ kira ödedi/.test(s) || /^🚉 /.test(s)) return sfx('rent');
+    if(/^🏁 .+ başlangıçtan geçti/.test(s) || /^🌍 .+ başlangıçtan geçti/.test(s)) return sfx('salary');
+    if(/^🔨 (AÇIK ARTIRMA|GİZLİ MÜZAYEDE) KAZANANI/.test(s) || /^🔨 Özel müzayede sonucu/.test(s)) return sfx('gavel');
+    if(/^📍 CEZA EVİ$/.test(s) || /^🚔 .+ hapishanede 2 tur/.test(s)) return sfx('jail');
+    if(/^💥 /.test(s)) return sfx('bankrupt');
+    if((m = /^🏆 OYUN BİTTİ! (.+?) oyunu kazandı/.exec(s))) return sfx(m[1] === myName() ? 'win' : 'end');
+  }
+
+  /* ===================== 5) MİNİ ŞANS KARTI ===================== */
+  var mcEl = null, mcCur = null;
+  function colByName(n){ var ps = window.players || []; for(var i=0;i<ps.length;i++) if(ps[i] && ps[i].name === n) return colOf(ps[i]); return '#a78bfa'; }
+  function mini(name, title, bulk){
+    if(bulk || !isoOn()) return;
+    if(!mcEl){ mcEl = document.createElement('div'); mcEl.id = 'mcMiniCard'; document.body.appendChild(mcEl); }
+    var d = document.createElement('div'); d.className = 'mc'; d.style.setProperty('--c', colByName(name));
+    d.innerHTML = '<div class="q">?</div><div style="min-width:0"><small>'+esc(name)+' · ŞANS KARTI</small><b>'+esc(title)+'</b></div>';
+    mcEl.innerHTML = ''; mcEl.appendChild(d);
+    var cur = mcCur = {name:name, el:d, t:Date.now()};
+    cur.tm = setTimeout(function(){ if(mcCur !== cur) return; d.classList.add('out'); setTimeout(function(){ if(d.parentNode) d.remove(); if(mcCur === cur) mcCur = null; }, 400); }, 3800);
+  }
+  function miniUpd(name, text){
+    if(!mcCur || mcCur.name !== name || Date.now() - mcCur.t > 40000) return;
+    var b = mcCur.el.querySelector('b'); if(b) b.textContent = text;
+    clearTimeout(mcCur.tm); var cur = mcCur, d = cur.el; d.classList.remove('out');
+    cur.tm = setTimeout(function(){ if(mcCur !== cur) return; d.classList.add('out'); setTimeout(function(){ if(d.parentNode) d.remove(); if(mcCur === cur) mcCur = null; }, 400); }, 3200);
+  }
+  window.monocityMiniCard = mini;
+
+  /* ===================== 4) SES EFEKTLERİ ===================== */
+  var SFX = {on:true, last:{}}; try{ SFX.on = localStorage.getItem('mc_sfx') !== '0'; }catch(e){}
+  window.__mcSfx = [];
+  var AC = null, MG = null, NB = null;
+  function ac(){
+    if(AC) return AC; var C = window.AudioContext || window.webkitAudioContext; if(!C) return null;
+    try{ AC = new C(); MG = AC.createGain(); MG.gain.value = 0.5; MG.connect(AC.destination); }catch(e){ AC = null; }
+    return AC;
+  }
+  ['pointerdown','touchstart','keydown'].forEach(function(ev){ document.addEventListener(ev, function(){ if(!SFX.on) return; var a = ac(); if(a && a.state === 'suspended'){ try{ a.resume(); }catch(e){} } }, {capture:true, passive:true}); });
+  function tone(f, t0, dur, type, vol, f2){
+    var o = AC.createOscillator(), g = AC.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0); if(f2) o.frequency.exponentialRampToValueAtTime(f2, t0 + dur);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol || 0.2, t0 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(MG); o.start(t0); o.stop(t0 + dur + 0.03);
+  }
+  function noise(t0, dur, vol, ftype, f1, f2){
+    if(!NB){ NB = AC.createBuffer(1, AC.sampleRate, AC.sampleRate); var dd = NB.getChannelData(0); for(var i=0;i<dd.length;i++) dd[i] = Math.random()*2 - 1; }
+    var s = AC.createBufferSource(), fl = AC.createBiquadFilter(), g = AC.createGain(); s.buffer = NB;
+    fl.type = ftype || 'bandpass'; fl.frequency.setValueAtTime(f1 || 1200, t0); if(f2) fl.frequency.exponentialRampToValueAtTime(f2, t0 + dur); fl.Q.value = 1.2;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol || 0.2, t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    s.connect(fl); fl.connect(g); g.connect(MG); s.start(t0, Math.random()*0.5); s.stop(t0 + dur + 0.03);
+  }
+  var GAP = {step:45, dice:700, turn:1200};
+  function sfx(name){
+    if(!SFX.on) return;
+    var now = Date.now(); if(now - (SFX.last[name] || 0) < (GAP[name] || 160)) return; SFX.last[name] = now;
+    window.__mcSfx.push(name); if(window.__mcSfx.length > 60) window.__mcSfx.shift();
+    if(!AC || AC.state !== 'running') return;
+    var t = AC.currentTime + 0.01, i;
+    try{
+      switch(name){
+        case 'dice': for(i=0;i<7;i++) noise(t + i*0.085 + Math.random()*0.03, 0.05, 0.28 - i*0.025, 'bandpass', 1800 + Math.random()*1400); tone(160, t+0.62, 0.12, 'triangle', 0.18); break;
+        case 'step': tone(620, t, 0.06, 'triangle', 0.12, 430); noise(t, 0.04, 0.06, 'highpass', 2500); break;
+        case 'buy': tone(1318, t, 0.12, 'square', 0.07); tone(1760, t+0.08, 0.22, 'square', 0.07); noise(t+0.02, 0.18, 0.1, 'highpass', 5000); break;
+        case 'rent': [0,0.07,0.14].forEach(function(d, k){ tone(2100 - k*260, t+d, 0.1, 'sine', 0.13); }); noise(t, 0.2, 0.06, 'highpass', 6000); break;
+        case 'salary': tone(988, t, 0.09, 'sine', 0.12); tone(1319, t+0.08, 0.16, 'sine', 0.12); break;
+        case 'card': noise(t, 0.16, 0.2, 'bandpass', 800, 3500); tone(740, t+0.1, 0.12, 'triangle', 0.1, 990); break;
+        case 'gavel': noise(t, 0.08, 0.35, 'lowpass', 900); tone(180, t, 0.12, 'triangle', 0.25, 110); noise(t+0.22, 0.08, 0.35, 'lowpass', 900); tone(180, t+0.22, 0.14, 'triangle', 0.25, 110); break;
+        case 'jail': tone(220, t, 0.45, 'square', 0.07, 200); tone(331, t, 0.4, 'square', 0.05, 300); noise(t, 0.12, 0.2, 'bandpass', 2600); break;
+        case 'energy': tone(420, t, 0.75, 'sawtooth', 0.09, 45); noise(t, 0.1, 0.18, 'highpass', 4000); break;
+        case 'meteor': noise(t, 0.62, 0.16, 'bandpass', 500, 2600); noise(t+0.66, 0.7, 0.45, 'lowpass', 400, 60); tone(70, t+0.66, 0.55, 'sine', 0.35, 35); break;
+        case 'turn': tone(880, t, 0.35, 'sine', 0.13); tone(1320, t+0.1, 0.4, 'sine', 0.1); break;
+        case 'bankrupt': [392,349,311,233].forEach(function(f, k){ tone(f, t + k*0.2, 0.28, 'triangle', 0.14, f*0.97); }); break;
+        case 'win': [523,659,784,1047].forEach(function(f, k){ tone(f, t + k*0.13, k === 3 ? 0.55 : 0.18, 'square', 0.07); }); break;
+        case 'end': tone(660, t, 0.2, 'triangle', 0.12); tone(523, t+0.18, 0.35, 'triangle', 0.12); break;
+      }
+    }catch(e){}
+  }
+  window.monocitySfx = sfx;
+  window.monocitySfxOn = function(v){ if(typeof v === 'boolean'){ SFX.on = v; try{ localStorage.setItem('mc_sfx', v ? '1' : '0'); }catch(e){} if(v){ var a = ac(); if(a && a.state === 'suspended'){ try{ a.resume(); }catch(e){} } } } return SFX.on; };
+  /* zar + piyon adımı + sıra */
+  var diceWas = false, turnWas = false;
+  function watchLoop(){
+    var fx = document.getElementById('diceFX'), d2 = document.getElementById('mcDice2');
+    var on = !!((fx && fx.classList.contains('show')) || (d2 && d2.classList.contains('show')));
+    if(on && !diceWas) sfx('dice'); diceWas = on;
+    var ps = window.players || [], me = ps[0];
+    var my = !!(me && isoOn() && window.currentPlayer === 0 && !window.gameOver && !me.bankrupt && !window.waiting && !window.rollInProgress && !(me.skip > 0));
+    if(isGuest()) my = !!(me && isoOn() && window.MONOCITY_COOP_CAN_ROLL && !window.gameOver);
+    if(my && !turnWas) sfx('turn'); turnWas = my;
+  }
+  setInterval(watchLoop, 120);
+  (function stepObs(){
+    var bd = document.getElementById('board'); if(!bd){ return setTimeout(stepObs, 800); }
+    new MutationObserver(function(recs){
+      for(var i=0;i<recs.length;i++){ var r = recs[i], t = r.target; if(t && t.classList && t.classList.contains('mcStep') && String(r.oldValue||'').indexOf('mcStep') < 0){ sfx('step'); break; } }
+    }).observe(bd, {attributes:true, subtree:true, attributeFilter:['class'], attributeOldValue:true});
+  })();
+  /* ayarlar: ses efektleri aç/kapa */
+  function hookSettings(){
+    var o = window.openGameSettings; if(typeof o !== 'function' || o.__p2) return;
+    var w = function(){
+      var r = o.apply(this, arguments);
+      try{
+        var cards = document.querySelectorAll('#infoText .propertyDetailCard');
+        for(var i=0;i<cards.length;i++){
+          var c = cards[i], nm = c.querySelector('.propertyCity');
+          if(nm && /SES/.test(nm.textContent) && !/MÜZİK/.test(nm.textContent)){
+            c.classList.add('mcSfxRow'); nm.textContent = '🔊 SES EFEKTLERİ';
+            var paint = function(){ var b = c.querySelector('.propertyRent b'); if(b){ b.textContent = SFX.on ? 'AÇIK' : 'KAPALI'; b.classList.toggle('off', !SFX.on); } };
+            paint();
+            c.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); window.monocitySfxOn(!SFX.on); paint(); if(SFX.on) sfx('turn'); };
+            break;
+          }
+        }
+      }catch(e){}
+      return r;
+    };
+    w.__p2 = true; window.openGameSettings = w;
+  }
+  hookSettings(); setTimeout(hookSettings, 800); setTimeout(hookSettings, 2500);
+})();
+</script>
+<style id="monocity-p2-css2">
+body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s ease-out}
+@keyframes mcP2Sh{0%,100%{margin-left:0}20%{margin-left:-4px}40%{margin-left:4px}60%{margin-left:-3px}80%{margin-left:2px}}
+</style>
 
