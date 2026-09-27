@@ -3620,7 +3620,7 @@ if(o.id==p.id){
 if(isInteractiveSeat(p)){
  waiting=true;
  comboReset();
- document.getElementById("turnInfo").innerHTML=cityName+" senin. Bu gelişte yalnızca 1 işlem yapabilirsin. <span id='actionTimer' style='margin-left:8px;color:#ffd54f'>⏱️ 30</span>";
+ document.getElementById("turnInfo").innerHTML=cityName+" senin. Eksik parçaları seçip satın alabilirsin. <span id='actionTimer' style='margin-left:8px;color:#ffd54f'>⏱️ 30</span>";
  renderBoard();comboRender();startTimer(30,"action");return;
 }
 /* Bot da kendi şehrine her gelişinde en fazla bir geliştirme işlemi yapar. */
@@ -15169,7 +15169,7 @@ body.mcIso #mcIsoHud{display:block}
     }
     if(l && (force || l.classList.contains('show'))){
       var s2 = document.getElementById('log'), d2 = document.getElementById('mcIsoLogBody');
-      if(s2 && d2 && d2.__h !== s2.innerHTML){ var bot2 = (d2.scrollHeight - d2.scrollTop - d2.clientHeight) < 30; d2.__h = s2.innerHTML; d2.innerHTML = s2.innerHTML; if(force) d2.scrollTop = 0; else if(bot2) d2.scrollTop = d2.scrollHeight; }
+      if(s2 && d2 && d2.__h !== s2.innerHTML){ var bot2 = (d2.scrollHeight - d2.scrollTop - d2.clientHeight) < 30; d2.__h = s2.innerHTML; d2.innerHTML = s2.innerHTML; if(force) d2.scrollTop = d2.scrollHeight; else if(bot2) d2.scrollTop = d2.scrollHeight; }
     }
     updChatBadge();
   }
@@ -15182,7 +15182,7 @@ body.mcIso #mcIsoHud{display:block}
     for(var i=0;i<4;i++){
       var c = hud.querySelector('.ipc.c'+i), p = ps[i];
       if(!p){ c.style.display = 'none'; continue; } c.style.display = '';
-      var rs = seatOf(i), col = SEATC[rs] || SEATC[0];
+      var rs = seatOf(i), col = (window.playerColors && window.playerColors[rs]) || SEATC[rs] || SEATC[0];
       c.style.setProperty('--pc', col);
       var fr = (p.cos && p.cos.frame) || (i === 0 ? ((window.MONOCITY_GET_FRAME && MONOCITY_GET_FRAME()) || 'white') : 'white');
       c.style.setProperty('--fc', fr === 'white' ? col : (FRC[fr] || col));
@@ -15192,7 +15192,7 @@ body.mcIso #mcIsoHud{display:block}
       c.querySelector('.tx .m').textContent = '💰 ' + (typeof money === 'function' ? money(p.money) : p.money);
       var n = p.properties ? Object.keys(p.properties).length : 0;
       c.querySelector('.tx small').textContent = '🏙️ '+n+' mülk · 📍 '+(board[p.pos] || '');
-      c.querySelector('.rk').textContent = String(rs+1);
+      c.querySelector('.rk').textContent = String(window.monocityTurnNo ? window.monocityTurnNo(rs) : rs+1);
       c.classList.toggle('turn', cp === i && !window.gameOver && !p.bankrupt);
       c.classList.toggle('out', !!p.bankrupt);
     }
@@ -17475,6 +17475,36 @@ body.mcMatchOn #mcGameOver{display:none!important}
 .mcRkBox .tx{flex:1;min-width:0}
 .mcRkBox .tx b{display:block;font-size:calc(2.6*var(--u,1vh));font-weight:1000;color:var(--lc)}
 .mcRkBox .tx small{font-size:calc(1.9*var(--u,1vh));font-weight:800;color:#9fb0cf}
+
+/* ================= Lobi renk seçimi + kapalı kartlar ================= */
+#mcLobby2.mcHasSet .lbSeats{top:22%!important;height:30%!important}
+#mcLobby2.mcHasSet .lbChat{top:61.5%!important;height:20.5%!important}
+#mcLobby2 #mcLbCol{position:absolute;left:1.5%;width:66%;top:53%;height:7.4%;display:flex;align-items:center;gap:calc(1*var(--mcu,1vh));padding:0 calc(1*var(--mcu,1vh));border-radius:calc(1.4*var(--mcu,1vh));background:#0b1224;border:1.5px solid #2c3a66}
+#mcLobby2 #mcLbCol b{font-size:clamp(9px,calc(2.3*var(--mcu,1vh)),13px);font-weight:1000;color:#cfd8ff;white-space:nowrap}
+#mcLobby2 #mcLbCol .cl{flex:1;display:flex;gap:calc(.8*var(--mcu,1vh));height:78%}
+#mcLobby2 #mcLbCol .cc{flex:1;border-radius:calc(1*var(--mcu,1vh));background:var(--c);display:flex;align-items:center;justify-content:center;gap:4px;font-weight:1000;font-size:clamp(8px,calc(2.1*var(--mcu,1vh)),12px);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);cursor:pointer;border:2px solid transparent;white-space:nowrap;overflow:hidden;position:relative}
+#mcLobby2 #mcLbCol .cc small{font-size:.85em;opacity:.95;overflow:hidden;text-overflow:ellipsis}
+#mcLobby2 #mcLbCol .cc.on{border-color:#fff;box-shadow:0 0 12px var(--c)}
+#mcLobby2 #mcLbCol .cc.tk{filter:saturate(.35) brightness(.6);cursor:not-allowed}
+#mcLobby2 .lbSeat.filled .av{box-shadow:0 0 0 3px var(--fr,var(--sc))!important}
+#mcDraw{position:fixed;inset:0;z-index:1200040;display:none;align-items:center;justify-content:center;background:rgba(4,8,20,.78);font-family:Arial,Helvetica,sans-serif;color:#fff}
+#mcDraw.show{display:flex}
+#mcDraw .pan{position:relative;background:linear-gradient(180deg,#1b2440,#0d1428);border:2px solid #ffcc3d;border-radius:18px;padding:14px 18px;box-shadow:0 18px 40px rgba(0,0,0,.7);max-width:96vw}
+#mcDraw h3{font-size:clamp(15px,5vh,20px);font-weight:1000;text-align:center;color:#ffe08a;margin:0}
+#mcDraw .sub{font-size:clamp(10px,3vh,12px);color:#9fb0dd;text-align:center;margin-top:3px;font-weight:700}
+#mcDraw .tm{position:absolute;top:10px;right:12px;font-weight:1000;font-size:13px;background:#0b1224;border:1px solid #ffcc3d;color:#ffe08a;border-radius:10px;padding:3px 9px}
+#mcDraw .row{display:flex;gap:clamp(8px,2.5vw,16px);justify-content:center;margin:14px 6px 8px}
+#mcDraw .cd{width:clamp(64px,11vw,92px);height:clamp(90px,30vh,128px);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-weight:1000;cursor:pointer;transition:transform .15s}
+#mcDraw .cd.back:hover{transform:translateY(-4px)}
+#mcDraw .back{background:repeating-linear-gradient(45deg,#3b1f6e 0 8px,#2a1650 8px 16px);border:3px solid #c38bff;box-shadow:0 6px 14px rgba(0,0,0,.5)}
+#mcDraw .back .q{width:50%;aspect-ratio:1;border-radius:50%;background:#1a0f33;border:2px solid #c38bff;display:grid;place-items:center;font-size:clamp(18px,6vh,26px);color:#e6d4ff}
+#mcDraw .face{background:linear-gradient(180deg,#fff,#e8ecf5);color:#111;border:4px solid var(--c);box-shadow:0 0 18px var(--c);animation:mcDrFlip .35s ease-out;cursor:default}
+#mcDraw .face .n{font-size:clamp(18px,9vh,40px);line-height:1;color:var(--c);text-shadow:0 1px 0 rgba(0,0,0,.25)}
+#mcDraw .face .n.tx{font-size:clamp(11px,4.2vh,17px);letter-spacing:.3px}
+#mcDraw .face small{font-size:10px;color:#555}
+#mcDraw .face b{font-size:12px;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mcDraw .lg{text-align:center;font-size:11.5px;font-weight:900;color:#cfd8ff}
+@keyframes mcDrFlip{0%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
 </style>
 <script id="monocity-modes-js">
 (function(){
@@ -17520,6 +17550,8 @@ body.mcMatchOn #mcGameOver{display:none!important}
               ucr: (FEES.indexOf(+c.ucr) >= 0) ? +c.ucr : 1000 };
     if(o.mod === 'rank'){ o.para = 4; o.zar = 2; }
     if(c.mid) o.mid = String(c.mid);
+    if(Array.isArray(c.cols)) o.cols = c.cols.slice(0,4);
+    if(typeof c.first === 'number') o.first = c.first;
     return o;
   }
   var CFG = norm(lsGet(CFG_KEY));
@@ -17649,6 +17681,11 @@ body.mcMatchOn #mcGameOver{display:none!important}
     addMetro(-M.cfg.ucr);
     lsSet(LIVE_KEY, {mid:M.mid, cfg:M.cfg, ts:Date.now()});
     setBody();
+    applyCols(M.cfg);
+    if(role !== 'guest' && M.cfg.first){
+      var f0 = M.cfg.first;
+      setTimeout(function(){ try{ if(!M || window.gameOver || (window.players||[]).length < 4) return; stopTimer(); window.waiting = false; window.rollInProgress = false; window.currentPlayer = (f0 + 3) % 4; nextTurn(); }catch(e){ console.warn('mc first', e); } }, 80);
+    }
     if(role !== 'guest'){
       var ps = window.players || [];
       if(M.cfg.tur === '1v1'){ for(var i=2;i<ps.length;i++){ ps[i].bankrupt = true; ps[i].absent = true; ps[i].properties = {}; ps[i].money = 0; } }
@@ -17658,10 +17695,22 @@ body.mcMatchOn #mcGameOver{display:none!important}
     toast('🎟️ Giriş ücreti ödendi: -'+fmt(M.cfg.ucr)+' Metro');
   }
 
+  var DEFCOL = ['#ff3b30','#ffd60a','#34c759','#0a84ff'];
+  var COLS = [{k:'red',n:'KIRMIZI',c:'#ff3b30'},{k:'yellow',n:'SARI',c:'#ffd60a'},{k:'green',n:'YEŞİL',c:'#34c759'},{k:'blue',n:'MAVİ',c:'#0a84ff'}];
+  function colHex(k){ for(var i=0;i<COLS.length;i++) if(COLS[i].k === k) return COLS[i].c; return null; }
+  function applyCols(c){
+    try{ var pc = window.playerColors; if(!pc) return; for(var i=0;i<4;i++) pc[i] = (c && c.cols && c.cols[i]) || DEFCOL[i]; }catch(e){}
+  }
+  window.monocityTurnNo = function(rs){
+    var f = (M && typeof M.cfg.first === 'number') ? M.cfg.first : 0;
+    if(M && M.cfg.tur === '1v1') return ((rs - f + 2) % 2) + 1;
+    return ((rs - f + 4) % 4) + 1;
+  };
   /* ---- motor sarmalayıcıları ---- */
   var _sgn = window.startGameWithNames;
   if(typeof _sgn === 'function'){
     window.startGameWithNames = function(){
+      applyCols(null);
       var r = _sgn.apply(this, arguments);
       try{ if(pending){ var p = pending; pending = null; beginMatch(p.cfg, p.role, p.code, 0); } }catch(e){ console.warn('mc modes', e); }
       return r;
@@ -17871,7 +17920,16 @@ body.mcMatchOn #mcGameOver{display:none!important}
   })();
   var _ceg = window.confirmEndGame;
   if(typeof _ceg === 'function'){
-    window.confirmEndGame = function(){ try{ if(M && !M.settled) forfeit('quit'); }catch(e){} return _ceg.apply(this, arguments); };
+    window.confirmEndGame = function(){
+      try{
+        var meP = (window.players||[])[0];
+        if(M && !M.settled){
+          if(meP && meP.bankrupt){ if(M.role !== 'guest'){ track(); settle(); } }
+          else forfeit('quit');
+        }
+      }catch(e){}
+      return _ceg.apply(this, arguments);
+    };
   }
   function clearMatch(){ M = null; setBody(); }
   var _gtm = window.monocityGameOverToMenu;
@@ -18084,14 +18142,68 @@ body.mcMatchOn #mcGameOver{display:none!important}
     toast('👤 Giriş yapmadığın için botlarla oynuyorsun.');
     startSolo(c);
   }
-  function strip(c){ var o = {mod:c.mod, tur:c.tur, para:c.para, zar:c.zar, ucr:c.ucr}; if(c.mid) o.mid = c.mid; return o; }
+  function strip(c){ var o = {mod:c.mod, tur:c.tur, para:c.para, zar:c.zar, ucr:c.ucr}; if(c.mid) o.mid = c.mid; if(c.cols) o.cols = c.cols; if(typeof c.first === 'number') o.first = c.first; return o; }
   function startSolo(c){
     applyBoard(c);
     try{ var mm = document.getElementById('mainMenu'); if(mm) mm.style.display = 'none'; if(typeof setLobbyHitLayerVisible === 'function') setLobbyHitLayerVisible(false); }catch(e){}
     try{ if(typeof window.monocityCoopLeave === 'function') window.monocityCoopLeave(); }catch(e){}
-    pending = {cfg:c, role:'solo', code:null};
-    if(typeof quickStartGameAfterMode === 'function') quickStartGameAfterMode();
+    var n = c.tur === '1v1' ? 2 : 4;
+    showDraw({mode:'color', n:n, title:'🎨 RENGİNİ ÇEK', sub:'Kırmızı 1., Sarı 2., Yeşil 3., Mavi 4. oynar — çektiğin renk sırını ve rengini belirler',
+      onDone:function(h){
+        var cols = [null,null,null,null];
+        for(var k=0;k<n;k++) cols[k] = COLS[(h + k) % n].c;
+        c.cols = cols; c.first = (n - h) % n;
+        pending = {cfg:c, role:'solo', code:null};
+        if(typeof quickStartGameAfterMode === 'function') quickStartGameAfterMode();
+      }});
   }
+
+  /* ============================================================
+     KAPALI KART (sıra belirleme)
+     mode 'color' : tek oyunculu (Hızlı Başla) — renkli kartlar
+     mode 'num'   : lobi — 1..n numaralı kartlar (çok oyunculu, Firebase)
+     ============================================================ */
+  var dEl = null, dTimer = null;
+  function buildDraw(){
+    if(dEl) return dEl;
+    dEl = document.createElement('div'); dEl.id = 'mcDraw';
+    dEl.innerHTML = '<div class="pan"><span class="tm" id="mcDrT">⏱ 10</span><h3 id="mcDrH"></h3><div class="sub" id="mcDrS"></div><div class="row" id="mcDrRow"></div><div class="lg" id="mcDrLg"></div></div>';
+    document.body.appendChild(dEl);
+    return dEl;
+  }
+  function cardHtml(i, face, lbl, who, col){
+    if(!face) return '<div class="cd back" data-i="'+i+'"><div class="q">?</div></div>';
+    return '<div class="cd face" data-i="'+i+'" style="--c:'+col+'"><div class="n'+(String(lbl).length > 2 ? ' tx' : '')+'">'+esc(lbl)+'</div><small>'+esc(face)+'</small><b>'+esc(who||'')+'</b></div>';
+  }
+  function showDraw(o){
+    var el = buildDraw(), n = o.n, left = 10, done = false;
+    el.querySelector('#mcDrH').textContent = o.title; el.querySelector('#mcDrS').textContent = o.sub;
+    el.classList.add('show');
+    if(o.mode === 'color'){
+      /* renkler karıştırılıp kapalı dağıtılır */
+      var deck = []; for(var i=0;i<n;i++) deck.push(i); deck.sort(function(){ return Math.random() - .5; });
+      var picked = -1, row = el.querySelector('#mcDrRow');
+      var paint = function(reveal){
+        row.innerHTML = deck.map(function(ci, i){
+          var mine = i === picked, show = reveal || mine, C = COLS[ci];
+          return show ? cardHtml(i, (ci+1)+'. SIRA', C.n, mine ? 'Sen' : '🤖', C.c) : cardHtml(i);
+        }).join('');
+        el.querySelector('#mcDrLg').textContent = picked < 0 ? 'Bir kart seç' : ('Sen: '+COLS[deck[picked]].n+' — '+(deck[picked]+1)+'. oyuncusun');
+      };
+      var finish = function(){
+        if(done) return; done = true; clearInterval(dTimer);
+        if(picked < 0) picked = Math.floor(Math.random()*n);
+        paint(true);
+        setTimeout(function(){ el.classList.remove('show'); o.onDone(deck[picked]); }, 1600);
+      };
+      row.onclick = function(e){ var c = e.target.closest('.cd'); if(!c || picked >= 0 || done) return; picked = +c.getAttribute('data-i'); paint(false); setTimeout(finish, 700); };
+      paint(false);
+      clearInterval(dTimer); el.querySelector('#mcDrT').textContent = '⏱ '+left;
+      dTimer = setInterval(function(){ left--; el.querySelector('#mcDrT').textContent = '⏱ '+Math.max(0,left); if(left <= 0) finish(); }, 1000);
+      return;
+    }
+  }
+  window.monocityShowDraw = showDraw;
 
   /* eski mod ekranının yerine */
   window.openModeSelect = function(f){
@@ -18191,7 +18303,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
     if(bar.__h !== html){ bar.__h = html; bar.innerHTML = html; }
     el.classList.add('mcHasSet'); el.classList.toggle('mcM1', c.tur === '1v1'); el.classList.toggle('mcM2', c.tur === '2v2');
     var seats = el.querySelector('#lbSeats'); if(!seats) return;
-    if(c.tur === '4') return;
+    if(c.tur === '4'){ paintColors(el); return; }
     var hostP = {name:st.hostName, uid:st.hostUid, host:true, me:st.role === 'host', cos:(st.role === 'host' && window.monocityMyCos) ? window.monocityMyCos() : null};
     var gp = function(e){ return e ? {name:e.name, uid:e.uid, ready:e.ready, me:e.me, cos:e.cos, key:e.key} : null; };
     var out = '';
@@ -18207,6 +18319,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
             '<div class="mcTeam B"><h5><span>🔴 KIRMIZI TAKIM</span><span>'+b.filter(Boolean).length+'/2</span></h5><div class="sts">'+seatHtml(b[0],'#ef4444',emp('B'))+seatHtml(b[1],'#ef4444',emp('B'))+'</div></div>';
     }
     if(seats.__mc !== out || !seats.querySelector('.mcVs')){ painting = true; seats.__mc = out; seats.innerHTML = out; painting = false; }
+    paintColors(el);
     var info = el.querySelector('#lbInfo');
     if(info && st.role === 'host' && c.tur === '2v2' && !st.guests.length) info.innerHTML = 'Davet ettiğin arkadaş senin takımına gelir. Boş koltuklara bot oynar.';
     if(info && st.role === 'guest' && c.tur === '2v2' && !/Takım/.test(info.innerHTML)) info.innerHTML += '<br><small>Takım değiştirmek için karşı takımdaki boş koltuğa dokun.</small>';
@@ -18264,31 +18377,171 @@ body.mcMatchOn #mcGameOver{display:none!important}
 
   /* kurucu BAŞLAT → maçı başlat */
   var BOTN = ['Ali','Arda','Bora','Can','Cem','Efe','Emir','Kaan','Kerem','Mert','Onur','Selim','Tolga','Umut','Ada','Aslı','Defne','Duru','Elif','Ece','Eylül','Lara','Naz','Nehir','Selin','Zeynep','Buse','Mina','Sena','Yağmur'];
+  /* ---------- lobi renkleri ---------- */
+  var roomCols = {}, colsRef = null, colsCode = null;
+  function watchCols(){
+    var st = API && API.state(), code = (st && st.code && !st.entered) ? st.code : null;
+    if(code === colsCode) return;
+    if(colsRef){ try{ colsRef.off(); }catch(e){} }
+    colsRef = null; colsCode = code; roomCols = {};
+    if(!code || !db) return;
+    colsRef = db.ref('rooms/'+code+'/cols');
+    colsRef.on('value', function(sn){ roomCols = (sn && sn.val()) || {}; ensureMyCol(); var el = document.getElementById('mcLobby2'); if(el && el.classList.contains('show')) paintLobby(); });
+  }
+  function lobbyUids(){ var st = API.state(), u = []; if(st.hostUid) u.push(st.hostUid); (st.guests||[]).forEach(function(g){ if(g.uid) u.push(g.uid); }); return u; }
+  function colOwner(k){ var us = lobbyUids(); for(var i=0;i<us.length;i++) if(roomCols[us[i]] === k) return us[i]; return null; }
+  function ensureMyCol(){
+    var u = me(); if(!u || !colsCode || !db) return;
+    if(roomCols[u] && colOwner(roomCols[u]) === u) return;
+    for(var i=0;i<COLS.length;i++){ if(!colOwner(COLS[i].k)){ roomCols[u] = COLS[i].k; db.ref('rooms/'+colsCode+'/cols/'+u).set(COLS[i].k); return; } }
+  }
+  function pickCol(k){
+    var u = me(); if(!u || !colsCode) return;
+    var o = colOwner(k); if(o && o !== u){ toast('Bu renk başka bir oyuncuda.'); return; }
+    roomCols[u] = k; db.ref('rooms/'+colsCode+'/cols/'+u).set(k); paintLobby();
+  }
+  function uidName(u){ var st = API.state(); if(u === st.hostUid) return st.hostName; var g = (st.guests||[]).filter(function(x){ return x.uid === u; })[0]; return g ? g.name : ''; }
+  function paintColors(el){
+    var bar = el.querySelector('#mcLbCol');
+    if(!bar){ bar = document.createElement('div'); bar.id = 'mcLbCol'; el.appendChild(bar);
+      bar.addEventListener('click', function(e){ var c = e.target.closest('[data-col]'); if(c) pickCol(c.getAttribute('data-col')); }); }
+    var mine = roomCols[me()];
+    var html = '<b>🎨 RENGİN:</b><div class="cl">' + COLS.map(function(C){
+      var o = colOwner(C.k), isMe = o && o === me();
+      return '<div class="cc'+(isMe ? ' on' : (o ? ' tk' : ''))+'" data-col="'+C.k+'" style="--c:'+C.c+'">'+C.n+(o ? '<small>· '+esc(isMe ? 'Sen' : uidName(o))+'</small>' : '')+'</div>';
+    }).join('') + '</div>';
+    if(bar.__h !== html){ bar.__h = html; bar.innerHTML = html; }
+    /* koltuk kartları: dış çerçeve = oyun rengi, iç çerçeve = profil çerçevesi */
+    el.querySelectorAll('#lbSeats .lbSeat.filled').forEach(function(sEl2){
+      var u = sEl2.getAttribute('data-uid'); if(!u) return;
+      if(!sEl2.__fr){ sEl2.__fr = sEl2.style.getPropertyValue('--sc') || '#26345a'; sEl2.style.setProperty('--fr', sEl2.__fr); }
+      var h = colHex(roomCols[u]); if(h) sEl2.style.setProperty('--sc', h);
+    });
+  }
+
+  /* ---------- kurucu BAŞLAT → kart çekimi → maç ---------- */
+  var drawRef = null, drawCode = null, drawId = null;
+  function watchDraw(){
+    var co = window.MONOCITY_COOP, code = (co && co.code) || null;
+    if(code === drawCode) return;
+    if(drawRef){ try{ drawRef.off(); }catch(e){} }
+    drawRef = null; drawCode = code;
+    if(!code || !db) return;
+    drawRef = db.ref('rooms/'+code+'/draw');
+    drawRef.on('value', function(sn){ var v = sn && sn.val(); if(v) onDraw(v); });
+  }
+  var drawShownId = null, drawTick = null;
+  function onDraw(v){
+    var el = buildDraw(), co = window.MONOCITY_COOP;
+    if(v.st === 'go'){ if(drawShownId === v.id) setTimeout(function(){ el.classList.remove('show'); }, 400); return; }
+    if(co && co.entered && v.st !== 'done') return;
+    if(v.ts && Math.abs(Date.now() - v.ts) > 90000 && drawShownId !== v.id) return;
+    if(drawShownId !== v.id){
+      drawShownId = v.id; el.classList.add('show');
+      el.querySelector('#mcDrH').textContent = '🃏 SIRA BELİRLENİYOR';
+      el.querySelector('#mcDrS').textContent = 'Bir kart seç — kartındaki numara oyundaki sıranı belirler';
+      var left = 10, tEl = el.querySelector('#mcDrT');
+      clearInterval(drawTick); tEl.textContent = '⏱ '+left;
+      drawTick = setInterval(function(){ left--; tEl.textContent = '⏱ '+Math.max(0,left); if(left <= 0) clearInterval(drawTick); }, 1000);
+      el.querySelector('#mcDrRow').onclick = function(e){
+        var c = e.target.closest('.cd.back'); if(!c) return; var i = +c.getAttribute('data-i'), u = me(); if(!u) return;
+        var cur = el.__v || {}, pk = cur.picks || {};
+        if(pk[u] != null) return;
+        for(var k in pk) if(pk[k] === i) return;
+        db.ref('rooms/'+drawCode+'/draw/picks/'+u).set(i);
+      };
+    }
+    el.__v = v;
+    var pk = v.picks || {}, byCard = {};
+    Object.keys(pk).forEach(function(id){ byCard[pk[id]] = id; });
+    var parts = v.parts || [], pn = function(id){ for(var i=0;i<parts.length;i++) if(parts[i].id === id) return parts[i]; return null; };
+    var reveal = v.st === 'done';
+    el.querySelector('#mcDrRow').innerHTML = (v.cards||[]).map(function(num, i){
+      var id = byCard[i]; if(!id) return cardHtml(i);
+      var P = pn(id) || {}, isMe = id === me();
+      return cardHtml(i, num+'. SIRA', String(num), isMe ? 'Sen' : (P.name || ''), P.col || '#ffcc3d');
+    }).join('');
+    el.querySelector('#mcDrLg').innerHTML = parts.map(function(P){
+      var ci = pk[P.id], num = ci != null ? v.cards[ci] : null;
+      return '<span style="color:'+(P.col||'#fff')+'">● </span>'+esc(P.id === me() ? 'Sen' : P.name)+': '+(num ? '<b>'+num+'.</b>' : (reveal ? '—' : 'seçiyor…'));
+    }).join(' &nbsp; ');
+    if(reveal) clearInterval(drawTick);
+  }
+  var legacyStart = false;
+  document.addEventListener('click', function(e){ if(e.target && e.target.closest && e.target.closest('#coopStartBtn')) legacyStart = true; }, true);
   function hostStartCoop(){
     var co = window.MONOCITY_COOP; if(!co || co.role !== 'host' || !co.code) return;
     var c = norm(roomCfg || CFG), st = API.state();
     var reopen = function(msg){ toast(msg); setTimeout(function(){ if(_openLobby) _openLobby(); }, 50); };
     if(c.tur === '1v1' && st.guests.length > 1) return reopen('1 vs 1 için lobide en fazla 1 misafir olabilir.');
     if(metro() < c.ucr) return reopen('Bakiyen giriş ücretine yetmiyor.');
+    var n = c.tur === '1v1' ? 2 : 4, gs = co.guests || {};
+    /* katılımcılar + renkler */
+    var used = {}, parts = [];
+    var addP = function(id, name, key, bot){ var k = !bot && roomCols[id] && !used[roomCols[id]] ? roomCols[id] : null; if(k) used[k] = 1; parts.push({id:id, name:name, key:key||null, bot:!!bot, k:k}); };
+    addP(st.hostUid || 'host', st.hostName, null, false);
+    (st.guests||[]).slice(0, n-1).forEach(function(g){ addP(g.uid || g.key, g.name, g.key, false); });
+    var bi = 1; while(parts.length < n) addP('bot'+(bi++), '🤖 Bot', null, true);
+    parts.forEach(function(P){ if(!P.k){ for(var i=0;i<COLS.length;i++) if(!used[COLS[i].k]){ P.k = COLS[i].k; used[P.k] = 1; break; } } P.col = colHex(P.k); });
+    var cards = []; for(var i=1;i<=n;i++) cards.push(i); cards.sort(function(){ return Math.random() - .5; });
+    if(window.__MC_FAST_DRAW || legacyStart){
+      /* eski oda ekranından (veya test) başlatma: kart ekranı olmadan rastgele sıra */
+      legacyStart = false;
+      parts.forEach(function(P, i){ P.num = i + 1; });
+      return startSeated(c, parts, n);
+    }
+    var id = 'd'+Date.now();
+    var dv = {id:id, ts:Date.now(), st:'pick', n:n, cards:cards, parts:parts.map(function(P){ return {id:P.id, name:P.name, col:P.col, bot:P.bot}; }), picks:{}};
+    db.ref('rooms/'+co.code+'/draw').set(dv);
+    var t0 = Date.now(), fin = false;
+    var iv = setInterval(function(){
+      db.ref('rooms/'+co.code+'/draw/picks').once('value').then(function(sn){
+        if(fin) return;
+        var pk = (sn && sn.val()) || {}, humans = parts.filter(function(P){ return !P.bot; });
+        var allIn = humans.every(function(P){ return pk[P.id] != null; });
+        if(!allIn && Date.now() - t0 < 10500) return;
+        fin = true; clearInterval(iv);
+        var taken = {}; Object.keys(pk).forEach(function(k){ taken[pk[k]] = 1; });
+        parts.forEach(function(P){ if(pk[P.id] == null){ for(var j=0;j<n;j++) if(!taken[j]){ pk[P.id] = j; taken[j] = 1; break; } } });
+        db.ref('rooms/'+co.code+'/draw').update({st:'done', picks:pk});
+        parts.forEach(function(P){ P.num = cards[pk[P.id]]; });
+        setTimeout(function(){ startSeated(c, parts, n); db.ref('rooms/'+co.code+'/draw/st').set('go'); }, 2300);
+      });
+    }, 400);
+  }
+  function startSeated(c, parts, n){
+    var co = window.MONOCITY_COOP; if(!co || co.role !== 'host' || !co.code) return;
+    var seatP = [null,null,null,null], first = 0;
+    if(c.tur === '2v2'){
+      var T = teamsOf(), byKey = function(e){ if(!e) return null; for(var i=0;i<parts.length;i++) if(parts[i].key === e.key) return parts[i]; return null; };
+      seatP[0] = parts[0]; seatP[1] = byKey(T.B[0]); seatP[2] = byKey(T.A[0]); seatP[3] = byKey(T.B[1]);
+      var bots = parts.filter(function(P){ return P.bot; });
+      for(var s1=1;s1<4;s1++) if(!seatP[s1]) seatP[s1] = bots.shift();
+      for(var s2=0;s2<4;s2++) if(seatP[s2] && seatP[s2].num === 1) first = s2;
+    }else{
+      var O = parts.slice().sort(function(a,b){ return a.num - b.num; }), h = O.indexOf(parts[0]);
+      for(var k=0;k<n;k++) seatP[k] = O[(h + k) % n];
+      first = (n - h) % n;
+    }
+    c.cols = seatP.map(function(P){ return P ? P.col : null; });
+    c.first = first;
     c.mid = co.code + '-' + Date.now();
     try{ db.ref('rooms/'+co.code+'/cfg').set(strip(c)); }catch(e){}
     roomCfg = c;
     applyBoard(c);
     try{ var mm = document.getElementById('mainMenu'); if(mm) mm.style.display = 'none'; if(typeof setLobbyHitLayerVisible === 'function') setLobbyHitLayerVisible(false); }catch(e){}
     pending = {cfg:c, role:'host', code:co.code};
-    var real = co.guests || {}, fakes = [];
-    if(c.tur === '2v2'){
-      var T = teamsOf(), want = [T.B[0] || null, T.A[0] || null, T.B[1] || null], tmp = {};
-      want.forEach(function(e, i){
-        if(e){ var g = real[e.key] || {}; tmp[e.key] = {name:g.name, ready:g.ready, uid:g.uid, cos:g.cos, team:g.team, joinedAt:i+1}; }
-        else { var fk = '__mcbot'+i; fakes.push({key:fk, seat:i+1}); tmp[fk] = {name:'', joinedAt:i+1}; }
-      });
-      co.guests = tmp;
+    var real = co.guests || {}, fakes = [], tmp = {};
+    for(var s=1;s<4;s++){
+      var P = seatP[s];
+      if(P && P.key && real[P.key]){ var g = real[P.key]; tmp[P.key] = {name:g.name, ready:g.ready, uid:g.uid, cos:g.cos, team:g.team, joinedAt:s}; }
+      else { var fk = '__mcbot'+s; fakes.push({key:fk, seat:s}); tmp[fk] = {name:'', joinedAt:s}; }
     }
+    co.guests = tmp;
     try{ window.coopHostStartGameActual(); }
     finally{ co.guests = real; }
     if(fakes.length){
-      var used = (window.players||[]).map(function(p){ return p && p.name; }), pool = BOTN.filter(function(n){ return used.indexOf(n) < 0; });
+      var usedN = (window.players||[]).map(function(p){ return p && p.name; }), pool = BOTN.filter(function(nm){ return usedN.indexOf(nm) < 0; });
       var rs = window.MONOCITY_COOP_REMOTE_SEATS || [], sk = window.MONOCITY_COOP_SEAT_KEYS || [];
       fakes.forEach(function(f){
         var i = rs.indexOf(f.seat); if(i >= 0) rs.splice(i, 1);
@@ -18299,6 +18552,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
     }
     listenResult(null);
   }
+  setInterval(function(){ try{ watchCols(); watchDraw(); }catch(e){} }, 600);
 
   /* ============================================================
      PROFİL: rank kutusu  +  bakiye yayını (davet kilidi için)
@@ -18320,6 +18574,438 @@ body.mcMatchOn #mcGameOver{display:none!important}
   };
   var lastMb = null;
   setInterval(function(){ if(!ONLINE || !me()) return; var m = metro(); if(m === lastMb) return; lastMb = m; try{ db.ref('users/'+me()+'/mb').set(m); }catch(e){} }, 3000);
+})();
+</script>
+
+<style id="monocity-p1-css">
+/* ===== tahtada bildirimler ===== */
+#mcNotes{position:fixed;left:50%;top:calc(11vh + 6px);transform:translateX(-50%);z-index:1000450;display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none;font-family:Arial,Helvetica,sans-serif}
+#mcNotes .nt{display:flex;align-items:center;gap:7px;padding:5px 12px 5px 7px;border-radius:11px;background:rgba(8,12,26,.9);border-left:5px solid var(--c);box-shadow:0 0 14px color-mix(in srgb,var(--c) 40%,transparent);font-size:clamp(10px,3.4vh,13px);font-weight:900;color:#fff;white-space:nowrap;max-width:62vw;overflow:hidden;text-overflow:ellipsis;animation:mcNtIn .25s ease-out}
+#mcNotes .nt.out{opacity:0;transform:translateY(-6px);transition:all .35s}
+#mcNotes .nt .e{font-size:1.25em}
+#mcNotes .nt b{color:var(--c)}
+@keyframes mcNtIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+/* ===== ortak panel ===== */
+.mcP1Ov{position:fixed;inset:0;z-index:1200030;display:none;align-items:center;justify-content:center;background:rgba(4,8,20,.72);font-family:Arial,Helvetica,sans-serif;color:#fff}
+.mcP1Ov.show{display:flex}
+.mcP1Ov .pan{position:relative;width:min(470px,94vw);max-height:94vh;overflow:auto;background:linear-gradient(180deg,#1b2440,#0d1428);border:2px solid #ffcc3d;border-radius:18px;padding:12px 16px;box-shadow:0 18px 40px rgba(0,0,0,.7)}
+.mcP1Ov h3{font-size:clamp(15px,5vh,19px);font-weight:1000;text-align:center;color:#ffe08a;margin:0}
+.mcP1Ov .sub{font-size:clamp(10px,3vh,12px);color:#9fb0dd;text-align:center;margin-top:3px;font-weight:700}
+.mcP1Ov .tm{position:absolute;top:10px;right:12px;font-weight:1000;font-size:13px;background:#0b1224;border:1px solid #ffcc3d;color:#ffe08a;border-radius:10px;padding:3px 9px}
+.mcP1Ov .btn{border:0;border-radius:12px;padding:10px 14px;font-weight:1000;font-size:clamp(12px,3.6vh,14px);color:#fff;cursor:pointer;margin:0;min-height:0;text-align:center}
+.mcP1Ov .btn.g{background:linear-gradient(#5fe06a,#1d9a2c);box-shadow:0 4px 0 #0d5a17}
+.mcP1Ov .btn.r{background:linear-gradient(#ef4444,#991b1b);box-shadow:0 4px 0 #5b0f0f}
+.mcP1Ov .btn.gr{background:#374151}
+.mcP1Ov .btn:disabled{filter:grayscale(1);opacity:.55;cursor:not-allowed}
+.mcP1Ov .info{display:flex;gap:8px;margin:8px 0}
+.mcP1Ov .info div{flex:1;background:#0b1224;border:1px solid #1e2a44;border-radius:10px;padding:5px 8px;font-size:10.5px;color:#9fb0dd;font-weight:800}
+.mcP1Ov .info b{display:block;font-size:clamp(12px,4vh,15px);color:#fff;margin-top:2px}
+.mcP1Ov .info .neg b{color:#fca5a5}
+.mcP1Ov .sr{display:flex;align-items:center;gap:8px;background:#0b1224;border:1.5px solid #1e2a44;border-radius:10px;padding:5px 9px;margin-top:5px;font-size:clamp(11px,3.4vh,12.5px);cursor:pointer}
+.mcP1Ov .sr i{font-style:normal;width:18px;height:18px;border-radius:5px;border:2px solid #5a6c9c;display:grid;place-items:center;font-size:11px;font-weight:1000;color:#111;flex:0 0 auto}
+.mcP1Ov .sr.on{border-color:#ffcc3d;background:#1f1a0b}
+.mcP1Ov .sr.on i{background:#ffcc3d;border-color:#ffcc3d}
+.mcP1Ov .sr b{font-weight:1000}
+.mcP1Ov .sr small{flex:1;color:#8fa0d0;font-size:.85em}
+.mcP1Ov .sr span{font-weight:1000;color:#86efac}
+.mcP1Ov .ft{display:flex;gap:8px;margin-top:10px;align-items:center}
+.mcP1Ov .ft .t{flex:1;font-size:11.5px;font-weight:900;color:#cfd8ff}
+.mcP1Ov .ft .t b{color:#86efac}
+.mcP1Ov .ft .t b.neg{color:#fca5a5}
+.mcP1Ov .two{display:flex;gap:10px;margin-top:12px}
+.mcP1Ov .two .btn{flex:1}
+.mcP1Ov .ic{font-size:40px;text-align:center}
+#mcExitMenu .pan{width:min(300px,90vw);border-color:#ef4444}
+#mcExitMenu .col{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+</style>
+<script id="monocity-p1-js">
+(function(){
+  'use strict';
+  /* =============================================================
+     MONOCITY Paket 1: tapu hatası, bot geliştirme, 1,5× geri alım +
+     yükseltme, borçta mülk satış paneli, şans kartı borcu, tahtada
+     bildirimler, oyun başına 1 beğeni, iflas / çıkış / kopma → bot.
+     ============================================================= */
+  var db = window.MONOCITY_DB;
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function fm(n){ try{ return money(n); }catch(e){ return String(n); } }
+  function toast(m){ try{ if(window.MONOCITY_PROFILE && window.MONOCITY_PROFILE.toast) return window.MONOCITY_PROFILE.toast(m); }catch(e){} }
+  function co(){ return window.MONOCITY_COOP || {}; }
+  function isHost(){ var c = co(); return !!(c.code && c.role === 'host'); }
+  function isGuest(){ var c = co(); return !!(c.code && c.role === 'guest' && c.entered); }
+  function mySeat(){ return isGuest() ? window.MONOCITY_COOP_MY_SEAT : 0; }
+  function remoteSeats(){ return Array.isArray(window.MONOCITY_COOP_REMOTE_SEATS) ? window.MONOCITY_COOP_REMOTE_SEATS : []; }
+  function hasProps(p){ for(var k in (p.properties||{})) return true; return false; }
+  function mask(p, c){ return (p.properties && p.properties[c]) || 0; }
+  function inGame(){ var g = document.getElementById('game'); return !!(g && getComputedStyle(g).display !== 'none' && (window.players||[]).length); }
+
+  /* oyundan çıkıldıktan sonra bekleyen bot zamanlayıcısı hata vermesin */
+  var _pt = window.playTurn;
+  if(typeof _pt === 'function') window.playTurn = function(p){ if(!p || !(window.players||[]).length) return; return _pt.apply(this, arguments); };
+
+  /* ---------- 1) TAPU HATASI: seçim kontrolü alan kişinin seçimine göre ---------- */
+  var _cps = window.comboPurchaseSelected;
+  if(typeof _cps === 'function'){
+    window.comboPurchaseSelected = function(over, seat){
+      if(!over) return _cps.apply(this, arguments);
+      var save = window.comboSelection;
+      window.comboSelection = {land:!!over.land, house:!!over.house, hotel:!!over.hotel, deed:!!over.deed};
+      try{ return _cps.call(this, window.comboSelection, seat); }
+      finally{ window.comboSelection = save; }
+    };
+  }
+
+  /* ---------- 2) BOTLAR: kendi şehrinde birden fazla parça (%40 yedek) ---------- */
+  window.botBuyOnOwnCity = function(p, cityName){
+    var c = cities[cityName]; if(!c) return false;
+    var m = mask(p, cityName), start = p.money, keep = Math.round(start*0.40), bought = [], cost = 0;
+    var steps = [['land',1,c.land,'ARSA'],['house',2,c.house,'EV'],['hotel',4,c.hotel,'OTEL']];
+    steps.forEach(function(s){ if(!(m & s[1]) && p.money - s[2] >= keep && Math.random() > .15){ p.money -= s[2]; cost += s[2]; m |= s[1]; bought.push(s[3]); } });
+    if((m & 7) === 7 && !(m & 8) && (p.laps||0) >= 1 && p.money - c.deed >= keep && Math.random() > .25){ p.money -= c.deed; cost += c.deed; m |= 8; bought.push('TAPU'); }
+    if(!bought.length){ log('🤖 '+p.name+' '+cityName+' için geliştirme satın almadı.'); return false; }
+    p.properties[cityName] = m;
+    log('🛒 '+p.name+' '+cityName+' için seçilen kombinasyonu satın aldı: '+propertyLabel(m)+' / -'+fm(cost));
+    checkRegionCompletion(p);
+    return true;
+  };
+
+  /* ---------- 3) 1,5× GERİ ALIM: tüm yapılarla + ardından satın alma ekranı ---------- */
+  window.completeCityPurchaseAttempt = function(buyer, owner, cityName, level, buyPrice){
+    var p = buyer, o = owner;
+    if(!p || !o || getOwner(cityName) !== o){ waiting = false; renderBoard(); return setTimeout(nextTurn, DELAY); }
+    if(p.money < buyPrice){ log('❌ '+p.name+' '+cityName+' şehrini satın almak için yeterli Coin\'e sahip değil.'); waiting = false; renderBoard(); return setTimeout(nextTurn, DELAY); }
+    var lv = getLevel(o, cityName) || level;
+    p.money -= buyPrice; o.money += buyPrice;
+    transferCityOwnership(o, p, cityName, lv);
+    log('🏙️ '+p.name+' '+cityName+' şehrini 1,5× fiyatına aldı: '+fm(buyPrice)+' | Yeni sahip: '+p.name+' | Mülk: '+propertyLabel(lv));
+    var idx = players.indexOf(p), c = cities[cityName];
+    var canMore = c && (!(lv & 1) || !(lv & 2) || !(lv & 4) || (!(lv & 8) && (p.laps||0) >= 1));
+    if(isInteractiveSeat(p) && canMore && idx === currentPlayer){
+      try{ document.getElementById('infoModal').style.display = 'none'; }catch(e){}
+      waiting = true; rollInProgress = false;
+      if(typeof comboReset === 'function') comboReset();
+      var ti = document.getElementById('turnInfo'); if(ti) ti.innerHTML = cityName+' artık senin. Eksik parçaları seçip satın alabilirsin. <span id="actionTimer" style="margin-left:8px;color:#ffd54f">⏱️ 30</span>';
+      renderBoard(); if(typeof comboRender === 'function') comboRender(); startTimer(30, 'action');
+      return;
+    }
+    if(!isInteractiveSeat(p)) botBuyOnOwnCity(p, cityName);
+    rollInProgress = true; renderBoard();
+    return setTimeout(nextTurn, DELAY);
+  };
+
+  /* ---------- 4) BORÇ: mülk satış paneli ---------- */
+  var sEl = null, sale = null;
+  function buildSale(){
+    if(sEl) return sEl;
+    sEl = document.createElement('div'); sEl.id = 'mcSale'; sEl.className = 'mcP1Ov';
+    sEl.innerHTML = '<div class="pan"><span class="tm" id="mcSaT">⏱ 20</span><h3>💸 BORCUNU ÖDE</h3><div class="sub" id="mcSaW"></div><div class="info"><div>Borç<b id="mcSaD"></b></div><div>Bakiyen<b id="mcSaM"></b></div><div class="neg">Eksik<b id="mcSaE"></b></div></div><div id="mcSaL"></div>' +
+      '<div class="ft"><div class="t" id="mcSaF"></div><button type="button" class="btn g" id="mcSaOk">SAT VE ÖDE</button><button type="button" class="btn r" id="mcSaB" style="padding:10px">İFLAS ET</button></div></div>';
+    document.body.appendChild(sEl);
+    sEl.querySelector('#mcSaL').addEventListener('click', function(e){ var r = e.target.closest('.sr'); if(!r || !sale) return; var c = r.getAttribute('data-c'); sale.sel[c] = !sale.sel[c]; paintSale(); });
+    sEl.querySelector('#mcSaOk').onclick = function(){ if(sale) finishSale(false); };
+    sEl.querySelector('#mcSaB').onclick = function(){ if(!sale) return; var b = sEl.querySelector('#mcSaB'); if(b.getAttribute('data-sure')){ finishSale(true); } else { b.setAttribute('data-sure','1'); b.textContent = 'EMİN MİSİN?'; } };
+    return sEl;
+  }
+  function paintSale(){
+    var el = buildSale(), s = sale, got = 0;
+    s.props.forEach(function(x){ if(s.sel[x.c]) got += x.v; });
+    el.querySelector('#mcSaW').innerHTML = esc(s.why)+' · Hangi mülklerini satacağını sen seç';
+    el.querySelector('#mcSaD').textContent = fm(s.due); el.querySelector('#mcSaM').textContent = fm(s.money); el.querySelector('#mcSaE').textContent = fm(Math.max(0, s.due - s.money));
+    el.querySelector('#mcSaL').innerHTML = s.props.map(function(x){ return '<div class="sr'+(s.sel[x.c] ? ' on' : '')+'" data-c="'+esc(x.c)+'"><i>'+(s.sel[x.c] ? '✓' : '')+'</i><b>'+esc(x.c)+'</b><small>'+esc(x.l)+'</small><span>'+fm(x.v)+'</span></div>'; }).join('');
+    var ok = s.money + got >= s.due;
+    el.querySelector('#mcSaF').innerHTML = 'Seçilen: <b'+(ok ? '' : ' class="neg"')+'>'+fm(got)+'</b> '+(ok ? '✓ borç kapanıyor' : '— henüz yetmiyor')+'<br><small style="color:#8fa0d0">Süre dolarsa sistem en ucuzdan otomatik satar</small>';
+    el.querySelector('#mcSaOk').disabled = !ok;
+  }
+  function openSale(s){
+    sale = s; var el = buildSale(); var b = el.querySelector('#mcSaB'); b.removeAttribute('data-sure'); b.textContent = 'İFLAS ET';
+    paintSale(); el.classList.add('show');
+    var left = Math.max(1, Math.round((s.dl - Date.now())/1000)), tEl = el.querySelector('#mcSaT');
+    clearInterval(s.iv); tEl.textContent = '⏱ '+left;
+    s.iv = setInterval(function(){ left--; tEl.textContent = '⏱ '+Math.max(0,left); if(left <= 0){ clearInterval(s.iv); if(sale === s) finishSale(false, true); } }, 1000);
+  }
+  function closeSale(){ if(sale) clearInterval(sale.iv); sale = null; if(sEl) sEl.classList.remove('show'); }
+  function finishSale(bank, auto){
+    var s = sale; if(!s) return; closeSale();
+    var list = auto ? [] : s.props.filter(function(x){ return s.sel[x.c]; }).map(function(x){ return x.c; });
+    s.answer({sell:list, bank:!!bank});
+  }
+  function saleProps(p){
+    var out = []; for(var c in (p.properties||{})){ var m = p.properties[c]; out.push({c:c, m:m, v:propertySaleValue(c, m), l:(cities[c] ? propertyLabel(m) : 'Özel bölge')}); }
+    out.sort(function(a,b){ return a.v - b.v; }); return out;
+  }
+  function applySaleAnswer(p, ans){
+    if(!ans) return;
+    if(ans.bank){
+      for(var c in (p.properties||{})){ delete p.properties[c]; log('🏦 '+c+' mülkü BANKAYA geri döndü.'); }
+      try{ checkRegionCompletion(p); }catch(e){}
+      p.__volBank = true; return;
+    }
+    (ans.sell||[]).forEach(function(c){ if(p.properties && p.properties[c] !== undefined){ var v = propertySaleValue(c, p.properties[c]); delete p.properties[c]; p.money += v; log('🏷️ '+p.name+' '+c+' mülkünü '+fm(v)+' bedelle sattı.'); } });
+    try{ checkRegionCompletion(p); }catch(e){}
+  }
+  var saleSeq = 0, pendingSale = null;
+  /* host/solo: interaktif oyuncuya sor, sonra devam et */
+  function askSell(p, due, why, cont){
+    var idx = players.indexOf(p), dl = Date.now() + 20000, id = 's'+(++saleSeq)+'_'+Date.now();
+    try{ stopTimer(); }catch(e){}
+    window.waiting = true;
+    var done = false, finish = function(ans){ if(done) return; done = true; pendingSale = null; applySaleAnswer(p, ans); window.waiting = false; renderBoard(); cont(); };
+    pendingSale = {id:id, finish:finish};
+    var props = saleProps(p);
+    if(remoteSeats().indexOf(idx) >= 0 && isHost() && db){
+      var code = co().code;
+      db.ref('rooms/'+code+'/mcSell').set({id:id, seat:idx, due:due, why:why, money:p.money, dl:20000, props:props.map(function(x){ return {c:x.c, m:x.m, v:x.v, l:x.l}; })});
+      setTimeout(function(){ finish({sell:[], bank:false}); }, 22500);
+      return;
+    }
+    openSale({due:due, why:why, money:p.money, props:props, sel:{}, dl:dl, answer:finish});
+  }
+  /* host: misafir cevabını dinle */
+  var hostSaleCode = null;
+  function watchSaleHost(){
+    var c = co(); var code = (c.code && c.role === 'host') ? c.code : null;
+    if(code === hostSaleCode || !db) return; hostSaleCode = code; if(!code) return;
+    db.ref('rooms/'+code+'/mcSellAns').on('value', function(sn){ var v = sn && sn.val(); if(v && pendingSale && v.id === pendingSale.id) pendingSale.finish(v); });
+  }
+  /* misafir: kendisine gelen satış isteği */
+  var guestSaleCode = null, guestSeenSale = null;
+  function watchSaleGuest(){
+    var c = co(); var code = (c.code && c.role === 'guest') ? c.code : null;
+    if(code === guestSaleCode || !db) return; guestSaleCode = code; if(!code) return;
+    db.ref('rooms/'+code+'/mcSell').on('value', function(sn){
+      var v = sn && sn.val(); if(!v || v.id === guestSeenSale || v.seat !== window.MONOCITY_COOP_MY_SEAT) return;
+      guestSeenSale = v.id;
+      openSale({due:v.due, why:v.why, money:v.money, props:v.props || [], sel:{}, dl:Date.now() + (v.dl || 20000) - 800,
+        answer:function(ans){ db.ref('rooms/'+code+'/mcSellAns').set({id:v.id, sell:ans.sell || [], bank:!!ans.bank}); }});
+    });
+  }
+
+  /* kira borcu */
+  var _hc = window.handleCity;
+  window.handleCity = function(p, cityName){
+    try{
+      var o = getOwner(cityName);
+      if(o && o !== p && !p.__saleDone && isInteractiveSeat(p) && hasProps(p) && !(window.MONOCITY_MATCH && window.MONOCITY_MATCH() && window.MONOCITY_MATCH().cfg.tur === '2v2' && sameTeam(p, o))){
+        var rent = calculateRent(cityName, getLevel(o, cityName), o);
+        if(rent > 0 && p.money < rent){
+          var self = this, args = arguments;
+          return askSell(p, rent, 'Kira: '+cityName+' ('+o.name+')', function(){ p.__saleDone = true; try{ _hc.apply(self, args); } finally{ p.__saleDone = false; } });
+        }
+      }
+    }catch(e){ console.warn('mc sale', e); }
+    return _hc.apply(this, arguments);
+  };
+  function sameTeam(a, b){ var ia = players.indexOf(a), ib = players.indexOf(b); if(ia < 0 || ib < 0) return false; var ra = window.monocityRealSeat ? monocityRealSeat(ia) : ia, rb = window.monocityRealSeat ? monocityRealSeat(ib) : ib; return ra % 2 === rb % 2; }
+
+  /* ---------- 5) ŞANS KARTI BORCU: önce mülk satılır, yetmezse iflas ---------- */
+  function goBankrupt(p, why){
+    p.money = 0; p.bankrupt = true;
+    for(var c in (p.properties||{})){ delete p.properties[c]; log('🏦 '+c+' mülkü BANKAYA geri döndü.'); }
+    try{ checkRegionCompletion(p); }catch(e){}
+    log('💥 '+p.name+' iflas etti.'+(why ? ' ('+why+')' : ''));
+  }
+  var _acc = window.applyChanceCard;
+  window.applyChanceCard = function(p, card){
+    var amt = 0, others = null;
+    if(card && card.id === 'moneyMinus100k') amt = 100000;
+    else if(card && card.id === 'moneyMinus200k') amt = 200000;
+    else if(card && card.id === 'pay50k'){ others = players.filter(function(x){ return x !== p && !x.bankrupt; }); amt = 50000 * others.length; }
+    if(!amt || p.money >= amt) return _acc.apply(this, arguments);
+    try{ ensureChanceState(p); }catch(e){}
+    var go = function(){
+      if(p.money < amt && hasProps(p) && !p.__volBank) sellPropertiesForDebt(p, amt, null);
+      var paid = Math.min(Math.max(0, p.money), amt); p.money -= paid;
+      if(others && others.length){ var each = Math.floor(paid / others.length); others.forEach(function(o){ o.money += each; }); }
+      var txt;
+      if(paid >= amt) txt = others ? '💸 Diğer oyunculara toplam <b>'+fm(paid)+' Coin</b> ödedin.' : '💸 <b>-'+fm(amt)+' Coin</b> hesabından düşüldü.';
+      else { goBankrupt(p, 'şans kartı borcu'); txt = '💥 Borç ödenemedi (<b>'+fm(amt - paid)+'</b> eksik) — <b>İFLAS</b>'; }
+      p.__volBank = false;
+      renderBoard();
+      return showChanceResult(p, card, txt);
+    };
+    if(isInteractiveSeat(p) && hasProps(p)) return askSell(p, amt, 'Şans kartı: −'+fm(amt), go);
+    return go();
+  };
+
+  /* ---------- 6) TAHTADA BİLDİRİMLER (log'dan) ---------- */
+  var nEl = null, nQueue = [], nTimer = null;
+  function colOfName(name){
+    var ps = window.players || [];
+    for(var i=0;i<ps.length;i++){ if(ps[i] && ps[i].name === name){ var rs = window.monocityRealSeat ? monocityRealSeat(i) : i; return (window.playerColors && playerColors[rs]) || '#ffcc3d'; } }
+    return '#ffcc3d';
+  }
+  var PAT = [
+    [/^🛒 (\S+) (\S+) için seçilen kombinasyonu satın aldı: (.+?) \/ -/, function(m){ return ['🏙️', m[1], m[2]+' · '+m[3]+' aldı']; }],
+    [/^🛒 (\S+) (\S+) için (ARSA|EV|OTEL|TAPU) satın aldı/, function(m){ return ['🏙️', m[1], m[2]+' · '+m[3]+' aldı']; }],
+    [/^🏙️ (\S+) (\S+) şehrini 1,5× fiyatına aldı: (\S+)/, function(m){ return ['🏙️', m[1], m[2]+' şehrini 1,5× ile aldı · '+m[3]]; }],
+    [/^💸 (\S+) (\S+) oyuncusuna (\S+) kira ödedi/, function(m){ return ['💸', m[1], '→ '+m[2]+' · '+m[3]+' kira']; }],
+    [/^💥 (\S+) iflas etti/, function(m){ return ['💥', m[1], 'iflas etti!']; }],
+    [/^🌍 (\S+) (.+?) bölgesini tamamladı/, function(m){ return ['🌍', m[1], m[2]+' bölgesini tamamladı · kiralar 2×']; }],
+    [/^🌍 (\S+) 4 ÖZEL BÖLGEYİ TAMAMLADI/, function(m){ return ['🌍', m[1], '4 özel bölgeyi tamamladı!']; }],
+    [/^🔨 (?:AÇIK ARTIRMA|GİZLİ MÜZAYEDE) KAZANANI: (\S+) \/ (\S+) \//, function(m){ return ['🔨', m[1], m[2]+' müzayedesini kazandı']; }],
+    [/^🔨 Özel müzayede sonucu: (\S+) \/ Paket: .+? \/ Kazanan: (\S+) \//, function(m){ return ['🔨', m[2], m[1]+' müzayedesini kazandı']; }],
+    [/^🚔 (\S+) hapishanede 2 tur cezası aldı/, function(m){ return ['🚔', m[1], 'Ceza Evi\'ne girdi · 2 tur']; }],
+    [/^🚔 (\S+) hapishaneden çıkmak için (\S+) Coin/, function(m){ return ['🚔', m[1], 'Ceza Evi\'nden çıktı · '+m[2]]; }],
+    [/^🏷️ (\S+) (\S+) mülkünü (\S+) bedelle sattı/, function(m){ return ['🏷️', m[1], m[2]+' mülkünü sattı · '+m[3]]; }],
+    [/^🔌 (\S+) (.+)$/, function(m){ return ['🔌', m[1], m[2]]; }]
+  ];
+  function note(e, name, text){
+    if(!nEl){ nEl = document.createElement('div'); nEl.id = 'mcNotes'; document.body.appendChild(nEl); }
+    if(!inGame()) return;
+    var d = document.createElement('div'); d.className = 'nt'; d.style.setProperty('--c', colOfName(name));
+    d.innerHTML = '<span class="e">'+e+'</span><b>'+esc(name)+'</b> '+esc(text);
+    nEl.appendChild(d);
+    while(nEl.children.length > 3) nEl.removeChild(nEl.firstChild);
+    setTimeout(function(){ d.classList.add('out'); setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); }, 400); }, 3600);
+  }
+  window.monocityBoardNote = note;
+  var _log2 = window.log;
+  if(typeof _log2 === 'function'){
+    window.log = function(t){
+      var r = _log2.apply(this, arguments);
+      try{
+        var s = String(t);
+        for(var i=0;i<PAT.length;i++){ var m = PAT[i][0].exec(s); if(m){ nQueue.push(PAT[i][1](m)); break; } }
+        if(nQueue.length && !nTimer){ nTimer = setTimeout(function(){ var q = nQueue.slice(-3); nQueue = []; nTimer = null; q.forEach(function(x){ note(x[0], x[1], x[2]); }); }, 120); }
+      }catch(e){}
+      return r;
+    };
+  }
+
+  /* ---------- 7) BEĞENİ: oyun başına aynı oyuncuya 1 kez ---------- */
+  var liked = {}, likedGame = null;
+  function gameKey(){ var M = window.MONOCITY_MATCH && window.MONOCITY_MATCH(); return (M && M.mid) || (co().code ? 'c:'+co().code : 'solo:'+(window.__mcGameT || 0)); }
+  var _sgn2 = window.startGameWithNames;
+  if(typeof _sgn2 === 'function') window.startGameWithNames = function(){ window.__mcGameT = Date.now(); return _sgn2.apply(this, arguments); };
+  document.addEventListener('click', function(e){
+    var b = e.target && e.target.closest && e.target.closest('#mcIsoPP button[data-a="like"]'); if(!b) return;
+    var gk = gameKey(); if(gk !== likedGame){ likedGame = gk; liked = {}; }
+    var sel = document.querySelector('#mcIsoHud .ipc.sel'), i = sel ? +sel.getAttribute('data-i') : -1, p = (window.players||[])[i];
+    if(!p) return;
+    var key = p.uid || ('n:'+p.name);
+    if(liked[key]){ e.stopImmediatePropagation(); e.preventDefault(); toast('❤️ '+p.name+' adlı oyuncuyu bu oyunda zaten beğendin.'); return; }
+    liked[key] = 1;
+  }, true);
+
+  /* ---------- 8) İFLAS / ÇIKIŞ / BAĞLANTI KOPMASI ---------- */
+  function bankruptSeat(i, why){
+    var p = players[i]; if(!p || p.bankrupt || window.gameOver) return false;
+    if(i === currentPlayer && window.rollInProgress) return false;
+    goBankrupt(p, why);
+    if(i === currentPlayer){
+      try{ stopTimer(); }catch(e){} window.waiting = false;
+      try{ if(typeof comboReset === 'function') comboReset(); }catch(e){}
+      ['infoModal','openModal','secretModal'].forEach(function(id){ var m = document.getElementById(id); if(m) m.style.display = 'none'; });
+      renderBoard();
+      if(!checkAutomaticGameOver()) setTimeout(nextTurn, DELAY);
+    }else{ renderBoard(); checkAutomaticGameOver(); }
+    return true;
+  }
+  /* host: koltuğu bota devret */
+  var dropped = {}, seen = {}, actCode = null;
+  function dropSeat(s, why){
+    if(dropped[s] || !players[s]) return; dropped[s] = true;
+    players[s].autoBot = true;
+    try{ log('🔌 '+players[s].name+' '+why+' — yerine bot oynuyor.'); }catch(e){}
+  }
+  function hostTick(){
+    if(!isHost() || !(window.players||[]).length || window.gameOver) return;
+    var now = Date.now(), rs = remoteSeats();
+    rs.slice().forEach(function(s){
+      if(seen[s] == null) seen[s] = now;
+      if(!dropped[s] && now - seen[s] > 25000) dropSeat(s, 'bağlantısı koptu');
+      if(dropped[s] && !(currentPlayer === s && window.waiting)){
+        var k = rs.indexOf(s); if(k >= 0) rs.splice(k, 1);
+        if(players[s]) players[s].remote = false;
+        if(currentPlayer === s && window.MONOCITY_COOP_AWAITING_ROLL_SEAT === s && !window.waiting && !window.rollInProgress){
+          window.MONOCITY_COOP_AWAITING_ROLL_SEAT = null; window.rollInProgress = true; playTurn(players[s]);
+        }
+        renderBoard();
+      }
+    });
+    pendingActs = pendingActs.filter(function(a){ return !doAct(a); });
+  }
+  var pendingActs = [];
+  function doAct(a){
+    if(!a || typeof a.seat !== 'number' || !players[a.seat]) return true;
+    if(a.t === 'bankrupt') return bankruptSeat(a.seat, 'kendi isteğiyle') || players[a.seat].bankrupt;
+    if(a.t === 'leave'){ dropSeat(a.seat, 'oyundan ayrıldı'); return true; }
+    return true;
+  }
+  function watchActs(){
+    var c = co(); var code = (c.code && c.role === 'host') ? c.code : null;
+    if(code === actCode || !db) return; actCode = code; dropped = {}; seen = {}; if(!code) return;
+    db.ref('rooms/'+code+'/mcAlive').on('value', function(sn){ var v = (sn && sn.val()) || {}; Object.keys(v).forEach(function(k){ var s = +k; if(v[k] !== seen['v'+s]){ seen['v'+s] = v[k]; seen[s] = Date.now(); } }); });
+    db.ref('rooms/'+code+'/mcAct').on('child_added', function(sn){ var a = sn && sn.val(); try{ sn.ref.remove(); }catch(e){} if(a && !doAct(a)) pendingActs.push(a); });
+  }
+  /* misafir: kalp atışı */
+  var aliveT = 0;
+  function guestTick(){
+    if(!isGuest() || !db || window.gameOver) return;
+    if(Date.now() - aliveT < 4000) return; aliveT = Date.now();
+    try{ db.ref('rooms/'+co().code+'/mcAlive/'+window.MONOCITY_COOP_MY_SEAT).set(Date.now()); }catch(e){}
+  }
+  function sendAct(t){ try{ db.ref('rooms/'+co().code+'/mcAct').push({seat:window.MONOCITY_COOP_MY_SEAT, t:t, ts:Date.now()}); }catch(e){} }
+
+  /* çıkış menüsü (X butonu) */
+  var xEl = null;
+  function buildExit(){
+    if(xEl) return xEl;
+    xEl = document.createElement('div'); xEl.id = 'mcExitMenu'; xEl.className = 'mcP1Ov';
+    xEl.innerHTML = '<div class="pan"><h3>⚙️ OYUN MENÜSÜ</h3><div class="sub" id="mcXS"></div><div class="col"><button type="button" class="btn gr" id="mcXB">🏳️ İFLAS ET</button><button type="button" class="btn gr" id="mcXQ">🚪 OYUNDAN ÇIK</button><button type="button" class="btn g" id="mcXC">VAZGEÇ</button></div></div>';
+    document.body.appendChild(xEl);
+    xEl.addEventListener('click', function(e){ if(e.target === xEl) xEl.classList.remove('show'); });
+    xEl.querySelector('#mcXC').onclick = function(){ xEl.classList.remove('show'); };
+    xEl.querySelector('#mcXQ').onclick = function(){ xEl.classList.remove('show'); var b = document.getElementById('mgEnd'); if(typeof endGame === 'function') endGame(); else if(b) b.click(); };
+    xEl.querySelector('#mcXB').onclick = function(){
+      var b = xEl.querySelector('#mcXB');
+      if(!b.getAttribute('data-sure')){ b.setAttribute('data-sure','1'); b.textContent = '⚠️ EMİN MİSİN? (geri alınamaz)'; b.className = 'btn r'; return; }
+      xEl.classList.remove('show');
+      if(isGuest()){ sendAct('bankrupt'); toast('🏳️ İflas isteğin gönderildi.'); return; }
+      if(!bankruptSeat(0, 'kendi isteğiyle')) toast('Zar atılırken iflas edilemez, birazdan tekrar dene.');
+    };
+    return xEl;
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target && e.target.closest && e.target.closest('#mcIsoEnd'); if(!t) return;
+    var me = (window.players||[])[0]; if(!me || window.gameOver) return;
+    e.stopImmediatePropagation(); e.preventDefault();
+    var el = buildExit(), b = el.querySelector('#mcXB');
+    b.removeAttribute('data-sure'); b.className = 'btn gr'; b.textContent = '🏳️ İFLAS ET';
+    b.style.display = me.bankrupt ? 'none' : '';
+    el.querySelector('#mcXS').textContent = me.bankrupt ? 'İflas ettin — izlemeye devam edebilir ya da çıkabilirsin.' : (isHost() ? 'Kurucu oyundan çıkarsa oyun herkes için biter.' : 'İflas edersen mülklerin bankaya döner.');
+    el.classList.add('show');
+  }, true);
+
+  /* iflas edince: izle / çık */
+  var bEl = null, bShown = null;
+  function buildBk(){
+    if(bEl) return bEl;
+    bEl = document.createElement('div'); bEl.id = 'mcBankrupt'; bEl.className = 'mcP1Ov';
+    bEl.innerHTML = '<div class="pan"><div class="ic">💥</div><h3>İFLAS ETTİN</h3><div class="sub">Mülklerin bankaya döndü</div><div class="two"><button type="button" class="btn g" id="mcBkW">👀 İZLEMEYE DEVAM ET</button><button type="button" class="btn gr" id="mcBkQ">🚪 OYUNDAN ÇIK</button></div><div class="sub" id="mcBkN" style="margin-top:10px"></div></div>';
+    document.body.appendChild(bEl);
+    bEl.querySelector('#mcBkW').onclick = function(){ bEl.classList.remove('show'); };
+    bEl.querySelector('#mcBkQ').onclick = function(){ bEl.classList.remove('show'); try{ confirmEndGame(); }catch(e){} };
+    return bEl;
+  }
+  function bankruptTick(){
+    var me = (window.players||[])[0]; if(!me || !inGame() || window.gameOver) return;
+    var gk = gameKey(), was = (bShown === gk);
+    if(!me.bankrupt){ if(was) bShown = null; return; }
+    if(!was){
+      bShown = gk; var el = buildBk();
+      el.querySelector('#mcBkN').textContent = isHost() ? 'Kurucu çıkarsa oyun herkes için biter.' : 'Çıksan da oyun diğerleri için devam eder · Ödülün maç bitince iflas sırana göre hesaplanır.';
+      el.classList.add('show');
+    }
+  }
+
+  /* misafir çıkarken hosta haber ver */
+  var _ceg = window.confirmEndGame;
+  if(typeof _ceg === 'function'){
+    window.confirmEndGame = function(){ try{ if(isGuest() && !window.gameOver) sendAct('leave'); }catch(e){} return _ceg.apply(this, arguments); };
+  }
+
+  setInterval(function(){ try{ watchSaleHost(); watchSaleGuest(); watchActs(); hostTick(); guestTick(); bankruptTick(); }catch(e){ console.warn('mc p1', e); } }, 1000);
 })();
 </script>
 
