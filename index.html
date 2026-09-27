@@ -3642,7 +3642,7 @@ if(propertyHasDeed(o,cityName)){
  if(isInteractiveSeat(p)){waiting=false;document.getElementById("infoModal").style.display="none";renderBoard();return setTimeout(nextTurn,DELAY)}
  return setTimeout(nextTurn,DELAY);
 }
-var buyPrice=Math.floor(c.price*1.5);
+var buyPrice=mcBuybackPrice(cityName,level);
 var pendingPurchase={buyer:p,owner:o,city:cityName,level:level,buyPrice:buyPrice};
 
 if(isInteractiveSeat(p)){
@@ -3684,12 +3684,14 @@ function transferCityOwnership(from,to,cityName,level){
  if(from)checkRegionCompletion(from);
  checkRegionCompletion(to);
 }
+/* 1,5× geri alım: sahibinin şehre ödediği toplam değerin 1,5 katı (arsa/ev/otel) */
+function mcBuybackPrice(city,mask){var c=cities[city];if(!c)return 0;var v=propertySaleValue(city,(mask||0)&~DEED_BIT);if(!v)v=c.land;return Math.floor(v*1.5);}
 function buyFromPlayer(){
 if(!waiting||!isInteractiveSeat(players[currentPlayer]))return;
 stopTimer();
 var p=players[currentPlayer],cityName=board[p.pos],c=cities[cityName],o=getOwner(cityName);
 if(!o||o.id==p.id){continueAfterRent();return}
-var price=Math.floor(c.price*1.5);
+var price=mcBuybackPrice(cityName,getLevel(o,cityName));
 if(p.money<price){log("❌ Satın alma için yeterli para yok.");continueAfterRent();return}
 var level=getLevel(o,cityName);
 /* İnsan alıcı için koruma kartı sahibi insan ise kart kararı burada değil,
@@ -18745,7 +18747,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
   function isGuest(){ var c = co(); return !!(c.code && c.role === 'guest' && c.entered); }
   function mySeat(){ return isGuest() ? window.MONOCITY_COOP_MY_SEAT : 0; }
   function remoteSeats(){ return Array.isArray(window.MONOCITY_COOP_REMOTE_SEATS) ? window.MONOCITY_COOP_REMOTE_SEATS : []; }
-  function hasProps(p){ for(var k in (p.properties||{})) return true; return false; }
+  function hasProps(p){ for(var k in (p.properties||{})) if(window.cities && cities[k]) return true; return false; }
   function mask(p, c){ return (p.properties && p.properties[c]) || 0; }
   function inGame(){ var g = document.getElementById('game'); return !!(g && getComputedStyle(g).display !== 'none' && (window.players||[]).length); }
 
@@ -18859,7 +18861,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
     s.answer({sell:list, bank:!!bank});
   }
   function saleProps(p){
-    var out = []; for(var c in (p.properties||{})){ var m = p.properties[c]; out.push({c:c, m:m, v:propertySaleValue(c, m), l:(cities[c] ? propertyLabel(m) : 'Özel bölge')}); }
+    var out = []; for(var c in (p.properties||{})){ var m = p.properties[c]; if(!(window.cities && cities[c])) continue; out.push({c:c, m:m, v:propertySaleValue(c, m), l:(cities[c] ? propertyLabel(m) : 'Özel bölge')}); }
     out.sort(function(a,b){ return a.v - b.v; }); return out;
   }
   function applySaleAnswer(p, ans){
@@ -18925,6 +18927,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
     return _hc.apply(this, arguments);
   };
   function sameTeam(a, b){ var ia = players.indexOf(a), ib = players.indexOf(b); if(ia < 0 || ib < 0) return false; var ra = window.monocityRealSeat ? monocityRealSeat(ia) : ia, rb = window.monocityRealSeat ? monocityRealSeat(ib) : ib; return ra % 2 === rb % 2; }
+  window.monocityAskSell = askSell; window.monocityHasSellable = hasProps; window.monocitySameTeam = sameTeam;
 
   /* ---------- 5) ŞANS KARTI BORCU: önce mülk satılır, yetmezse iflas ---------- */
   function goBankrupt(p, why){
@@ -18976,6 +18979,10 @@ body.mcMatchOn #mcGameOver{display:none!important}
     [/^🚔 (\S+) hapishanede 2 tur cezası aldı/, function(m){ return ['🚔', m[1], 'Ceza Evi\'ne girdi · 2 tur']; }],
     [/^🚔 (\S+) hapishaneden çıkmak için (\S+) Coin/, function(m){ return ['🚔', m[1], 'Ceza Evi\'nden çıktı · '+m[2]]; }],
     [/^🏷️ (\S+) (\S+) mülkünü (\S+) bedelle sattı/, function(m){ return ['🏷️', m[1], m[2]+' mülkünü sattı · '+m[3]]; }],
+    [/^💰 (\S+) vergi -(\S+)/, function(m){ return ['💸', m[1], 'vergi ödedi (%15) · '+m[2]]; }],
+    [/^🚗 (\S+) (?:park yerinde beklememek için|ŞANS kartından gelen PARK CEZASINDA) (\S+) Coin öde/, function(m){ return ['🚗', m[1], 'park cezası ödedi · '+m[2]]; }],
+    [/^(?:🚗 )?.*?(\S+) Coin ödendi; (\S+) 1 tur bekleyecek/, function(m){ return ['🚗', m[2], 'park cezası · '+m[1]+' · 1 tur bekleyecek']; }],
+    [/^🔨 Satılacak boş şehir kalmadı — (.+)$/, function(m){ return ['🔨', 'Banka', 'boş şehir yok · '+m[1]]; }],
     [/^🔌 (\S+) (.+)$/, function(m){ return ['🔌', m[1], m[2]]; }]
   ];
   function note(e, name, text){
@@ -19627,7 +19634,9 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
   }, true);
   setInterval(function(){
     var it = document.querySelector('#infoText .mcP2Pk'), bar = document.getElementById('mcWtBar');
-    if(it && bar && bar.classList.contains('show')){ var sp = bar.querySelector('span'), k = it.getAttribute('data-k'), want = k === 'meteor' ? '☄️ Göktaşı düşecek rakip şehre dokun' : '⚡ Elektriği kesilecek rakip şehre dokun'; if(sp && sp.textContent !== want) sp.textContent = want; }
+    if(!bar) return; var sp = bar.querySelector('span'); if(!sp) return;
+    if(it && bar.classList.contains('show')){ var k = it.getAttribute('data-k'), want = k === 'meteor' ? '☄️ Göktaşı düşecek rakip şehre dokun' : '⚡ Elektriği kesilecek rakip şehre dokun'; if(sp.textContent !== want){ if(!/^(☄️|⚡) /.test(sp.textContent)) bar.__mcOrig = sp.textContent; sp.textContent = want; } }
+    else if(!it && /^(☄️|⚡) /.test(sp.textContent)) sp.textContent = bar.__mcOrig || '🌍 Gitmek istediğin kareye dokun';
   }, 120);
 
   /* ===================== 3) KOMPAKT EKRANLAR + ADLAR ===================== */
@@ -20888,6 +20897,105 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
   /* ===================== BAŞLAT ===================== */
   function onUser(u){ if(!u) return; pullMine(u.uid); pullStats(u.uid); setTimeout(indexNick, 1500); }
   if(ONLINE){ try{ A.onChange(function(u){ onUser(u); }); A.ready.then(function(u){ onUser(u); }); }catch(e){} }
+})();
+</script>
+
+<script id="monocity-fix2-js">
+(function(){
+  'use strict';
+  /* =============================================================
+     MONOCITY düzeltme turu 2:
+     1) Borç satış paneli tüm borçlarda (özel bölge kirası, park cezası)
+     2) Açık artırma / müzayede yalnızca BOŞ şehirler
+     ============================================================= */
+  function DL(){ return window.DELAY || 900; }
+  function match(){ try{ return window.MONOCITY_MATCH && MONOCITY_MATCH(); }catch(e){ return null; } }
+  function is2v2(){ var M = match(); return !!(M && M.cfg && M.cfg.tur === '2v2'); }
+  function canAsk(p){ return !!(p && !p.__saleDone && window.monocityAskSell && window.monocityHasSellable && isInteractiveSeat(p) && window.monocityHasSellable(p)); }
+
+  /* ---------- 1a) Özel bölge (otobüs/tren/gemi/uçak) kirası ---------- */
+  function wrapTile(_ht){
+    var w = function(p){
+      try{
+        var SP = window.MONOCITY_WIDE_SPECIALS || {}, tile = board[p.pos];
+        if(SP[tile] && canAsk(p)){
+          var o = getOwner(tile);
+          if(o && o !== p && !o.bankrupt && !(is2v2() && window.monocitySameTeam && monocitySameTeam(p, o))){
+            var base = window.MONOCITY_SPECIAL_RENT || 50000, rent = (window.ownsAllSpecialRegions && ownsAllSpecialRegions(o)) ? base*2 : base;
+            if(p.money < rent){
+              var self = this, args = arguments;
+              return monocityAskSell(p, rent, 'Kira: '+((window.monocityTileName && monocityTileName(tile)) || tile)+' ('+o.name+')', function(){ p.__saleDone = true; try{ _ht.apply(self, args); } finally{ p.__saleDone = false; } });
+            }
+          }
+        }
+      }catch(e){ console.warn('fix2 special', e); }
+      return _ht.apply(this, arguments);
+    };
+    w.__f2 = true; if(_ht._v47Special) w._v47Special = true;
+    window.handleTile = w;
+  }
+  function ensureTile(){ var h = window.handleTile; if(typeof h === 'function' && !h.__f2) wrapTile(h); }
+  ensureTile(); setInterval(ensureTile, 400);
+
+  /* ---------- 1b) Park cezası (tahta + şans kartı) ---------- */
+  function wrapPark(name, costOf, ok){
+    var orig = window[name]; if(typeof orig !== 'function') return;
+    window[name] = function(){
+      try{
+        var p = players[currentPlayer], cost = costOf();
+        if(window.waiting && p && ok(p) && canAsk(p) && p.money < cost){
+          var self = this, args = arguments, wdt = window.waitDecisionTile;
+          return monocityAskSell(p, cost, 'Park cezası', function(){
+            window.waiting = true; window.waitDecisionTile = wdt; p.__saleDone = true;
+            try{ orig.apply(self, args); } finally{ p.__saleDone = false; }
+          });
+        }
+      }catch(e){ console.warn('fix2 park', e); }
+      return orig.apply(this, arguments);
+    };
+  }
+  var onPark = function(p){ return board[p.pos] === 'PARK CEZASI'; };
+  var chancePark = function(){ return window.waitDecisionTile === 'ŞANS_PARK'; };
+  wrapPark('payParkNow', function(){ return window.PARK_NOW_COST || 300000; }, onPark);
+  wrapPark('payParkWait', function(){ return window.PARK_WAIT_COST || 150000; }, onPark);
+  wrapPark('payChanceParkNow', function(){ return window.PARK_NOW_COST || 300000; }, chancePark);
+  wrapPark('payChanceParkWait', function(){ return window.PARK_WAIT_COST || 150000; }, chancePark);
+
+  /* ---------- 1c) Şans kartı vergisi de log'a (tahtada bildirim) ---------- */
+  var _acc = window.applyChanceCard;
+  if(typeof _acc === 'function') window.applyChanceCard = function(p, card){
+    if(!card || card.id !== 'tax' || !p) return _acc.apply(this, arguments);
+    var before = Number(p.money) || 0, r = _acc.apply(this, arguments), d = before - (Number(p.money) || 0);
+    try{ if(d > 0) log('💰 '+p.name+' vergi -'+money(d)+' (şans kartı)'); }catch(e){}
+    return r;
+  };
+
+  /* ---------- 2) Açık artırma / müzayede: sadece boş şehir ---------- */
+  window.getOwnedAuctionCandidates = function(){ return []; };
+  var _gat = window.getAuctionTarget;
+  if(typeof _gat === 'function') window.getAuctionTarget = function(){ var t = _gat.apply(this, arguments); return (t && t.type === 'free') ? t : null; };
+  function noFree(){ try{ return !getUntitledCities().length; }catch(e){ return false; } }
+  function skipAuction(label){
+    log('🔨 Satılacak boş şehir kalmadı — '+label+' yapılmadı.');
+    window.waiting = false;
+    try{ var m = document.getElementById('infoModal'); if(m) m.style.display = 'none'; }catch(e){}
+    try{ renderBoard(); }catch(e){}
+    return setTimeout(nextTurn, DL());
+  }
+  [['startOpenAuction','açık artırma'],['startSecretAuction','müzayede'],['startPrivateAuction','müzayede']].forEach(function(x){
+    var orig = window[x[0]]; if(typeof orig !== 'function') return;
+    window[x[0]] = function(){ if(noFree()) return skipAuction(x[1]); return orig.apply(this, arguments); };
+  });
+  /* güvenlik: bir şehir aynı anda iki oyuncuda görünmesin (son alan kalır) */
+  function dedupe(){
+    try{
+      var ps = window.players || [], seen = {};
+      for(var i=0;i<ps.length;i++){ var pr = ps[i] && ps[i].properties; if(!pr) continue;
+        for(var c in pr){ if(seen[c] === undefined) seen[c] = [i]; else seen[c].push(i); } }
+      for(var k in seen) if(seen[k].length > 1) window.__mcDup = (window.__mcDup || 0) + 1;
+    }catch(e){}
+  }
+  setInterval(dedupe, 5000);
 })();
 </script>
 
