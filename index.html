@@ -9738,10 +9738,10 @@ mportant;}
   // durumu ayrıca rooms/{kod}/auction üzerinden yayınlanır.
   // =================================================================
   var coopPrompt = null, coopPromptSeq = 0, coopRoutePending = 0;
-  var PROMPT_TITLE_RE = /Şehir Teklifi|MÜLK KORUMA|HAPİSHANE|PARK|ŞANS KARTI|DÜNYA TURU|MÜZAYEDE|OTOGAR|YHT|FERİBOT|HAVALİMANI/;
+  var PROMPT_TITLE_RE = /Şehir Teklifi|MÜLK KORUMA|HAPİSHANE|PARK|ŞANS KARTI|DÜNYA TURU|MÜZAYEDE|OTOGAR|YHT|FERİBOT|HAVALİMANI|TAKIM ŞEHRİ/;
   var CALL_WHITELIST = {buyFromPlayer:1,continueAfterRent:1,continueProtectedPurchase:1,payJailFine:1,takeWaitTurn:1,
     useJailFreeCard:1,payParkWait:1,payParkNow:1,payChanceParkWait:1,payChanceParkNow:1,chooseWorldTourIndex:1,
-    chooseWorldTour:1,chooseChanceTile:1,closeChanceAndContinue:1,closeInfoModal:1,buySpecialRegion:1,skipSpecialRegion:1};
+    chooseWorldTour:1,chooseChanceTile:1,closeChanceAndContinue:1,closeInfoModal:1,buySpecialRegion:1,skipSpecialRegion:1,mcTeamUp:1};
 
   function coopIsHostLive(){ return coop.role === 'host' && !!coop.code && !!db; }
   function coopIsRemoteSeat(id){
@@ -14039,13 +14039,14 @@ body.mcPawnLayerOn #board .cell.mcStep{animation:mcStepGlow .38s ease-out!import
       var last = st.queue.length ? st.queue[st.queue.length-1] : (st.anim ? st.anim.to : st.shown);
       if(last !== p.pos){
         var fwd = (p.pos - last + n) % n;
-        if(fwd >= 1 && fwd <= 12){ for(var k=1;k<=fwd;k++) st.queue.push((last+k)%n); }
+        var __wk = p.chanceCards && p.chanceCards.mcWalk;
+        if(fwd >= 1 && (fwd <= 12 || (__wk != null && +__wk === p.pos))){ for(var k=1;k<=fwd;k++) st.queue.push((last+k)%n); }
         else st.queue.push({fly: p.pos});
       }
       if(!st.anim && st.queue.length){
         var nx = st.queue.shift(), fly = typeof nx === 'object';
         var to = fly ? nx.fly : nx;
-        st.anim = { from: st.shown, to: to, t0: now, dur: fly ? 520 : (st.queue.length > 1 ? 130 : 200), fly: fly };
+        st.anim = { from: st.shown, to: to, t0: now, dur: fly ? 520 : (st.queue.length > 12 ? 80 : (st.queue.length > 1 ? 130 : 200)), fly: fly };
       }
       var stack = byCell[st.anim ? st.anim.to : st.shown] || [i], si = stack.indexOf(i);
       var a = st.anim, x, y, lift = 0, sz;
@@ -19007,8 +19008,12 @@ body.mcMatchOn #mcGameOver{display:none!important}
     [/^💥 (\S+) iflas etti/, function(m){ return ['💥', m[1], 'iflas etti!']; }],
     [/^🌍 (\S+) (.+?) bölgesini tamamladı/, function(m){ return ['🌍', m[1], m[2]+' bölgesini tamamladı · kiralar 2×']; }],
     [/^🌍 (\S+) 4 ÖZEL BÖLGEYİ TAMAMLADI/, function(m){ return ['🌍', m[1], '4 özel bölgeyi tamamladı!']; }],
-    [/^🔨 (?:AÇIK ARTIRMA|GİZLİ MÜZAYEDE) KAZANANI: (\S+) \/ (\S+) \//, function(m){ return ['🔨', m[1], m[2]+' müzayedesini kazandı']; }],
-    [/^🔨 Özel müzayede sonucu: (\S+) \/ Paket: .+? \/ Kazanan: (\S+) \//, function(m){ return ['🔨', m[2], m[1]+' müzayedesini kazandı']; }],
+    [/^🔨 (AÇIK ARTIRMA|GİZLİ MÜZAYEDE) KAZANANI: (\S+) \/ (\S+) \/ PAKET: .+? \/ (\S+)/, function(m){ return ['🔨', m[2], m[3]+' '+(m[1] === 'AÇIK ARTIRMA' ? 'açık artırmasını' : 'müzayedesini')+' kazandı · '+m[4]]; }],
+    [/^🔨 Özel müzayede sonucu: (\S+) \/ Paket: .+? \/ Kazanan: (\S+) \/ Oyuncu teklifi: (\S+)/, function(m){ return ['🔨', m[2], m[1]+' müzayedesini kazandı · '+m[3]]; }],
+    [/^🔨 Özel müzayede sonucu: (\S+) \/ Paket: .+? \/ (?:Banka kazandı|Kaybedildi)/, function(m){ return ['🔨', 'Banka', m[1]+' müzayedesini banka kazandı']; }],
+    [/^🔨 Açık artırmada şehir satılmadı/, function(){ return ['🔨', 'Banka', 'açık artırmada şehir satılmadı']; }],
+    [/^🔨 Gizli müzayedede teklif veren olmadı/, function(){ return ['🔨', 'Banka', 'gizli müzayedede kimse teklif vermedi']; }],
+    [/^🤝 (\S+) takım arkadaşı (\S+) için (\S+) şehrine (.+?) aldı/, function(m){ return ['🤝', m[1], m[3]+' · '+m[4]+' aldı ('+m[2]+' adına)']; }],
     [/^🚔 (\S+) hapishanede 2 tur cezası aldı/, function(m){ return ['🚔', m[1], 'Ceza Evi\'ne girdi · 2 tur']; }],
     [/^🚔 (\S+) hapishaneden çıkmak için (\S+) Coin/, function(m){ return ['🚔', m[1], 'Ceza Evi\'nden çıktı · '+m[2]]; }],
     [/^🏷️ (\S+) (\S+) mülkünü (\S+) bedelle sattı/, function(m){ return ['🏷️', m[1], m[2]+' mülkünü sattı · '+m[3]]; }],
@@ -19018,9 +19023,12 @@ body.mcMatchOn #mcGameOver{display:none!important}
     [/^🔨 Satılacak boş şehir kalmadı — (.+)$/, function(m){ return ['🔨', 'Banka', 'boş şehir yok · '+m[1]]; }],
     [/^🔌 (\S+) (.+)$/, function(m){ return ['🔌', m[1], m[2]]; }]
   ];
-  function note(e, name, text){
+  function blocked(){ return ['infoModal','openModal','secretModal'].some(function(id){ var m = document.getElementById(id); if(!m || getComputedStyle(m).display === 'none' || getComputedStyle(m).visibility === 'hidden') return false; var r = m.getBoundingClientRect(); return r.width > 0 && r.height > 0; }); }
+  function note(e, name, text, tries){
     if(!nEl){ nEl = document.createElement('div'); nEl.id = 'mcNotes'; document.body.appendChild(nEl); }
     if(!inGame()) return;
+    /* müzayede sonucu: sonuç penceresi kapanınca göster (pencerenin arkasında kaybolmasın) */
+    if(e === '🔨' && (tries||0) < 40 && blocked()){ setTimeout(function(){ note(e, name, text, (tries||0)+1); }, 400); return; }
     var d = document.createElement('div'); d.className = 'nt'; d.style.setProperty('--c', colOfName(name));
     d.innerHTML = '<span class="e">'+e+'</span><b>'+esc(name)+'</b> '+esc(text);
     nEl.appendChild(d);
@@ -19385,7 +19393,7 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
     if(area){ var m = getComputedStyle(area).transform, a = m && /matrix\(([^)]+)\)/.exec(m); if(a){ var v = a[1].split(',').map(Number); z = v[0]; tx = v[4]; ty = v[5]; } }
     return {z:z, tx:tx, ty:ty};
   }
-  function outOf(t){ var o = ownerOf(t); if(!o) return 0; var mo = o.chanceCards && o.chanceCards.mcOut; return (mo && +mo[t] > 0) ? +mo[t] : 0; }
+  function outOf(t){ var o = ownerOf(t); if(!o) return 0; var mo = o.chanceCards && o.chanceCards.mcOut; return (mo && mo[t] != null && mo[t] !== '') ? Math.max(1, +mo[t] || 0) : 0; }
   window.monocityCityOut = outOf;
   /* fn: yalnızca imza değişince çağrılır → {h: html, z: z-ofseti}; rk: yükselme animasyonu anahtarı (yapı değişince) */
   function put(key, cls, sig, fn, rk){
@@ -19439,7 +19447,8 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
       if(isCity && (m & 8)) continue;   /* tapulu: sadece simge, çit yok */
       /* arka çit + binalar (yalnızca değişince çizilir) */
       var mk = function(hw, hh, m, base, col, grey, isCity, side){ return function(){
-        var inner = fenceSvg(hw, hh, base, U, 'back'), zb = -(hw+hh)*0.86*R2*COS;
+        var fenceOn = !isCity || !!(m & 1);   /* çit = arsa; sadece ev/otel alındıysa çit yok */
+        var inner = fenceOn ? fenceSvg(hw, hh, base, U, 'back') : '', zb = -(hw+hh)*0.86*R2*COS;
         if(isCity && !(m & 8) && (m & 6)){
           var s = Math.min(hw, hh)*0.7, long = (side === 'b' || side === 't'), list = [], both = (m & 2) && (m & 4);
           if(long){ var bb0 = -hh*0.42; if(m & 2) list.push(['h', both ? -hw*0.4 : 0, bb0]); if(m & 4) list.push(['o', both ? hw*0.34 : 0, bb0]); }
@@ -19451,7 +19460,7 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
         return {h:'<svg>'+inner+'</svg>', z:zb};
       }; };
       var obB = put('p'+i, 'bld', 'b|'+sigB, mk(hw, hh, m, base, col, grey, isCity, p.side), m); place(obB, i, obB ? obB.zo : 0);
-      place(put('q'+i, 'bld fr', 'f|'+sigB, (function(hw, hh, base){ return function(){ return '<svg>'+fenceSvg(hw, hh, base, U, 'front')+'</svg>'; }; })(hw, hh, base), m), i, (hw+hh)*0.86*R2*COS, 2);
+      if(!isCity || (m & 1)) place(put('q'+i, 'bld fr', 'f|'+sigB, (function(hw, hh, base){ return function(){ return '<svg>'+fenceSvg(hw, hh, base, U, 'front')+'</svg>'; }; })(hw, hh, base), m), i, (hw+hh)*0.86*R2*COS, 2);
       if(grey){
         var ob = put('x'+i, 'out', 'x|'+out+'|'+U.toFixed(1), (function(out){ return function(){ return '<div class="sm s1"></div><div class="sm s2"></div><div class="sm s3"></div><div class="x">✕</div><div class="n">⚡'+out+'</div>'; }; })(out));
         if(ob) ob.el.style.setProperty('--u', U+'px');
@@ -19558,10 +19567,12 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
     try{ ensureChanceState(o); }catch(e){}
     var mo = (o.chanceCards.mcOut && typeof o.chanceCards.mcOut === 'object') ? o.chanceCards.mcOut : {};
     mo[t] = 2; o.chanceCards.mcOut = mo;
-    log('⚡ '+p.name+' ENERJİ ÇÖKÜŞÜ: '+t+' ('+o.name+') 2 tur elektriksiz — kira yok');
+    var mb = (o.chanceCards.mcOutBy && typeof o.chanceCards.mcOutBy === 'object') ? o.chanceCards.mcOutBy : {};
+    mb[t] = p.id; o.chanceCards.mcOutBy = mb;   /* sayaç kesen oyuncunun zarlarına göre işler */
+    log('⚡ '+p.name+' ENERJİ ÇÖKÜŞÜ: '+t+' ('+o.name+') elektriksiz — '+p.name+' 2 kez zar atınca geri gelir, kira yok');
   }
   function destroy(p, o, t){
-    try{ delete o.properties[t]; if(o.chanceCards && o.chanceCards.mcOut) delete o.chanceCards.mcOut[t]; }catch(e){}
+    try{ delete o.properties[t]; if(o.chanceCards && o.chanceCards.mcOut) delete o.chanceCards.mcOut[t]; if(o.chanceCards && o.chanceCards.mcOutBy) delete o.chanceCards.mcOutBy[t]; }catch(e){}
     try{ checkRegionCompletion(o); }catch(e){}
     log('☄️ '+p.name+' GÖKTAŞI: '+t+' yıkıldı → BANKAYA döndü ('+o.name+')');
   }
@@ -19642,23 +19653,36 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
     try{ var o = ownerOf(cityName); if(o && o !== p && outOf(cityName)) log('⚡ '+cityName+' elektriksiz — '+p.name+' kira ödemedi.'); }catch(e){}
     return _hc.apply(this, arguments);
   };
-  /* sayaç: şehir sahibinin her turunda 1 azalır */
-  var turnNo = 0;
+  /* sayaç: elektriği KESEN oyuncunun her zar atışında 1 azalır; 2. zarından sonra
+     (sırası bitince) elektrik geri gelir. Eski kayıtlarda kesen yoksa sahibin turuna göre. */
+  var turnNo = 0, pendingOn = [];
+  function restore(o, c){ var mo = o.chanceCards && o.chanceCards.mcOut; if(mo) delete mo[c]; var mb = o.chanceCards && o.chanceCards.mcOutBy; if(mb) delete mb[c]; log('💡 '+c+' şehrinin elektriği geri geldi ('+o.name+').'); }
   var _nt = window.nextTurn;
-  window.nextTurn = function(){ turnNo++; return _nt.apply(this, arguments); };
+  window.nextTurn = function(){
+    turnNo++;
+    try{ if(pendingOn.length){ var L = pendingOn; pendingOn = []; L.forEach(function(x){ if(x.o && x.o.chanceCards && x.o.chanceCards.mcOut && x.o.chanceCards.mcOut[x.c] !== undefined && (+x.o.chanceCards.mcOut[x.c] || 0) <= 0) restore(x.o, x.c); }); } }catch(e){}
+    return _nt.apply(this, arguments);
+  };
   var _pt = window.playTurn;
   window.playTurn = function(p){
     try{
-      if(p && p.chanceCards && p.chanceCards.mcOut && p.__mcOutTick !== turnNo && !window.gameOver){
+      if(p && p.__mcOutTick !== turnNo && !window.gameOver && !p.bankrupt && !(p.skip > 0)){
         p.__mcOutTick = turnNo;
-        var mo = p.chanceCards.mcOut;
-        Object.keys(mo).forEach(function(c){
-          if(!p.properties || p.properties[c] === undefined){ delete mo[c]; return; }
-          mo[c] = (+mo[c] || 0) - 1;
-          if(mo[c] <= 0){ delete mo[c]; log('💡 '+c+' şehrinin elektriği geri geldi ('+p.name+').'); }
+        (window.players || []).forEach(function(o){
+          var mo = o && o.chanceCards && o.chanceCards.mcOut; if(!mo) return;
+          var mb = o.chanceCards.mcOutBy || {};
+          Object.keys(mo).forEach(function(c){
+            if(!o.properties || o.properties[c] === undefined){ delete mo[c]; delete mb[c]; return; }
+            var by = mb[c], cutter = (by != null) ? (window.players || []).filter(function(q){ return q && q.id === by; })[0] : null;
+            var mine = cutter ? (cutter === p) : (o === p);          /* kesen yoksa/iflas ettiyse: sahibin turu */
+            if(cutter && cutter.bankrupt) mine = (o === p);
+            if(!mine) return;
+            mo[c] = (+mo[c] || 0) - 1;
+            if(mo[c] <= 0){ mo[c] = 0; pendingOn.push({o:o, c:c}); }
+          });
         });
       }
-    }catch(e){}
+    }catch(e){ console.warn('p2 out', e); }
     return _pt.apply(this, arguments);
   };
   /* tahta üzerinde hedef seçme yazıları */
@@ -19804,7 +19828,7 @@ html body #infoModal #infoText .mcP2Pk + .mcP2D{font-weight:800;margin:0 0 6px}
   function myName(){ var p = (window.players||[])[0]; return p ? p.name : null; }
   function onLine(s, bulk){
     var m;
-    if((m = /^⚡ (.+?) ENERJİ ÇÖKÜŞÜ: (\S+) \((.+?)\) 2 tur/.exec(s))){ if(!bulk){ addFx('bolt', m[2]); note('⚡', m[1], m[2]+' şehrinin elektriğini kesti!'); sfx('energy'); } miniUpd(m[1], '⚡ ENERJİ ÇÖKÜŞÜ → '+m[2]); return; }
+    if((m = /^⚡ (.+?) ENERJİ ÇÖKÜŞÜ: (\S+) \((.+?)\) (?:2 tur|elektriksiz)/.exec(s))){ if(!bulk){ addFx('bolt', m[2]); note('⚡', m[1], m[2]+' şehrinin elektriğini kesti!'); sfx('energy'); } miniUpd(m[1], '⚡ ENERJİ ÇÖKÜŞÜ → '+m[2]); return; }
     if((m = /^☄️ (.+?) GÖKTAŞI: (\S+) yıkıldı/.exec(s))){ if(!bulk){ addFx('meteor', m[2]); setTimeout(function(){ note('☄️', m[1], m[2]+' yıkıldı, bankaya döndü!'); }, 700); sfx('meteor'); } miniUpd(m[1], '☄️ GÖKTAŞI → '+m[2]); return; }
     if((m = /^🛡️ (.+?) Mülk Koruma kartıyla (\S+) şehrini elektrik kesintisinden korudu/.exec(s))){ if(!bulk){ note('🛡️', m[1], m[2]+' şehrini elektrik kesintisinden korudu!'); } miniUpd(m[1], '🛡️ KORUNDU → '+m[2]); return; }
     if((m = /^🛡️ (.+?) Mülk Koruma kartıyla (\S+) şehrini göktaşından korudu/.exec(s))){ if(!bulk){ addFx('meteor', m[2], 'shield'); setTimeout(function(){ note('🛡️', m[1], m[2]+' şehrini korudu!'); }, 700); sfx('meteor'); } return; }
@@ -20959,6 +20983,10 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
   /* ---------- 1a) Özel bölge (otobüs/tren/gemi/uçak) kirası ---------- */
   function wrapTile(_ht){
     var w = function(p){
+      /* seyahatte piyon kare kare yürürken kare işlemi varışa kadar beklesin */
+      try{ var g = window.__mcWalkGate; if(g && p && g.pid === p.id && Date.now() < g.at){ var self0 = this, a0 = arguments, d0 = g.at - Date.now(); window.__mcWalkGate = null;
+        return setTimeout(function(){ try{ if(p.chanceCards) delete p.chanceCards.mcWalk; }catch(e){} window.handleTile.apply(self0, a0); }, d0); }
+        if(g && p && g.pid === p.id){ window.__mcWalkGate = null; try{ if(p.chanceCards) delete p.chanceCards.mcWalk; }catch(e){} } }catch(e){}
       try{
         var SP = window.MONOCITY_WIDE_SPECIALS || {}, tile = board[p.pos];
         if(SP[tile] && canAsk(p)){
@@ -21088,6 +21116,136 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
 })();
 </script>
 
+<script id="monocity-fix4-js">
+(function(){
+  /* =============================================================
+     MONOCITY düzeltme turu 4:
+     1) Seyahat (şans kartı + köşe): piyon uçmadan kare kare yürür,
+        kare işlemi varışa kadar bekler
+     2) 2v2: takım arkadaşının şehrinde eksik parçaları (arsa/ev/otel,
+        sahibinin turu yetiyorsa tapu) kendi paranla al — mülk arkadaşında kalır
+     ============================================================= */
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function fm(v){ try{ return money(v); }catch(e){ return String(v); } }
+
+  /* ---------------- 1) seyahat yürüyüşü ---------------- */
+  function walkMs(fwd){ return fwd <= 12 ? (fwd-1)*130 + 200 : (fwd-12)*80 + 11*130 + 200; }
+  function markWalk(p, to){
+    try{
+      if(!p || typeof to !== 'number' || typeof board === 'undefined') return;
+      var n = board.length, fwd = ((to - p.pos) % n + n) % n; if(fwd < 1) return;
+      try{ ensureChanceState(p); }catch(e){}
+      p.chanceCards = p.chanceCards || {}; p.chanceCards.mcWalk = to;
+      var iso = document.body.classList.contains('mcIso');
+      window.__mcWalkGate = iso ? {pid:p.id, at:Date.now() + walkMs(fwd) + 350} : null;
+    }catch(e){}
+  }
+  function wrapTravel(name, who){
+    var o = window[name]; if(typeof o !== 'function' || o.__walk) return;
+    var w = function(i){
+      try{ if(waiting){ var p = who(); if(p && i !== p.pos) markWalk(p, +i); } }catch(e){}
+      return o.apply(this, arguments);
+    };
+    for(var k in o) try{ w[k] = o[k]; }catch(e){}
+    w.__walk = true; window[name] = w;
+  }
+  function hookTravel(){
+    wrapTravel('chooseWorldTourIndex', function(){ return players[currentPlayer]; });
+    wrapTravel('chooseChanceTile', function(){ if(window.waitDecisionTile === 'MC_PICK' || window._chanceTilePlayer == null) return null; var c = window._chanceTileCard; if(c && c !== 'worldTour' && c !== 'chooseTile') return null; return players[window._chanceTilePlayer]; });
+  }
+  hookTravel(); setInterval(hookTravel, 1500);
+
+  /* ---------------- 2) 2v2 takım yükseltmesi ---------------- */
+  var L = 1, H = 2, O = 4, D = 8;
+  function is2v2(){ try{ var M = window.MONOCITY_MATCH && window.MONOCITY_MATCH(); return !!(M && M.cfg && M.cfg.tur === '2v2'); }catch(e){ return false; } }
+  function mates(a, b){ try{ return !!(window.monocitySameTeam && monocitySameTeam(a, b)); }catch(e){ return false; } }
+  function partPrice(c, bit){ return bit === L ? c.land : bit === H ? c.house : bit === O ? c.hotel : c.deed; }
+  function partName(bit){ return bit === L ? 'ARSA' : bit === H ? 'EV' : bit === O ? 'OTEL' : 'TAPU'; }
+  function maskName(m){ return [L,H,O,D].filter(function(b){ return m & b; }).map(partName).join(' + '); }
+  function maskPrice(c, m){ var s = 0; [L,H,O,D].forEach(function(b){ if(m & b) s += partPrice(c, b); }); return s; }
+  /* alınabilecek seçenekler: tek parçalar, hepsi, hepsi+tapu (sahibinin turu yetiyorsa) */
+  function options(p, o, city){
+    var c = cities[city]; if(!c) return [];
+    var m = o.properties[city] || 0; if(m & D) return [];
+    var miss = [L,H,O].filter(function(b){ return !(m & b); }), missMask = miss.reduce(function(a, b){ return a|b; }, 0);
+    var deedOk = (o.laps || 0) >= 1, out = [];
+    miss.forEach(function(b){ out.push(b); });
+    if(miss.length > 1) out.push(missMask);
+    if(deedOk) out.push(missMask | D);
+    var seen = {}; return out.filter(function(x){ if(!x || seen[x]) return false; seen[x] = 1; return true; });
+  }
+  var cur = null;
+  function apply(p, o, city, mask){
+    var c = cities[city], cost = maskPrice(c, mask);
+    p.money -= cost; o.properties[city] = (o.properties[city] || 0) | mask;
+    log('🤝 '+p.name+' takım arkadaşı '+o.name+' için '+city+' şehrine '+maskName(mask)+' aldı: -'+fm(cost));
+    try{ checkRegionCompletion(o); }catch(e){}
+  }
+  window.mcTeamUp = function(mask){
+    var s = cur; if(!s || !waiting) return;
+    mask = +mask || 0;
+    var opts = options(s.p, s.o, s.city);
+    if(mask && opts.indexOf(mask) === -1) return;
+    if(mask && s.p.money < maskPrice(cities[s.city], mask)){ alert('Yetersiz para!'); return; }
+    cur = null; try{ stopTimer(); }catch(e){}
+    var im = document.getElementById('infoModal'); if(im) im.style.display = 'none';
+    waiting = false; try{ waitDecisionTile = null; }catch(e){}
+    if(mask) apply(s.p, s.o, s.city, mask);
+    else log('🤝 '+s.p.name+' takım arkadaşının şehrinde ('+s.city+') bir şey almadı.');
+    try{ renderBoard(); }catch(e){}
+    s.cont();
+  };
+  function prompt(p, o, city, opts, cont){
+    var c = cities[city], m = o.properties[city] || 0;
+    cur = {p:p, o:o, city:city, cont:cont};
+    waiting = true; try{ stopTimer(); }catch(e){}
+    var has = [L,H,O].filter(function(b){ return m & b; }).map(partName).join(' + ') || '—';
+    var btns = opts.map(function(x){ var pr = maskPrice(c, x), ok = p.money >= pr;
+      return '<button onclick="mcTeamUp('+x+')" style="background:'+(x & D ? '#b45309' : '#16a34a')+(ok ? '' : ';opacity:.45')+'"'+(ok ? '' : ' disabled')+'>'+(x & D ? '📜 ' : '🏗️ ')+maskName(x)+' — '+fm(pr)+' Coin</button>'; }).join('');
+    showInfo('🤝 TAKIM ŞEHRİ · '+city,
+      '<div style="text-align:center;font-size:40px">🤝</div><b>'+esc(city)+'</b> takım arkadaşın <b>'+esc(o.name)+'</b> adlı oyuncunun.<br>Kira yok. Eksik parçaları <b>kendi paranla</b> alabilirsin; şehir <b>'+esc(o.name)+'</b>\'de kalır.' +
+      '<br><br>Şu an: <b>'+has+'</b>'+(((o.laps || 0) >= 1) ? '' : '<br><small>📜 Tapu için '+esc(o.name)+' en az 1 tur tamamlamalı.</small>')+'<br>Paran: <b>'+fm(p.money)+' Coin</b><br><br>' + btns +
+      '<button onclick="mcTeamUp(0)" style="background:#26344b">➡️ ALMA — DEVAM ET</button>');
+    try{ setInfoNavigationVisible(false); }catch(e){}
+    try{ waitDecisionTile = 'TAKIM'; startTimer(30, 'action'); }catch(e){}
+  }
+  function botPick(p, city, opts){
+    var c = cities[city], best = 0, bestPr = 0, reserve = 400000;
+    opts.forEach(function(x){ var pr = maskPrice(c, x); if(p.money - pr >= reserve && pr > bestPr){ best = x; bestPr = pr; } });
+    return best;
+  }
+  function hookCity(){
+    var o0 = window.handleCity; if(typeof o0 !== 'function' || o0.__team) return;
+    var w = function(p, city){
+      var self = this, args = arguments;
+      try{
+        if(is2v2() && p && !p.bankrupt && cities[city]){
+          var o = getOwner(city);
+          if(o && o !== p && !o.bankrupt && mates(o, p)){
+            var opts = options(p, o, city).filter(function(x){ return p.money >= maskPrice(cities[city], x); });
+            if(opts.length){
+              var cont = function(){ return o0.apply(self, args); };
+              if(isInteractiveSeat(p)){ prompt(p, o, city, options(p, o, city), cont); return; }
+              var pick = botPick(p, city, opts); if(pick) apply(p, o, city, pick);
+            }
+          }
+        }
+      }catch(e){ console.warn('fix4 team', e); }
+      return o0.apply(this, arguments);
+    };
+    for(var k in o0) try{ w[k] = o0[k]; }catch(e){}
+    w.__team = true; window.handleCity = w;
+  }
+  hookCity(); setInterval(hookCity, 1500);
+  /* süre dolarsa: almadan devam */
+  (function hookTimeout(){
+    var o = window.handleWaitDecisionTimeout; if(typeof o !== 'function' || o.__team) return;
+    var w = function(){ if(cur && waiting){ try{ log('⏱️ '+cur.p.name+' süre içinde seçim yapmadı.'); }catch(e){} return window.mcTeamUp(0); } return o.apply(this, arguments); };
+    w.__team = true; window.handleWaitDecisionTimeout = w;
+  })();
+})();
+</script>
+
 <style id="monocity-hw-css">
 /* =============== MONOCITY · HALLOWEEN (Balkabağı Gecesi) =============== */
 #hwOv{position:fixed;inset:0;z-index:1100050;display:none;align-items:center;justify-content:center;background:rgba(6,2,14,.78);font-family:Arial,Helvetica,sans-serif;color:#fff;padding:6px;box-sizing:border-box}
@@ -21169,8 +21327,17 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
 #hwOv .lv.got{opacity:.5}
 #hwOv .lv.got:after{content:"✓";position:absolute;right:5px;top:3px;color:#4ade80;font-weight:1000}
 #hwOv .lv.lock .r{filter:grayscale(.6) brightness(.8)}
-#hwOv .lv .r .mcFrameDemo,#hwOv .day .r .mcFrameDemo,#hwOv .rc .v .mcFrameDemo{height:74%;width:auto!important;font-size:.8em!important}
+#hwOv .lv .r .mcFrameDemo,#hwOv .day .r .mcFrameDemo,#hwOv .rc .v .mcFrameDemo{height:62%;width:auto!important;font-size:.8em!important}
 #hwOv .lv.fin{border-color:#ff8a1f;background:linear-gradient(#4a1d7a,#1c0b33)}
+#hwOv .lvb{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;padding:6px 10px;border-radius:12px;background:rgba(20,8,36,.85);border:1.5px solid #ff8a1f}
+#hwOv .lvb .t{font-weight:1000;color:#ffb35c;font-size:clamp(10.5px,2.9vh,13px);white-space:nowrap}
+#hwOv .lvb .st{min-width:clamp(28px,7.4vh,38px);padding:0;font-size:18px;color:#fff;background:#3b2560}
+#hwOv .lvb .cnt{min-width:30px;text-align:center;font-size:clamp(13px,3.6vh,17px)}
+#hwOv .lvb .calc{flex:1;min-width:150px;font-weight:900;font-size:clamp(10px,2.8vh,12.5px);color:#e9dcff;display:flex;align-items:center;gap:4px;white-space:nowrap}
+#hwOv .lvb .calc img{width:15px;height:15px}
+#hwOv .lvb .calc em{color:#fca5a5;font-style:normal}
+#hwOv .nav button.gmb{border:1.5px dashed #4ade80;background:#052e16;color:#86efac;margin-top:auto}
+#hwOv .gmg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}
 /* görevler */
 #hwOv .task{display:flex;align-items:center;gap:10px;border-radius:12px;background:rgba(20,8,36,.85);border:1.5px solid #3b2560;padding:8px 12px;margin-top:7px}
 #hwOv .task .ic{font-size:clamp(20px,6vh,30px)}
@@ -21229,12 +21396,21 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
 .hwBan small{position:absolute;left:6%;bottom:9%;z-index:2;font-size:clamp(7px,2vh,10px);font-weight:900;color:#fff}
 .hwBan i{position:absolute;right:5%;top:7%;z-index:2;height:24%}
 /* mağaza kartları */
-#monocityShop .hwCard{position:relative}
-#monocityShop .hwCard .hwTagS{position:absolute;left:6px;top:32px;height:15px;z-index:5;filter:drop-shadow(0 1px 2px #000)}
-#monocityShop .hwCard img.diceIcon3d,#monocityShop .hwCard .shopItemVisual img{object-fit:contain}
-#monocityShop .hwCard .shopItemVisual img{max-height:100%;max-width:100%}
-#monocityShop .hwCard .shopBuy.hwEv{background:linear-gradient(#ffb04a,#e25d00)!important;color:#2a0e00!important}
-#monocityShop .hwEmoEv .shopBuy{background:linear-gradient(#ffb04a,#e25d00)!important;color:#2a0e00!important}
+#monocityShop #shopGrid{grid-auto-rows:min-content!important;grid-template-rows:none!important;align-content:start!important;overflow-y:auto!important}
+#monocityShop #shopGrid > .shopItem,#monocityShop #shopGrid > .shopDiceCard{height:auto!important;min-height:max-content!important;overflow:visible!important}
+#monocityShop #shopGrid .shopItemName,#monocityShop #shopGrid .diceName{flex:0 0 auto;line-height:1.25;min-height:1.25em}
+#monocityShop .hwCard,#monocityShop .hwEmoEv{position:relative}
+#monocityShop .hwVis{position:relative;width:78px;height:78px;margin:4px auto 2px;flex:0 0 auto}
+#monocityShop .hwVis img.diceIcon3d{width:100%!important;height:100%!important;margin:0!important;padding:11px;box-sizing:border-box;object-fit:contain}
+#monocityShop .hwTagS{position:absolute!important;right:0;top:0;left:auto!important;height:14px!important;width:auto!important;max-width:none!important;z-index:6;filter:drop-shadow(0 1px 2px #000);pointer-events:none;margin:0!important;padding:0!important}
+#monocityShop .hwCard .shopItemVisual,#monocityShop .hwEmoEv .shopItemVisual{position:relative}
+#monocityShop .hwCard .shopItemVisual img.hwBrd{max-height:78%;max-width:92%;object-fit:contain;border-radius:8px;box-shadow:0 4px 10px #0008}
+#monocityShop .hwCard .shopItemVisual svg{max-height:100%}
+#monocityShop .hwCard .diceStatus,#monocityShop .hwCard .shopItemStatus{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+#monocityShop .hwCard .shopBuy.hwEv,#monocityShop .hwEmoEv .shopBuy.hwEv{background:linear-gradient(#ffb04a,#e25d00)!important;color:#2a0e00!important}
+/* hediyeler */
+#mcGiftBox .gi{position:relative}
+#mcGiftBox .gi .hwTagG{position:absolute;right:2px;top:2px;height:11px;pointer-events:none;filter:drop-shadow(0 1px 1px #000)}
 /* çift zar */
 #mcDice2.hw .f{background:radial-gradient(circle at 35% 30%,#5b2d86,#2a1242 55%,#12071f)!important;box-shadow:inset 0 0 1.6vh rgba(0,0,0,.6),0 0 1.4vh rgba(255,122,26,.35)!important;border:.25vh solid #3b1760}
 #mcDice2.hw .f i{background:radial-gradient(circle,#fff6b0,#ffb000 55%,#ff6a00)!important;box-shadow:0 0 1.2vh #ff7a1a,0 0 .4vh #ffcf6b!important}
@@ -21259,9 +21435,10 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
 .mcPwn .bd img.hwPwn{position:absolute;left:50%;bottom:-4%;height:128%;width:auto;max-width:none;transform:translateX(-50%);filter:drop-shadow(0 2px 2px rgba(0,0,0,.6))}
 .mcPwn.turn .bd img.hwPwn{filter:drop-shadow(0 0 4px var(--fxc,#fff3b0)) drop-shadow(0 0 2px #fff)}
 /* tahta ortası */
-#mcIsoLogo.hwArt b,#mcIsoLogo.hwArt small{display:none!important}
-#mcIsoLogo img.hwC{display:none}
-#mcIsoLogo.hwArt img.hwC{display:block;pointer-events:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}
+#mcIsoLogo b,#mcIsoLogo small{transition:opacity .3s}
+#mcIsoLogo.hwArt b,#mcIsoLogo.hwArt small{opacity:0}
+#mcIsoLogo img.hwC{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:block;pointer-events:none;opacity:0;transition:opacity .3s;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));max-width:none}
+#mcIsoLogo.hwArt img.hwC{opacity:1}
 /* profil rozeti */
 .hwBadge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(#ff9a2e,#c2410c);color:#fff;border:1.5px solid #ffd08a;border-radius:10px;padding:1px 8px;font-weight:1000;font-size:.82em;white-space:nowrap;box-shadow:0 0 8px rgba(255,122,26,.5);margin-right:6px}
 @media (max-height:430px){ #hwOv .setg{grid-template-columns:repeat(9,1fr);gap:4px} #hwOv .cal{gap:5px} }
@@ -21547,7 +21724,7 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
     if(el) return el;
     el = document.createElement('div'); el.id = 'hwOv';
     el.innerHTML = '<div class="hwBox"><div class="hd">'+tagImg('tg')+'<h2>BALKABAĞI GECESİ</h2><div class="cd" id="hwCd"></div><div class="sp"></div><div class="wal" id="hwWal"></div><button type="button" class="x" data-a="close">✕</button></div>' +
-      '<div class="nav">'+TABS.map(function(t){ return '<button type="button" data-t="'+t[0]+'"><span>'+t[1]+'</span>'+t[2]+'<em></em></button>'; }).join('')+'</div>' +
+      '<div class="nav">'+TABS.map(function(t){ return '<button type="button" data-t="'+t[0]+'"><span>'+t[1]+'</span>'+t[2]+'<em></em></button>'; }).join('')+'<button type="button" class="gmb" data-a="gm" id="hwGmB" style="display:none"><span>🧪</span>TEST PANELİ</button></div>' +
       '<div class="ct" id="hwCt"></div><div class="res" id="hwRes"></div></div>';
     document.body.appendChild(el);
     el.addEventListener('click', function(e){
@@ -21563,6 +21740,12 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
       if(act === 'pass'){ buyPass(); return; }
       if(act === 'plv'){ claimPass(+arg); return; }
       if(act === 'pall'){ claimPass(0); return; }
+      if(act === 'lvm'){ buyN = Math.max(1, buyN-1); paint(); return; }
+      if(act === 'lvp'){ buyN = Math.min(20 - level(), buyN+1); paint(); return; }
+      if(act === 'lvx'){ buyN = 20 - level(); paint(); return; }
+      if(act === 'lvbuy'){ buyLevels(); return; }
+      if(act === 'gm'){ gmPanel(); return; }
+      if(act === 'gmx'){ gmDo(arg); return; }
       if(act === 'k1'){ doPull(1); return; }
       if(act === 'k10'){ doPull(10); return; }
       if(act === 'buy'){ shopBuy(+arg); return; }
@@ -21586,11 +21769,43 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
   }
   window.monocityOpenHalloween = open;
   function left(){ var l = END - Date.now(); if(l <= 0) return 'Etkinlik bitti'; var d = Math.floor(l/86400000), h = Math.floor(l%86400000/3600000); return '⏳ <b>'+d+'g '+h+'s</b> kaldı'; }
+  function isGM(){ if(!TEST) return false; if(window.__MC_GM_TEST) return true; try{ return String(window.MONOCITY_ACCOUNT.getUsername()||'').toLowerCase() === 'beny1905'; }catch(e){ return false; } }
+  window.monocityHwIsGM = isGM;
+  function gmPanel(){
+    if(!isGM()) return;
+    var r = el.querySelector('#hwRes'), b = function(a, t){ return '<button type="button" class="btn '+(a === 'reset' ? 'k' : 'p')+'" data-a="gmx" data-i="'+a+'">'+t+'</button>'; };
+    r.innerHTML = '<div class="rb" style="width:min(520px,94%);border-color:#4ade80"><h3 style="color:#86efac">🧪 TEST PANELİ <small style="font-size:11px;color:#bbf7d0">sadece sende · yayında kapanır</small></h3>' +
+      '<div class="note">Takvim '+S.cal.n+'/10 · Görev: '+S.tp+' maç, '+S.tw+' galibiyet · Pass '+(S.pass ? 'var' : 'yok')+' · Seviye '+level()+'</div><div class="gmg">' +
+      b('day','⏭️ Sonraki gün') + b('tasks','✅ Görevleri tamamla') + b('candy','🍬 +1.000 Şeker') + b('lv','🎫 +1 Pass seviyesi') + b('dia','💎 +1.000 Elmas') + b('reset','🔄 Etkinliği sıfırla') +
+      '</div><button type="button" class="btn o" data-a="rok">KAPAT</button></div>';
+    r.classList.add('show');
+  }
+  function gmDo(a){
+    if(!isGM()) return;
+    if(a === 'day'){ S.day = -1; S.cal.last = -1; rollDay(); rollCal(); save(); toast('⏭️ Yeni gün: takvim '+S.cal.n+'/10, görevler sıfırlandı'); }
+    else if(a === 'tasks'){ rollDay(); S.tp = Math.max(S.tp, 3); S.tw = Math.max(S.tw, 1); save(); toast('✅ Bugünün görevleri tamamlandı'); }
+    else if(a === 'candy'){ S.candy += 1000; save(); }
+    else if(a === 'lv'){ S.pts = Math.min(2000, (S.pts||0) + 100); save(); }
+    else if(a === 'dia'){ addCur('diamonds', 1000); }
+    else if(a === 'reset'){
+      var r0 = el.querySelector('#hwRes .gmg'); if(r0) r0.insertAdjacentHTML('afterend', '<div class="note" style="color:#fca5a5;margin-bottom:8px">Halloween ilerlemen ve Halloween ürünlerin silinecek. <button type="button" class="btn k" data-a="gmx" data-i="reset2" style="min-height:26px;color:#fecaca;background:#7f1d1d">EVET, SIFIRLA</button></div>');
+      return;
+    }
+    else if(a === 'reset2'){
+      SETK.forEach(function(k){ var it = IT[k]; var arr = list(it.c).filter(function(x){ return x !== it.id; }); try{ localStorage.setItem(CATK[it.c], JSON.stringify(arr)); }catch(e){}
+        if(equipped(it.c) === it.id){ if(it.c === 'frame' && window.monocityEquipFrame) monocityEquipFrame('white'); else if(it.c === 'fx' && window.monocityEquipFx) monocityEquipFx('white'); else try{ localStorage.setItem(EQK[it.c], 'white'); }catch(e){} } });
+      var em = list('emo').filter(function(e){ return !isHwEmo(e); }); try{ localStorage.setItem(CATK.emo, JSON.stringify(em)); }catch(e){}
+      try{ if(me() && db){ db.ref('users/'+me()+'/emo').set(em); ['dice','pawn','frame','fx','board','ct'].forEach(function(c){ db.ref('users/'+me()+'/own/'+c).set(list(c)); }); } }catch(e){}
+      S = fresh(); rollDay(); rollCal(); save(); toast('🔄 Halloween sıfırlandı');
+    }
+    gmPanel(); paintHead();
+  }
   function paintHead(){
+    var gb = el.querySelector('#hwGmB'); if(gb) gb.style.display = isGM() ? '' : 'none';
     var cd = el.querySelector('#hwCd'); if(cd) cd.innerHTML = '1–31 Ekim · '+(Date.now() < START ? '<b>TEST</b> · 1 Ekim\'de başlar' : left());
     var w = el.querySelector('#hwWal'); if(w) w.innerHTML = '<div class="cn">'+CANDY+' '+fmt(S.candy)+'</div><div>'+ci('diamond')+' '+fmt(bal('diamonds'))+'</div><div>'+ci('metro')+' '+fmt(bal('metro'))+'</div>';
     var em = { cal: calCan() ? 1 : 0, task: TASKS.filter(taskCan).length, pass: passCan() };
-    el.querySelectorAll('.nav button').forEach(function(b){ var t = b.getAttribute('data-t'); b.classList.toggle('on', t === tab); var e = b.querySelector('em'); var n = em[t] || 0; e.textContent = n; e.classList.toggle('on', n > 0); });
+    el.querySelectorAll('.nav button[data-t]').forEach(function(b){ var t = b.getAttribute('data-t'); b.classList.toggle('on', t === tab); var e = b.querySelector('em'); var n = em[t] || 0; e.textContent = n; e.classList.toggle('on', n > 0); });
   }
   function itemTile(k, extra){
     var o = owns(k), it = IT[k];
@@ -21635,9 +21850,29 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
       '<div class="pbuy"><img alt="" src="'+IMG.kabak+'"><div style="flex:1"><h4 style="margin:0">🎫 BALKABAĞI PASS</h4><div class="note">Alır almaz <b style="color:#ffb35c">Kabak piyon</b> senin · 20 seviye boyunca Metro, Elmas, Bilet, Şeker, 👻 🐈‍⬛ emojileri ve 20. seviyede <b style="color:#ffb35c">Örümcek Ağı çerçeve</b> · Seviyeler şimdiden ilerliyor, alınca hepsini toplarsın</div></div><button type="button" class="btn o" data-a="pass" style="min-height:44px;font-size:15px">'+ci('diamond')+' '+fmt(PASS_PRICE)+'</button></div>';
     return top + '<h4 style="margin-top:8px">🎫 SEVİYELER <small>Maçlardan ve görevlerden kazandığın her '+CANDY+' = 1 pass puanı · her seviye 100 puan</small></h4>' +
       '<div class="row"><b style="white-space:nowrap">Seviye '+L+' / 20</b><div class="bar"><i style="width:'+(L >= 20 ? 100 : S.pts%100)+'%"></i><span>'+(L >= 20 ? 'TAMAMLANDI' : (S.pts%100)+' / 100 · toplam '+fmt(S.pts))+'</span></div>'+(passCan() ? '<button type="button" class="btn o" data-a="pall">🎁 TÜMÜNÜ AL ('+passCan()+')</button>' : '')+'</div>' +
+      lvBuyBox(L) +
       '<div class="lane">'+PR.map(function(r, i){ var lv = i+1, un = lv <= L, got = !!S.pl[lv], can = S.pass && un && !got;
         return '<div class="lv'+(un?' un':' lock')+(got?' got':'')+(can?' can':'')+(lv === 20 ? ' fin' : '')+'"><span class="n">SV '+lv+'</span><div class="r">'+gVis(r.g)+'</div><b>'+esc(gText(r.g))+'</b>'+(can ? '<button type="button" class="btn o" data-a="plv" data-i="'+lv+'" style="min-height:22px;padding:0 8px;font-size:11px">AL</button>' : (!S.pass && un ? '<span class="note">🔒 Pass</span>' : ''))+'</div>'; }).join('')+'</div>';
   }
+  var LV_PRICE = 50, buyN = 1;
+  function lvBuyBox(L){
+    if(!S.pass || L >= 20) return '';
+    var left = 20 - L; buyN = Math.max(1, Math.min(buyN, left));
+    var cost = buyN*LV_PRICE, ok = bal('diamonds') >= cost;
+    return '<div class="lvb"><span class="t">⏫ SEVİYE AL</span><button type="button" class="btn k st" data-a="lvm"'+(buyN <= 1 ? ' disabled' : '')+'>−</button><b class="cnt" id="hwLvN">'+buyN+'</b><button type="button" class="btn k st" data-a="lvp"'+(buyN >= left ? ' disabled' : '')+'>+</button><button type="button" class="btn p" data-a="lvx">MAX</button>' +
+      '<span class="calc">Seviye '+L+' → <b>'+(L+buyN)+'</b> · '+ci('diamond')+' <b>'+fmt(cost)+'</b>'+(ok ? '' : ' <em>💎 yetersiz</em>')+'</span><button type="button" class="btn o" data-a="lvbuy"'+(ok ? '' : ' disabled')+'>SATIN AL</button></div>';
+  }
+  function buyLevels(){
+    var L = level(); if(!S.pass || L >= 20) return;
+    var n = Math.max(1, Math.min(buyN, 20 - L)), cost = n*LV_PRICE;
+    if(bal('diamonds') < cost){ toast('💎 Yeterli elmasın yok ('+fmt(cost)+' gerekli).'); return; }
+    confirmBuy('⏫ '+n+' PASS SEVİYESİ (Seviye '+L+' → '+(L+n)+')', cost, function(){
+      var L2 = level(), n2 = Math.max(0, Math.min(n, 20 - L2)); if(!n2) return;
+      if(!spend('diamonds', n2*LV_PRICE)){ toast('💎 Yeterli elmasın yok.'); return; }
+      S.pts += n2*100; buyN = 1; save(); toast('⏫ Pass seviye '+level()+' oldu! Ödüllerini topla.');
+    });
+  }
+  window.monocityHwBuyLevels = function(n){ buyN = n; buyLevels(); };
   function paintTask(){
     rollDay();
     return '<h4>📜 GÜNLÜK GÖREVLER <small>Her gece 00:00\'da yenilenir</small></h4>' + TASKS.map(function(t){ var v = Math.min(t.need, S[t.of]||0), done = !!S.tc[t.k], can = taskCan(t);
@@ -21748,11 +21983,19 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
     var it = IT[k], own = owns(k), eq = isEq(k), dicey = (cat === 'dice' || cat === 'pawn');
     var card = document.createElement('div'); card.className = (dicey ? 'shopDiceCard' : 'shopItem')+' hwCard'; card.setAttribute('data-hw', k);
     var buyable = (k === 'hayalet' && active() && !own);
-    var st = own ? (eq ? 'Kullanılıyor' : 'Sahipsin') : (buyable ? (window.monocityCurIcon ? monocityCurIcon('diamond') : '💎 ')+fmt(GHOST_PRICE) : '🎃 '+esc(it.s));
+    var st = own ? (eq ? 'Kullanılıyor' : 'Sahipsin') : (buyable ? (window.monocityCurIcon ? monocityCurIcon('diamond') : '💎 ')+fmt(GHOST_PRICE) : '🎃 Etkinlik');
     var bt = own ? (eq ? '✓ KULLANILIYOR' : 'KULLAN') : (buyable ? 'SATIN AL' : (active() ? 'ETKİNLİĞE GİT' : 'ETKİNLİK BİTTİ'));
-    var visH = (k === 'board' || k === 'dice' || PAWNIMG[it.id]) ? '<img class="diceIcon3d" alt="" src="'+(k === 'board' ? IMG.center : (k === 'dice' ? IMG.die : PAWNIMG[it.id]))+'">' : vis(k);
-    if(dicey) card.innerHTML = tagImg('hwTagS')+'<div class="diceName">'+esc(it.n)+'</div>'+visH+'<div class="diceStatus">'+st+'</div><button class="shopBuy '+(eq ? 'equipped' : (own ? '' : (buyable ? 'locked' : 'hwEv')))+'">'+bt+'</button>';
-    else card.innerHTML = tagImg('hwTagS')+'<div class="shopItemName">'+esc(it.n)+'</div><div class="shopItemVisual">'+(k === 'board' ? '<img alt="" src="'+IMG.center+'" style="border-radius:10px">' : visH)+'</div><div class="shopItemStatus'+(own?' owned':'')+'">'+st+'</div><button class="shopBuy '+(eq ? 'equipped' : (own ? 'owned' : 'hwEv'))+'">'+bt+'</button>';
+    var bcls = 'shopBuy '+(eq ? 'equipped' : (own ? 'owned' : (buyable ? '' : 'hwEv')));
+    card.title = it.n+' · '+it.s;
+    if(dicey){
+      var src = k === 'dice' ? IMG.die : PAWNIMG[it.id];
+      card.innerHTML = '<div class="diceName">'+esc(it.n)+'</div><div class="hwVis"><img class="diceIcon3d" alt="" src="'+src+'">'+tagImg('hwTagS')+'</div><div class="diceStatus">'+st+'</div><button class="'+bcls+'">'+bt+'</button>';
+    } else {
+      var v = k === 'board' ? '<img class="hwBrd" alt="" src="'+IMG.center+'">' :
+              k === 'frame' ? '<div class="mcFrameDemo" data-mcframe="hw" data-mcframe-tier="hw"><span class="mcFrameFace">🧑🏻‍💻</span></div>' :
+              k === 'ct' ? '<div class="mcBtWrap"><div class="mcCtPrev">'+(window.monocityChatRow ? monocityChatRow({n:'Beny', t:'Boo! 👻', l:24, f:'white', ct:'hw'}, false) : '')+'</div></div>' : vis(k);
+      card.innerHTML = '<div class="shopItemName">'+esc(it.n)+'</div><div class="shopItemVisual">'+v+tagImg('hwTagS')+'</div><div class="shopItemStatus'+(own ? ' owned' : '')+'">'+st+'</div><button class="'+bcls+'">'+bt+'</button>';
+    }
     card.querySelector('.shopBuy').addEventListener('click', function(){
       if(own){ if(!eq){ equip(k); rerender(cat); } return; }
       if(buyable){ buyGhost(function(){ rerender(cat); }); return; }
@@ -21780,11 +22023,11 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
   function decorateEmo(grid){
     grid.querySelectorAll('.shopItem').forEach(function(c){
       if(c.__hw) return; var d = c.querySelector('.mcEmoDemo'); if(!d) return; var x = isHwEmo((d.textContent||'').trim()); if(!x) return;
-      c.__hw = 1; c.classList.add('hwEmoEv'); c.insertAdjacentHTML('afterbegin', tagImg('hwTagS')); c.style.position = 'relative';
+      c.__hw = 1; c.classList.add('hwEmoEv'); var vv = c.querySelector('.shopItemVisual') || c; vv.insertAdjacentHTML('beforeend', tagImg('hwTagS'));
       var own = ownsId('emo', x.e), st = c.querySelector('.shopItemStatus'), b = c.querySelector('.shopBuy');
       if(!own && !active()){ c.remove(); return; }
       if(st){ st.textContent = own ? 'Sahipsin' : '🎃 Etkinlik ödülü'; st.classList.toggle('owned', own); }
-      if(b){ var nb = b.cloneNode(false); nb.className = 'shopBuy'+(own ? ' equipped' : ''); nb.textContent = own ? '✓ SAHİPSİN' : (active() ? 'ETKİNLİĞE GİT' : 'ETKİNLİK BİTTİ');
+      if(b){ var nb = b.cloneNode(false); nb.className = 'shopBuy'+(own ? ' equipped' : ' hwEv'); nb.textContent = own ? '✓ SAHİPSİN' : (active() ? 'ETKİNLİĞE GİT' : 'ETKİNLİK BİTTİ');
         nb.addEventListener('click', function(){ if(own){ toast(x.e+' bu emoji zaten sende.'); return; } if(active()){ closeShop(); open('shop'); } });
         b.parentNode.replaceChild(nb, b); }
     });
@@ -21822,6 +22065,11 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
       {id:'hw_lantern', n:'Balkabağı Feneri', e:'🎃', price:20, cur:'diamond', pop:20},
       {id:'hw_ghost', n:'Hayalet', e:'👻', price:50, cur:'diamond', pop:50} ].forEach(function(g){ if(!G.some(function(x){ return x.id === g.id; })) G.push(g); });
   })();
+
+  /* hediye penceresinde Halloween hediyelerine etiket */
+  setInterval(function(){ try{ var gl = document.getElementById('mcGiftL'); if(!gl || gl.__hwObs) return; gl.__hwObs = 1;
+    var deco = function(){ gl.querySelectorAll('.gi[data-g^="hw_"]').forEach(function(d){ if(!d.querySelector('.hwTagG')) d.insertAdjacentHTML('beforeend', '<img class="hwTagG" alt="" src="'+IMG.tag+'">'); }); };
+    new MutationObserver(deco).observe(gl, {childList:true}); deco(); }catch(e){} }, 1000);
 
   /* ---------------- oyun içi: piyon, zar, efekt, tahta ---------------- */
   window.monocityPawnArt = function(i){
@@ -21898,7 +22146,7 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
     var im = lg.querySelector('img.hwC');
     if(on && !im){ im = document.createElement('img'); im.className = 'hwC'; im.alt = ''; im.src = IMG.center; lg.appendChild(im); }
     lg.classList.toggle('hwArt', !!on);
-    if(on && im){ var b = lg.querySelector('b'), fs = b ? parseFloat(b.style.fontSize) : 0; var S0 = fs ? fs/0.068 : 600; var w = Math.round(S0*0.7); if(im.__w !== w){ im.__w = w; im.style.width = w+'px'; im.style.marginTop = Math.round(S0*0.05)+'px'; } }
+    if(im){ var b = lg.querySelector('b'), fs = b ? parseFloat(b.style.fontSize) : 0; var S0 = fs ? fs/0.068 : 600; var w = Math.round(S0*0.7); if(im.__w !== w){ im.__w = w; im.style.width = w+'px'; im.style.marginTop = Math.round(S0*0.05)+'px'; } }
   }
 
   /* ---------------- profil rozeti ---------------- */
@@ -21929,7 +22177,8 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
   })();
 
   /* ---------------- döngü ---------------- */
-  setInterval(function(){ try{ tick(); fixBanner(); watchShop(); boardArt(); }catch(e){ console.warn('hw', e); } }, 1000);
+  setInterval(function(){ try{ tick(); fixBanner(); watchShop(); }catch(e){ console.warn('hw', e); } }, 1000);
+  setInterval(function(){ try{ boardArt(); }catch(e){} }, 120);   /* tema sıraya göre değişince orta görsel hemen uyum sağlasın */
   setTimeout(function(){ try{ tick(); fixBanner(); }catch(e){} }, 300);
   window.MONOCITY_HW = { state:function(){ return S; }, save:save, give:give, owns:owns, grant:grant, IT:IT, EMO:EMO, level:level, unclaimed:unclaimed, open:open, onMatch:onMatch, TEST:TEST };
 })();
