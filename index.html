@@ -6766,7 +6766,7 @@ document.addEventListener("keydown",function(e){
   function handleSpecial(p,tile){
     var owner=typeof getOwner==="function"?getOwner(tile):null;
     if(owner && owner!==p){
-      var rent=allFourOwned(owner)?SPECIAL_RENT*2:SPECIAL_RENT;
+      var rent=((typeof window.ownsAllSpecialRegions==="function")?window.ownsAllSpecialRegions(owner):allFourOwned(owner))?SPECIAL_RENT*2:SPECIAL_RENT;
       collectRent(p,owner,rent);
       log("🚉 "+p.name+" "+tile+" için "+owner.name+" oyuncusuna "+money(rent)+" kira ödedi."+(rent===SPECIAL_RENT*2?" 4 ÖZEL BÖLGE BONUSU: 2× kira.":""));
       renderBoard();
@@ -25094,6 +25094,20 @@ html body #openModal.mcF5 .openActionRow button:disabled{filter:grayscale(.7);op
   function arm(e){ if(e.hasAttribute('data-kbs')) return; e.setAttribute('data-kbs', '1'); e.readOnly = true; }
   function scan(){ if(!TOUCH) return; var all = document.querySelectorAll('input,textarea'); for(var i=0;i<all.length;i++){ var e = all[i]; if(!e.hasAttribute('data-kbs') && managed(e)) arm(e); } }
   setInterval(scan, 700);
+  /* T7b: pencere her açılışta yeniden çizilen kutular (arkadaş ekle, lobiye kodla katıl) eklendiği AN
+     salt-okunur yapılır; yoksa pencerenin kendi otomatik odaklanması telefon klavyesini açıyor,
+     ardından salt-okunur olunca klavye kapanıyordu (aç-kapa). */
+  function armTree(n){
+    if(!n || n.nodeType !== 1) return;
+    if((n.tagName === 'INPUT' || n.tagName === 'TEXTAREA') && !n.hasAttribute('data-kbs') && managed(n)) arm(n);
+    if(n.querySelectorAll){ var l = n.querySelectorAll('input,textarea'); for(var i=0;i<l.length;i++){ var e = l[i]; if(!e.hasAttribute('data-kbs') && managed(e)) arm(e); } }
+  }
+  if(TOUCH){
+    try{ new MutationObserver(function(ms){ for(var i=0;i<ms.length;i++){ var a = ms[i].addedNodes; for(var k=0;k<a.length;k++) armTree(a[k]); } }).observe(document.documentElement, {childList:true, subtree:true}); }catch(e){}
+  }
+  /* emniyet: henüz işaretlenmemiş kutuya dokunuş / odak gelirse hemen işaretle */
+  document.addEventListener('pointerdown', function(e){ if(!TOUCH) return; var t = e.target; if(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') && !t.hasAttribute('data-kbs') && managed(t)) arm(t); }, true);
+  document.addEventListener('focusin', function(e){ if(!TOUCH) return; var t = e.target; if(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') && !t.hasAttribute('data-kbs') && managed(t)){ arm(t); } }, true);
 
   var kbsEl = null, kbsT = null, kbsH0 = 0, kbsSeenSmall = false;
   function isChat(e){ return /mesaj|yorum/i.test(e.placeholder || '') || /chat|lbIn|dmInput|AlCm/i.test(e.id || ''); }
