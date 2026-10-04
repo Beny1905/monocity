@@ -3782,7 +3782,7 @@ function projectedRentInfo(s,k){
 function comboRender(){
  var s=comboState(),box=document.getElementById("comboPurchase"),grid=document.getElementById("comboGrid"),rentInfoEl=document.getElementById("comboRentInfo"),totalEl=document.getElementById("comboTotal"),buy=document.getElementById("comboBuyBtn");if(!box||!grid||!totalEl||!buy)return;
  if(!s){box.style.display="none";return} box.style.display="block";grid.innerHTML="";var title=document.getElementById("comboTitle");if(title)title.innerHTML="🏙️ "+s.cityName.toLocaleUpperCase("tr-TR")+(s.team?'<span class="mcTeamHelp">🤝 ARKADAŞ YARDIMI · Sahibi: '+String(s.own.name||'').replace(/[&<>"']/g,'')+'</span>':'');box.classList.toggle("mcTeamBox",!!s.team);
- var items=[["house","🏡 EV"],["hotel","🏨 OTEL"],["land","🏠 ARSA"],["deed","📜 TAPU"]],total=0,any=false;
+ var items=[["land","🏠 ARSA"],["house","🏡 EV"],["hotel","🏨 OTEL"],["deed","📜 TAPU"]],total=0,any=false;
  items.forEach(function(it){var k=it[0],ok=comboAllowed(k,s),sel=comboSelection[k];if(ok){any=true;if(sel)total+=comboPrice(k,s)}var owned=(k==="land"&&(s.mask&LAND_BIT))||(k==="house"&&(s.mask&HOUSE_BIT))||(k==="hotel"&&(s.mask&HOTEL_BIT))||(k==="deed"&&(s.mask&DEED_BIT));var ri=projectedRentInfo(s,k);var status=ok?"<b>"+money(comboPrice(k,s))+"</b>":(owned?"✅ ALINDI":(k==="deed"&&((s.own||s.p).laps||0)<1?(s.team?"🔒 "+s.own.name+" 1. turu bitirmedi":"🔒 1. tur bitmedi"):(k==="deed"?"🔒 Arsa+Ev+Otel gerekli":"UYGUN DEĞİL")));var b=document.createElement("button");b.type="button";b.className="comboItem "+(sel?"selected ":"")+(ok?"":"locked");b.disabled=!ok;b.innerHTML='<span class="ciChk">'+(sel?"✓":"")+'</span><span class="ciName">'+it[1]+'</span><span class="ciRight"><span class="ciPrice">'+status+'</span><span class="ciRent">Kira '+money(ri.rent)+(ri.bonus?" · 🌍 2×":"")+'</span></span>';if(ok)b.onclick=function(){
   /* Kombinasyon serbest: birden fazla uygun mülk aynı işlemde seçilebilir. */
   comboSelection[k]=!comboSelection[k];
@@ -3796,10 +3796,10 @@ function comboRender(){
 };grid.appendChild(b)});
  if(rentInfoEl){
    var comboDefs=[
+     {mask:LAND_BIT|HOUSE_BIT,label:"Arsa + Ev"},
+     {mask:LAND_BIT|HOTEL_BIT,label:"Arsa + Otel"},
      {mask:HOUSE_BIT|HOTEL_BIT,label:"Ev + Otel"},
-     {mask:HOUSE_BIT|LAND_BIT,label:"Ev + Arsa"},
-     {mask:HOTEL_BIT|LAND_BIT,label:"Otel + Arsa"},
-     {mask:HOUSE_BIT|HOTEL_BIT|LAND_BIT,label:"Ev + Otel + Arsa",full:true}
+     {mask:LAND_BIT|HOUSE_BIT|HOTEL_BIT,label:"Arsa + Ev + Otel",full:true}
    ];
    var region=getRegion(s.cityName),regionBonus=region&&playerOwnsRegion((s.own||s.p),region);
    if(region&&!regionBonus){
@@ -15190,6 +15190,8 @@ body.mcIso #mcIsoHud{display:block}
         html += '<div class="'+cls+'" style="transform:translate(-50%,-50%) '+sh+' rotate('+rot+'deg)">'+lbl+'</div>';
       }
       d.innerHTML = html;
+      if(!corner){ try{ var __lb = d.querySelector(':scope > .l'); if(__lb){ var __rad = (p.side==='b'||p.side==='t') ? (p.h-2*gap) : (p.w-2*gap), __lim = __rad - gb*1.1 - 4, __bw = __lb.offsetWidth;
+        if(__bw > __lim && __lim > 10){ __lb.style.transform = 'translate(-50%,-50%) '+sh+' rotate('+rot+'deg) scale('+(__lim/__bw).toFixed(3)+')'; } } }catch(__e){} }
     }
   }
   G.decorate = decorate;
@@ -16985,10 +16987,10 @@ body.mcIso #mcIsoHud{display:block}
       var mask = 0; try{ mask = o ? getLevel(o, t) : 0; }catch(e){}
       var reg = (typeof getRegion === 'function') ? getRegion(t) : null;
       var bonus = !!(o && reg && typeof playerOwnsRegion === 'function' && playerOwnsRegion(o, reg));
-      var pr = function(m){ var r = Math.floor(c.price*((m&1?.15:0)+(m&2?.05:0)+(m&4?.10:0)+(m&8?.25:0))); return bonus ? r*2 : r; };
-      var rows = [ ['🏡 Ev', c.house, 2], ['🏨 Otel', c.hotel, 4], ['🏠 Arsa', c.land, 1], ['📜 Tapu', c.deed, 8] ];
+      var pr = function(m){ var r = Math.floor(c.price*((m&1?.05:0)+(m&2?.10:0)+(m&4?.15:0)+(m&8?.25:0))); return bonus ? r*2 : r; };
+      var rows = [ ['🏠 Arsa', c.land, 1], ['🏡 Ev', c.house, 2], ['🏨 Otel', c.hotel, 4], ['📜 Tapu', c.deed, 8] ];
       var LM = window.MONOCITY_LANDMARKS && MONOCITY_LANDMARKS[t];
-      var combos = [ ['Ev + Otel', 2|4], ['Ev + Arsa', 2|1], ['Otel + Arsa', 4|1], ['Ev + Otel + Arsa', 2|4|1], ['Hepsi + Tapu', 15] ];
+      var combos = [ ['Arsa + Ev', 1|2], ['Arsa + Otel', 1|4], ['Ev + Otel', 2|4], ['Arsa + Ev + Otel', 1|2|4], ['Hepsi + Tapu', 15] ];
       html = '<div class="hd"><div><b>🏙️ '+esc(t.toLocaleUpperCase('tr-TR'))+'</b><small>'+(reg ? esc(reg)+' bölgesi · ' : '')+'Değer '+fmt(c.price)+(LM ? ' · '+esc(LM.n) : '')+'</small></div><div class="x">✕</div></div>' +
         '<div class="bd"><div class="lm">'+(LM ? '<svg viewBox="0 -4 100 124">'+LM.svg+'</svg>' : '<span class="ic">'+(c.icon||'🏙️')+'</span>')+'</div><div style="flex:1;min-width:0">' +
         '<div class="ow">'+(o ? '<i style="background:'+seatCol(o)+'"></i>Sahibi: '+esc(o.name)+' · <em>Şu anki kira '+fmt(pr(mask))+'</em>' : '<i style="background:#475569"></i>Sahipsiz — satın alınabilir')+'</div>' +
@@ -18224,8 +18226,9 @@ body.mcMatchOn #mcGameOver{display:none!important}
     return alive.concat(out);
   }
   function uidOfSeat(i){ var p = (window.players||[])[i]; if(p && p.uid) return p.uid; if(i === 0) return me(); return null; }
+  function pl0real(){ var ps = window.players || []; return !!(ps.length && ps[0] && !ps[0].__pv); }
   function settle(){
-    if(!M || M.settled) return; track();
+    if(!M || M.settled || !pl0real()) return; track();
     var c = M.cfg, order = placements(), ps = window.players || [], winT = order.length ? teamOfIdx(order[0]) : 'A';
     var rows = order.map(function(i, k){
       var place = k + 1, p = ps[i], team = c.tur === '2v2' ? teamOfIdx(i) : null, win = team ? (team === winT) : (place === 1);
@@ -18353,7 +18356,8 @@ body.mcMatchOn #mcGameOver{display:none!important}
       if(co && co.role === 'guest' && co.entered && typeof window.MONOCITY_COOP_MY_SEAT === 'number' && (window.players||[]).length && roomCfg && roomCfg.mid && (!M || M.mid !== roomCfg.mid) && doneSet().indexOf(roomCfg.mid) < 0){
         beginMatch(roomCfg, 'guest', co.code, window.MONOCITY_COOP_MY_SEAT); listenResult(co.code);
       }
-      if(M && !M.settled && M.role !== 'guest' && window.gameOver && (window.players||[]).length) settle();
+      if(M && !M.live && !window.gameOver && pl0real()) M.live = true;
+      if(M && M.live && !M.settled && M.role !== 'guest' && window.gameOver && pl0real()) settle();
       /* HUD: takım etiketi / boş koltuk */
       var hud = document.getElementById('mcIsoHud');
       if(hud){
@@ -18507,6 +18511,8 @@ body.mcMatchOn #mcGameOver{display:none!important}
   /* kart çekilirken arkada yeni oyunun boş tahtası (piyonlar Yola Çık'ta) */
   var pvShownAt = 0;
   function preview(c, n){
+    try{ if(M && !(window.MONOCITY_COOP && MONOCITY_COOP.role === 'guest' && MONOCITY_COOP.entered)){ if(!M.settled){ M.settled = true; markDone(M.mid); lsDel(LIVE_KEY); if(M.cfg.mod === 'rank' && M.live){ try{ rankApply(rpFor(M.cfg, M.cfg.tur === '1v1' ? 2 : 4, false)); }catch(x){} } } clearMatch(); } }catch(e){}
+    try{ if(rEl) rEl.classList.remove('show'); }catch(e){}
     try{
       var cc = window.MONOCITY_COOP; if(cc && cc.role === 'guest' && cc.entered) return;
       var ps = window.players || []; if(ps.length && ps[0] && !ps[0].__pv && !window.gameOver){ var g0 = document.getElementById('game'); if(g0 && g0.style.display !== 'none') return; }
@@ -22506,6 +22512,7 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
   function decGround(){
     var bd = document.getElementById('board'), wrap = document.getElementById('mgBoardWrap'), I = window.MONOCITY_ISO; if(!bd || !wrap || !I) return;
     var S = I.S, C = I.C, In = S - 2*C, key = S+':'+C;
+    var M6 = Math.round(C*0.14);   /* T7: zemin kare yazılarının iç ucunu kapatmasın */
     if(!DEC.g || !DEC.g.isConnected){ DEC.g = document.createElement('div'); DEC.g.id = 'hwGround'; DEC.gk = ''; wrap.appendChild(DEC.g); }
     ['left','top','width','height','transform','transform-origin','position'].forEach(function(k){ var v = bd.style.getPropertyValue(k); if(DEC.g.style.getPropertyValue(k) !== v) DEC.g.style.setProperty(k, v); });
     if(DEC.gk === key) return; DEC.gk = key;
@@ -22514,7 +22521,7 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
     var leaves = '', LC = ['#7c2d12','#9a3412','#78350f','#4a2511'];
     for(var i=0;i<26;i++){ var a = i*2.39, rr = In*(0.2+0.28*((i*37)%100)/100), x = In/2+Math.cos(a)*rr, y = In/2+Math.sin(a)*rr;
       leaves += '<path transform="translate('+x.toFixed(1)+' '+y.toFixed(1)+') rotate('+(i*47)+') scale('+(0.7+(i%3)*0.25)+')" d="M0 -6 Q5 -2 0 6 Q-5 -2 0 -6z" fill="'+LC[i%4]+'" opacity=".75"/>'; }
-    DEC.g.innerHTML = '<div class="in" style="left:'+C+'px;top:'+C+'px;width:'+In+'px;height:'+In+'px;background:url('+IMG.wood+') 0 0/'+Math.round(In*0.55)+'px;box-shadow:inset 0 0 '+Math.round(In*0.12)+'px rgba(0,0,0,.85),inset 0 0 0 2px rgba(255,122,26,.35)">' +
+    DEC.g.innerHTML = '<div class="in" style="left:'+(C+M6)+'px;top:'+(C+M6)+'px;width:'+(In-2*M6)+'px;height:'+(In-2*M6)+'px;background:url('+IMG.wood+') 0 0/'+Math.round(In*0.55)+'px;box-shadow:inset 0 0 '+Math.round(In*0.12)+'px rgba(0,0,0,.85),inset 0 0 0 2px rgba(255,122,26,.35)">' +
       '<svg viewBox="0 0 '+In+' '+In+'"><defs>' +
       '<radialGradient id="hwgLo"><stop offset="0" stop-color="#ff9a2e" stop-opacity=".55"/><stop offset=".45" stop-color="#ff7a1a" stop-opacity=".18"/><stop offset="1" stop-color="#ff7a1a" stop-opacity="0"/></radialGradient>' +
       '<radialGradient id="hwgLp"><stop offset="0" stop-color="#b98cff" stop-opacity=".35"/><stop offset="1" stop-color="#b98cff" stop-opacity="0"/></radialGradient>' +
@@ -24778,10 +24785,11 @@ html body #openModal.mcF5 .openActionRow button:disabled{filter:grayscale(.7);op
   function decGround(){
     var bd = document.getElementById('board'), wrap = document.getElementById('mgBoardWrap'), I = window.MONOCITY_ISO; if(!bd || !wrap || !I) return;
     var S0 = I.S, C = I.C, In = S0 - 2*C, key = S0+':'+C;
+    var M6 = Math.round(C*0.14);   /* T7: zemin kare yazılarının iç ucunu kapatmasın */
     if(!DEC.g || !DEC.g.isConnected){ DEC.g = document.createElement('div'); DEC.g.id = 'atGround'; DEC.gk = ''; wrap.appendChild(DEC.g); }
     ['left','top','width','height','transform','transform-origin','position'].forEach(function(k){ var v = bd.style.getPropertyValue(k); if(DEC.g.style.getPropertyValue(k) !== v) DEC.g.style.setProperty(k, v); });
     if(DEC.gk === key) return; DEC.gk = key;
-    DEC.g.innerHTML = '<div class="in" style="left:'+C+'px;top:'+C+'px;width:'+In+'px;height:'+In+'px;background:url('+IMG.ground+') center/cover;box-shadow:inset 0 0 '+Math.round(In*0.08)+'px rgba(0,0,0,.9),inset 0 0 0 2px rgba(255,106,0,.45)"><div class="pl"></div></div>';
+    DEC.g.innerHTML = '<div class="in" style="left:'+(C+M6)+'px;top:'+(C+M6)+'px;width:'+(In-2*M6)+'px;height:'+(In-2*M6)+'px;background:url('+IMG.ground+') center/cover;box-shadow:inset 0 0 '+Math.round(In*0.08)+'px rgba(0,0,0,.9),inset 0 0 0 2px rgba(255,106,0,.45)"><div class="pl"></div></div>';
   }
   function decSprites(){
     if(DEC.sp && DEC.sp.v.isConnected) return DEC.sp;
