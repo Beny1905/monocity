@@ -25545,6 +25545,9 @@ html body #openModal.mcF5 .openActionRow button:disabled{filter:grayscale(.7);op
 @media (prefers-reduced-motion:reduce){#f7Net .heart{animation:none}}
 
 /* ===== T9 ===== */
+/* eski hazır arayüz resmi görünmesin: lobi gizlenince yeni arayüz yerinde kalır ama tıklanmaz */
+body.f8MenuOn #v20HitLayer.v20HitLayer.lobbyHidden{display:block!important;pointer-events:none!important}
+body.f8MenuOn #v20HitLayer.v20HitLayer.lobbyHidden *{pointer-events:none!important}
 .f8Swap{flex:0 0 auto!important;border:1.5px solid #ffd36b;border-radius:10px;background:linear-gradient(180deg,#f59e0b,#b45309);color:#fff;font-weight:1000;font-size:clamp(10px,2.8vh,13px);padding:5px 10px;cursor:pointer;white-space:nowrap;box-shadow:0 0 10px rgba(255,180,60,.5);margin:0;min-height:0}
 .f8Swap.draw{background:linear-gradient(180deg,#7c3aed,#4c1d95);border-color:#c4b5fd;box-shadow:0 0 10px rgba(167,139,250,.5)}
 #atOv .hd>*,#hwOv .hd>*{min-width:0}
@@ -26437,6 +26440,13 @@ html body #openModal.mcF5 .openActionRow button:disabled{filter:grayscale(.7);op
     var uid = isMe ? me() : (window.__atProfUid || window.__hwProfUid || null); openNet(uid, isMe);
   }, true);
 
+  /* ana menü görünürken body.f8MenuOn (lobi gizlense de yeni arayüz yerinde kalır; oyunda değil) */
+  function menuOnTick(){ var mm = document.getElementById('mainMenu'), g = document.getElementById('game');
+    var on = !!mm && getComputedStyle(mm).display !== 'none' && !(g && getComputedStyle(g).display !== 'none' && document.body.classList.contains('mcIso'));
+    if(document.body.classList.contains('f8MenuOn') !== on) document.body.classList.toggle('f8MenuOn', on); }
+  setInterval(menuOnTick, 150);
+  (function watchMM(){ var mm = document.getElementById('mainMenu'), g = document.getElementById('game'); if(!mm) return setTimeout(watchMM, 500);
+    var ob = new MutationObserver(menuOnTick); ob.observe(mm, {attributes:true, attributeFilter:['style','class']}); if(g) ob.observe(g, {attributes:true, attributeFilter:['style','class']}); ob.observe(document.body, {attributes:true, attributeFilter:['class']}); menuOnTick(); })();
   /* ======================================================================
      10) T9 · ETKİNLİK: çekiliş ↔ takas mağazası (MLBB gibi çekiliş ekranından)
      ====================================================================== */
