@@ -2563,7 +2563,7 @@ function applyChanceCard(p,card){
      }
      renderBoard();return setTimeout(nextTurn,DELAY);
    }
-   waitDecisionTile='ŞANS_PARK';waiting=true;renderBoard();return showInfo('🚗 PARK CEZASI','<b>PARK CEZASI</b><br><br>ŞANS kartından gelen park cezası uygulanıyor.<br><br>'+(p.money<PARK_NOW_COST?'⚠️ <b>Bakiyen yetmezse mülklerin satılarak ödenir.</b><br>':'')+'⏱️ Süre dolarsa 150.000 Coin otomatik ödenir.<br><br>💰 <b>'+money(PARK_NOW_COST)+' Coin öde:</b> Beklemeden devam et.<br>💰 <b>'+money(PARK_WAIT_COST)+' Coin öde:</b> 1 tur bekle.<br><br><button onclick="payChanceParkNow()">💰 300.000 COIN ÖDE — BEKLEME</button><button onclick="payChanceParkWait()">⏭️ 150.000 COIN ÖDE — 1 TUR BEKLE</button>'),startTimer(15,"action");
+   waitDecisionTile='ŞANS_PARK';waiting=true;renderBoard();return showInfo('🚗 PARK CEZASI','<b>PARK CEZASI</b><br><br>ŞANS kartından gelen park cezası uygulanıyor.<br><br>'+(p.money<PARK_NOW_COST?'⚠️ <b>Bakiyen yetmezse mülklerin satılarak ödenir.</b><br>':'')+'⏱️ Süre dolarsa 150.000 Coin otomatik ödenir.<br><br>💰 <b>'+money(PARK_NOW_COST)+' Coin öde:</b> Beklemeden devam et.<br>💰 <b>'+money(PARK_WAIT_COST)+' Coin öde:</b> 1 tur bekle.<br><br><button onclick="payChanceParkNow()">💰 300.000 COIN ÖDE — BEKLEME</button><button onclick="payChanceParkWait()">⏭️ 150.000 COIN ÖDE — 1 TUR BEKLE</button>'),startTimer(30,"action");
  }
  if(card.id==='bankAuction')return startPrivateAuction(p);
  if(card.id==='allAuction')return startSecretAuction();
@@ -2654,7 +2654,7 @@ var cities={
 "Denizli":{color:"#fbc02d",price:500000,icon:"🏔️"},"Aydın":{color:"#fbc02d",price:700000,icon:"🏛️"},"Muğla":{color:"#fbc02d",price:725000,icon:"🏖️"},"İzmir":{color:"#fbc02d",price:850000,icon:"🗼"},
 "İstanbul":{color:"#d32f2f",price:1000000,icon:"🌆"},"Çanakkale":{color:"#d32f2f",price:475000,icon:"🐴"},"Bursa":{color:"#d32f2f",price:775000,icon:"🕌"},"Kocaeli":{color:"#d32f2f",price:750000,icon:"🏭"}
 };
-for(var city in cities){var c=cities[city];c.house=Math.floor(c.price*.2);c.hotel=Math.floor(c.price*.3);c.land=Math.floor(c.price*.5);c.deed=c.house+c.hotel+c.land;c.rent=c.price}
+for(var city in cities){var c=cities[city];c.land=Math.floor(c.price*.2);c.house=Math.floor(c.price*.3);c.hotel=Math.floor(c.price*.5);c.deed=c.house+c.hotel+c.land;c.rent=c.price}
 
 var CLASSIC_BOARD=["BAŞLANGIÇ","Van","Erzincan","ŞANS","Ağrı","Erzurum","MÜZAYEDE ÖZEL","Gaziantep","Mardin","Şanlıurfa","Diyarbakır","HAPİSHANE","Trabzon","Ordu","AÇIK ARTIRMA","Rize","Samsun","Ankara","Konya","Eskişehir","Nevşehir","MÜZAYEDE GENEL","Antalya","Mersin","VERGİ %15","Adana","Hatay","Muğla","Denizli","Aydın","İzmir","DÜNYA TURU","ŞANS","AÇIK ARTIRMA","İstanbul","Kocaeli","Bursa","Çanakkale","PARK CEZASI","VERGİ %15","ŞANS"];
 var WIDE_BOARD=["BAŞLANGIÇ","Ağrı","Van","ŞANS","Erzurum","Erzincan","OTOGAR","Şanlıurfa","Diyarbakır","VERGİ %15","Mardin","HAPİSHANE","Gaziantep","Ordu","Rize","ŞANS","YHT","Samsun","Trabzon","AÇIK ARTIRMA","Konya","Eskişehir","MÜZAYEDE","Nevşehir","Ankara","Hatay","Adana","ŞANS","Mersin","Antalya","FERİBOT","Denizli","Aydın","ŞEHİR TURU","Muğla","İzmir","VERGİ %15","Bursa","Çanakkale","PARK CEZASI","İstanbul","Kocaeli","HAVALİMANI","MÜZAYEDE"];
@@ -3147,7 +3147,7 @@ function handleWaitDecisionTimeout(){
  stopTimer();
  if(tile=="HAPİSHANE"){
   p.skip=2;
-  log("⏱️ "+p.name+" 15 saniye içinde hapishane kararını vermedi. 2 tur cezası aldı.");
+  log("⏱️ "+p.name+" 30 saniye içinde hapishane kararını vermedi. 2 tur cezası aldı.");
  }else if(tile=="PARK CEZASI"||tile=="ŞANS_PARK"){
   log("⏱️ "+p.name+" süre içinde park cezası kararını vermedi; en düşük ceza otomatik uygulanıyor.");
   parkPayAndWait(p,"🚗 "+p.name+" park cezası:");
@@ -3171,7 +3171,7 @@ function handleWaitTile(p,tile){
  var isJail=(tile=="HAPİSHANE");
  if(isJail&&p.chanceCards.jailFree>0){
    waiting=true; waitDecisionTile="HAPİSHANE";
-   if(isInteractiveSeat(p)){showInfo("🗝️ HAPİSHANEDEN ÇIKIŞ KARTI","<b>Hapishaneye düştün.</b><br><br>🗝️ Elinde <b>"+p.chanceCards.jailFree+"</b> adet Hapishaneden Çıkış kartı var.<br><br><button onclick='useJailFreeCard()'>🗝️ KARTI KULLAN</button><button onclick='takeWaitTurn()'>⏭️ KARTI KULLANMA</button>");}
+   if(isInteractiveSeat(p)){showInfo("🗝️ HAPİSHANEDEN ÇIKIŞ KARTI","<b>Hapishaneye düştün.</b><br><br>🗝️ Elinde <b>"+p.chanceCards.jailFree+"</b> adet Hapishaneden Çıkış kartı var.<br><br><button onclick='useJailFreeCard()'>🗝️ KARTI KULLAN</button><button onclick='takeWaitTurn()'>⏭️ KARTI KULLANMA</button>");startTimer(30,"action");}
    else {
      /* BOT KARARI: Hapishaneden Çıkış kartı değerli olduğu için her zaman
         tüketilmez. Güçlü mülk/para pozisyonunda 2 tur kaybetmemek için kullanır;
@@ -3201,7 +3201,7 @@ function handleWaitTile(p,tile){
   }else{
    showInfo("🚗 PARK YERİ","<b>PARK YERİ KURALI</b><br><br>💰 <b>BAKİYEN: "+money(p.money)+" Coin</b><br><br>"+(p.money<PARK_NOW_COST?"⚠️ <b>Bakiyen yetmezse mülklerin satılarak ödenir.</b> Süre dolarsa 150.000 Coin otomatik ödenir.<br><br>":"⏱️ Süre dolarsa 150.000 Coin otomatik ödenir.<br><br>")+"💰 <b>150.000 Coin öde:</b> 1 tur bekle.<br><br>⚡ <b>300.000 Coin öde:</b> Bekleme, sonraki sıranda normal oyna.<br><br><button onclick='payParkWait()'>💰 150.000 COIN ÖDE — 1 TUR BEKLE</button><button onclick='payParkNow()'>⚡ 300.000 COIN ÖDE — BEKLEME</button>");
   }
-  startTimer(15,"action");
+  startTimer(30,"action");
   return;
  }
  if(isJail){
@@ -3300,9 +3300,9 @@ function takeWaitTurn(){
 function calculateRent(cityName,mask,owner){
 var c=cities[cityName];if(!c)return 0;
 var rate=0;
-if(mask&LAND_BIT)rate+=.15;
-if(mask&HOUSE_BIT)rate+=.05;
-if(mask&HOTEL_BIT)rate+=.10;
+if(mask&LAND_BIT)rate+=.05;
+if(mask&HOUSE_BIT)rate+=.10;
+if(mask&HOTEL_BIT)rate+=.15;
 if(mask&DEED_BIT)rate+=.25;
 var rent=Math.floor(c.price*rate);
 var region=getRegion(cityName);
@@ -4369,7 +4369,6 @@ function adjustOpenBid(delta){
  var next=Math.max(min,value+delta);
  next=Math.min(next,players[0].money);
  input.value=next;
- input.focus();
 }
 
 function setOpenAuctionControls(canBid){
@@ -12679,11 +12678,15 @@ mportant;}
     try{ if(typeof setLobbyHitLayerVisible==='function') setLobbyHitLayerVisible(true); }catch(e){}
   }
   window.monocityGameOverToMenu = toMenu;
+  var wasPlaying=false;
   setInterval(function(){
-    if(!window.gameOver){ shown=false; if(el && el.classList.contains('show') && !inGame()) el.classList.remove('show'); return; }
-    if(shown || !inGame() || !window.players || !window.players.length || document.body.classList.contains('mcDrawBg')) return;
-    shown=true; show();
+    var __mm=document.getElementById('mainMenu');
+    if(!inGame() || !window.players || !window.players.length || (__mm && getComputedStyle(__mm).display!=='none')){ wasPlaying=false; if(el && el.classList.contains('show') && !window.gameOver) el.classList.remove('show'); }
+    if(!window.gameOver){ shown=false; if(inGame() && window.players && window.players.length && !document.body.classList.contains('mcDrawBg')) wasPlaying=true; if(el && el.classList.contains('show') && !inGame()) el.classList.remove('show'); return; }
+    if(shown || !wasPlaying || !inGame() || !window.players || !window.players.length || document.body.classList.contains('mcDrawBg')) return;
+    shown=true; wasPlaying=false; show();
   }, 500);
+  window.monocityGameOverReset = function(){ wasPlaying=false; shown=false; if(el) el.classList.remove('show'); };
 })();
 </script>
 <style id="monocity-chatrow-css">
@@ -13949,9 +13952,8 @@ body.mcWtMode #board .cell.mcWtOk{cursor:pointer;position:relative;z-index:3;ani
   }
   function ui(){
     if(!bar){ bar = document.createElement('div'); bar.id = 'mcWtBar';
-      bar.innerHTML = '<span>🌍 Gitmek istediğin kareye dokun</span><button type="button" id="mcWtList">📋 Listeden seç</button>';
+      bar.innerHTML = '<span>🌍 Gitmek istediğin kareye dokun</span>';
       document.body.appendChild(bar);
-      bar.querySelector('#mcWtList').onclick = function(){ listMode = true; stop(); };
     }
     if(!ask){ ask = document.createElement('div'); ask.id = 'mcWtAsk'; document.body.appendChild(ask);
       ask.addEventListener('click', function(e){ if(e.target === ask) ask.classList.remove('show'); }); }
@@ -14006,14 +14008,18 @@ body.mcWtMode #board .cell.mcWtOk{cursor:pointer;position:relative;z-index:3;ani
     var i = [].indexOf.call(cell.parentNode.children, cell);
     if(valid[i]) confirmGo(i);
   }, true);
-  setInterval(function(){
+  function wtTick(){
     var a = active();
-    var sig = a ? (document.getElementById('infoText') ? document.getElementById('infoText').innerHTML.length : 1) + ':' + tourButtons().length : '';
     if(!a){ if(on) stop(); listMode = false; lastSig = ''; return; }
-    if(sig !== lastSig){ lastSig = sig; listMode = false; }
-    if(listMode) return;
     if(!on) start(); else paint();
-  }, 250);
+  }
+  setInterval(wtTick, 250);
+  /* modal açılır açılmaz (boyamadan önce) yakala → eski tablo hiç görünmez */
+  (function obs(){
+    var m = modal(); if(!m){ setTimeout(obs, 300); return; }
+    try{ new MutationObserver(function(){ try{ wtTick(); }catch(e){} }).observe(m, {attributes:true, attributeFilter:['style','class'], childList:true, subtree:true}); }catch(e){}
+  })();
+  window.monocityWtTick = wtTick;
   window.monocityWorldTourPickActive = function(){ return on; };
 })();
 </script>
@@ -15168,12 +15174,15 @@ body.mcIso #mcIsoHud{display:block}
       var inner = {b:'left:0;right:0;top:0;height:'+band+'px', t:'left:0;right:0;bottom:0;height:'+band+'px', l:'top:0;bottom:0;right:0;width:'+band+'px', r:'top:0;bottom:0;left:0;width:'+band+'px'}[p.side];
       var outer = {b:'left:0;right:0;bottom:0;height:'+ob+'px', t:'left:0;right:0;top:0;height:'+ob+'px', l:'top:0;bottom:0;left:0;width:'+ob+'px', r:'top:0;bottom:0;right:0;width:'+ob+'px'}[p.side];
       var special = window.MONOCITY_WIDE_SPECIALS && window.MONOCITY_WIDE_SPECIALS[t];
+      var gb = Math.max(4, Math.round(G.C*0.15));
+      var gband = {b:'left:0;right:0;bottom:0;height:'+gb+'px', t:'left:0;right:0;top:0;height:'+gb+'px', l:'top:0;bottom:0;left:0;width:'+gb+'px', r:'top:0;bottom:0;right:0;width:'+gb+'px'}[p.side];
+      var oin = {b:'left:0;right:0;top:0;height:'+ob+'px', t:'left:0;right:0;bottom:0;height:'+ob+'px', l:'top:0;bottom:0;right:0;width:'+ob+'px', r:'top:0;bottom:0;left:0;width:'+ob+'px'}[p.side];
       if(!corner){
-        if(city){ var gc = GROUPC[city.color] || city.color; html += '<div class="g" style="--c:'+gc+';--lt:'+shade(gc,.28)+';'+inner+'"></div>'; }
-        else if(special){ html += '<div class="g" style="--c:#64748b;--lt:#94a3b8;'+inner+'"></div>'; }
-        if(o) html += '<div class="o" style="--oc:'+oc+';'+outer+'"></div>';
+        if(city){ var gc = GROUPC[city.color] || city.color; html += '<div class="g" style="--c:'+gc+';--lt:'+shade(gc,.28)+';'+gband+'"></div>'; }
+        else if(special){ html += '<div class="g" style="--c:#64748b;--lt:#94a3b8;'+gband+'"></div>'; }
+        if(o) html += '<div class="o" style="--oc:'+oc+';'+oin+'"></div>';
         var rot = (p.side==='b'||p.side==='t') ? -90 : 0;
-        var sh = {b:'translateY('+(band*0.35)+'px)', t:'translateY('+(-band*0.35)+'px)', l:'translateX('+(-band*0.35)+'px)', r:'translateX('+(band*0.35)+'px)'}[p.side];
+        var sh = {b:'translateY('+(-gb*0.45)+'px)', t:'translateY('+(gb*0.45)+'px)', l:'translateX('+(gb*0.45)+'px)', r:'translateX('+(-gb*0.45)+'px)'}[p.side];
         var lbl = '', cls = 'l';
         if(city) lbl = '<b>'+esc(t.toLocaleUpperCase('tr-TR'))+'</b><i>'+fmtK(city.price)+'</i>';
         else { cls = 'l sp'; var pr = special && window.MONOCITY_SPECIAL_PRICE ? window.MONOCITY_SPECIAL_PRICE[t] : 0;
@@ -15384,19 +15393,22 @@ body.mcIso #mcIsoHud{display:block}
       var rs = seatOf(i), col = (window.playerColors && window.playerColors[rs]) || SEATC[rs] || SEATC[0];
       c.style.setProperty('--pc', col);
       var fr = (p.cos && p.cos.frame) || (i === 0 ? ((window.MONOCITY_GET_FRAME && MONOCITY_GET_FRAME()) || 'white') : 'white');
-      c.style.setProperty('--fc', fr === 'white' ? col : (FRC[fr] || col));
+      c.style.setProperty('--fc', fr === 'white' ? '#ffffff' : (FRC[fr] || '#ffffff'));
       var src = img('.mgPlayer.p'+i+' .pcAv img'); var im = c.querySelector('.av img'); if(src && im.getAttribute('src') !== src) im.setAttribute('src', src);
       c.querySelector('.av i').textContent = 'Lv'+levelOf(i, p);
       c.querySelector('.tx b').textContent = p.name;
       c.querySelector('.tx .m').textContent = '💰 ' + (typeof money === 'function' ? money(p.money) : p.money);
       var n = p.properties ? Object.keys(p.properties).length : 0;
-      c.querySelector('.tx small').textContent = '🏙️ '+n+' mülk · 📍 '+window.monocityTileName(board[p.pos] || '');
+      var __sm = c.querySelector('.tx small'), __sp = __sm.querySelectorAll('span.mcPl');
+      if(__sp.length !== 2){ __sm.textContent = ''; for(var __k=0;__k<2;__k++){ var __e = document.createElement('span'); __e.className = 'mcPl'; __sm.appendChild(__e); } __sp = __sm.querySelectorAll('span.mcPl'); }
+      var __t0 = n+' mülk', __t1 = '📍 '+window.monocityTileName(board[p.pos] || '');
+      if(__sp[0].textContent !== __t0) __sp[0].textContent = __t0; if(__sp[1].textContent !== __t1) __sp[1].textContent = __t1;
       c.querySelector('.rk').textContent = String(window.monocityTurnNo ? window.monocityTurnNo(rs) : rs+1);
       c.classList.toggle('turn', cp === i && !window.gameOver && !p.bankrupt);
       c.classList.toggle('out', !!p.bankrupt);
     }
     var turn = ps[cp]; var tt = document.getElementById('mcIsoTurn'); if(tt) tt.textContent = '🎯 SIRA: '+(turn ? turn.name : '-');
-    var tm = document.getElementById('mgTimer'), te = document.getElementById('mcIsoTime'); if(te) te.textContent = '⏱ '+(tm ? tm.textContent : '--');
+    var tm = document.getElementById('mgTimer'), te = document.getElementById('mcIsoTime'); if(te){ var __ht = null; try{ __ht = window.monocityHudTime ? window.monocityHudTime() : null; }catch(e){} var __tx = '⏱ '+(__ht != null ? __ht : (tm ? tm.textContent : '--')); if(te.textContent !== __tx) te.textContent = __tx; }
     var mr = document.getElementById('mgRoll'), ir = document.getElementById('mcIsoRoll'); if(mr && ir){ if(ir.disabled !== mr.disabled) ir.disabled = mr.disabled; }
     if(ppIdx >= 0) paintPP();
   }
@@ -17565,6 +17577,15 @@ body.mcIso #mcIsoHud{display:block}
 #mcSetup .bot{display:flex;align-items:center;gap:1.6vh;height:12vh;flex:0 0 auto;position:relative;z-index:3}
 #mcSetup .box{overflow:hidden;min-height:0}
 #mcSetup .chips{min-height:0}
+#mcSetup .mcPz{flex:1;display:flex;flex-direction:column;justify-content:center;gap:.7vh;margin-top:.8vh;min-height:0}
+#mcSetup .mcPz .hd{font-size:1.9vh;font-weight:1000;color:#9fb0dd;letter-spacing:.1em;display:flex;align-items:center;gap:.6vh}
+#mcSetup .mcPz .hd img{height:2.4vh}
+#mcSetup .mcPz .r{display:flex;align-items:center;gap:1vh;padding:.5vh 1vh;border-radius:1.2vh;background:#141d3b;border:.3vh solid #2a3a68;font-weight:1000;font-size:2.2vh;color:#fff;white-space:nowrap}
+#mcSetup .mcPz .r b{width:8.5vh;color:#cfd8f5;font-size:1.9vh}
+#mcSetup .mcPz .r span{display:flex;align-items:center;gap:.4vh}
+#mcSetup .mcPz .r em{font-style:normal;display:inline-grid;place-items:center;width:2.6vh;height:2.6vh;border-radius:50%;font-size:1.5vh;color:#231a00}
+#mcSetup .mcPz .r.on{border-color:#ffcc3d;background:linear-gradient(180deg,#5a4214,#2b1f0a);color:#ffe08a}
+#mcResult .mcAfk{background:#7f1d1d;color:#fecaca;border-radius:.6em;padding:0 .4em;margin-left:.4em;font-size:.75em}
 #mcSetup .sum{flex:1;height:100%;min-width:0;display:flex;align-items:center;gap:1.8vh;padding:0 2vh;border-radius:2.2vh;background:rgba(10,15,32,.85);border:.35vh solid #2c3a66;font-size:2.5vh;font-weight:800;color:#9fb0dd;white-space:nowrap;overflow:hidden}
 #mcSetup .sum b{color:#fff}
 #mcSetup .sum .pz{display:flex;gap:1.4vh;min-width:0}
@@ -17624,7 +17645,7 @@ body.mcIso #mcIsoHud{display:block}
 #mcDice2 .res.on{opacity:1}
 #mcDice2 .res b{color:#ffe08a}
 @keyframes mcD2Bounce{0%{transform:translateY(-14vh)}45%{transform:translateY(0)}62%{transform:translateY(-4vh)}78%{transform:translateY(0)}88%{transform:translateY(-1.2vh)}100%{transform:translateY(0)}}
-body.mcDbl #diceFX{visibility:hidden!important;opacity:0!important}
+body.mcDbl #diceFX,body.mcMatchOn #diceFX{visibility:hidden!important;opacity:0!important}
 #coopMenuHitBtn,#coopMenuBtn{display:none!important}
 
 /* ================= Oyun ici: takim / bos koltuk ================= */
@@ -17721,7 +17742,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
   var TEST_BOTS_IN_RANK = true;   /* TEST: Rank'ta bot serbest. Yayından önce false yapılacak. */
   var A = window.MONOCITY_AUTH, db = window.MONOCITY_DB, API = window.MONOCITY_LOBBY_API;
   var ONLINE = !!(A && A.available && db);
-  var FEES = [1000,2000,5000,10000,15000,20000];
+  var FEES = [0];   /* T7: giriş ücreti kalktı */
   var FEEC = ['#6b7280','#16a34a','#2563eb','#7c3aed','#dc2626','#d97706'];
   var CFG_KEY = 'mc_match_cfg', RANK_KEY = 'mc_rank_v1', LIVE_KEY = 'mc_match_live', DONE_KEY = 'mc_match_done';
 
@@ -17752,7 +17773,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
               tur: (c.tur === '1v1' || c.tur === '2v2') ? c.tur : '4',
               para: ([3,4,5].indexOf(+c.para) >= 0) ? +c.para : 3,
               zar: (+c.zar === 2) ? 2 : 1,
-              ucr: (FEES.indexOf(+c.ucr) >= 0) ? +c.ucr : 1000 };
+              ucr: 0 };
     if(o.mod === 'rank'){ o.para = 4; o.zar = 2; }
     if(c.mid) o.mid = String(c.mid);
     if(Array.isArray(c.cols)) o.cols = c.cols.slice(0,4);
@@ -17766,14 +17787,17 @@ body.mcMatchOn #mcGameOver{display:none!important}
 
   /* ---------------- ödül hesabı ---------------- */
   function nSeats(c){ return c.tur === '1v1' ? 2 : 4; }
-  function pot(c){ var k = c.ucr * nSeats(c); var cut = c.mod === 'rank' ? Math.round(k/10) : 0; return {kasa:k, cut:cut, d:k-cut}; }
+  function pot(c){ return {kasa:0, cut:0, d:0}; }
+  /* T7: sabit ödüller (Metro). AFK / maçtan çıkan: 0 */
+  var PRIZE = { klasik:{'1v1':[25000,15000], '2v2':[30000,20000], '4':[40000,30000,20000,10000]},
+                rank:  {'1v1':[20000,10000], '2v2':[25000,15000], '4':[35000,25000,15000,7500]} };
+  function prizeList(c){ return (PRIZE[c.mod === 'rank' ? 'rank' : 'klasik'] || {})[c.tur] || []; }
   function coinFor(c, place, win){
-    var P = pot(c);
-    if(c.tur === '1v1') return place === 1 ? P.d : 0;
-    if(c.tur === '2v2') return Math.round(win ? P.d*0.75/2 : P.d*0.25/2);
-    var w = c.mod === 'rank' ? [9,6,2,1] : [8,5,2,1], s = c.mod === 'rank' ? 18 : 16;
-    return Math.round(P.d * w[place-1] / s);
+    var L = prizeList(c);
+    if(c.tur === '2v2') return win ? L[0] : L[1];
+    return L[place-1] || 0;
   }
+  window.MONOCITY_PRIZES = PRIZE;
   function rpFor(c, place, win){
     if(c.mod !== 'rank') return 0;
     if(c.tur === '1v1') return place === 1 ? 25 : -25;
@@ -17908,9 +17932,9 @@ body.mcMatchOn #mcGameOver{display:none!important}
   }
   function beginMatch(c, role, code, mySeat){
     try{ document.body.classList.remove('mcDrawBg'); }catch(e){}
+    try{ if(rEl) rEl.classList.remove('show'); }catch(e){}
     M = { cfg:norm(c), mid:(c.mid || ('solo-'+Date.now())), role:role, code:code||null, mySeat:mySeat||0,
           settled:false, out:{}, outCnt:0, snap:{}, tsnap:{}, t0:Date.now() };
-    addMetro(-M.cfg.ucr);
     lsSet(LIVE_KEY, {mid:M.mid, cfg:M.cfg, ts:Date.now()});
     setBody();
     applyCols(M.cfg);
@@ -17921,10 +17945,9 @@ body.mcMatchOn #mcGameOver{display:none!important}
     if(role !== 'guest'){
       var ps = window.players || [];
       if(M.cfg.tur === '1v1'){ for(var i=2;i<ps.length;i++){ ps[i].bankrupt = true; ps[i].absent = true; ps[i].properties = {}; ps[i].money = 0; } }
-      try{ log('🎟️ '+(M.cfg.mod === 'rank' ? 'RANK' : 'KLASİK')+' maç · '+({'1v1':'1 vs 1','2v2':'2 vs 2','4':'4 Kişilik'}[M.cfg.tur])+' · Giriş '+fmt(M.cfg.ucr)+' Metro · Kasa '+fmt(pot(M.cfg).kasa)); }catch(e){}
+      try{ log('🎟️ '+(M.cfg.mod === 'rank' ? 'RANK' : 'KLASİK')+' maç · '+({'1v1':'1 vs 1','2v2':'2 vs 2','4':'4 Kişilik'}[M.cfg.tur])+' · Ödüller: '+prizeList(M.cfg).map(fmt).join(' / ')+' Metro'); }catch(e){}
       try{ if(typeof renderBoard === 'function') renderBoard(); }catch(e){}
     }
-    toast('🎟️ Giriş ücreti ödendi: -'+fmt(M.cfg.ucr)+' Metro');
   }
 
   var DEFCOL = ['#ff3b30','#ffd60a','#34c759','#0a84ff'];
@@ -18022,13 +18045,14 @@ body.mcMatchOn #mcGameOver{display:none!important}
     try{ if(window.monocityDice2Skin) window.monocityDice2Skin(el, skin); }catch(e){}
     var res = el.querySelector('.res'); res.classList.remove('on'); res.innerHTML = '';
     var cubes = el.querySelectorAll('.cube'), dws = el.querySelectorAll('.dw');
-    [d1, d2].forEach(function(v, i){
+    var one = !d2; dws[1].style.display = one ? 'none' : '';
+    (one ? [d1] : [d1, d2]).forEach(function(v, i){
       var c = cubes[i], f = FACE[v], sx = 360*(3+i) + Math.floor(Math.random()*180), sy = 360*(2+i) + Math.floor(Math.random()*180);
       c.style.transition = 'none'; c.style.transform = 'rotateX('+(f[0]+sx)+'deg) rotateY('+(f[1]+sy)+'deg)';
       var dw = dws[i]; dw.style.animation = 'none'; void dw.offsetWidth; dw.style.animation = '';
     });
     el.classList.add('show'); void el.offsetWidth;
-    [d1, d2].forEach(function(v, i){ var c = cubes[i], f = FACE[v]; c.style.transition = ''; c.style.transform = 'rotateX('+(f[0]-14)+'deg) rotateY('+(f[1]+18)+'deg)'; });
+    (one ? [d1] : [d1, d2]).forEach(function(v, i){ var c = cubes[i], f = FACE[v]; c.style.transition = ''; c.style.transform = 'rotateX('+(f[0]-14)+'deg) rotateY('+(f[1]+18)+'deg)'; });
     clearTimeout(d2timer);
     d2timer = setTimeout(function(){
       landedFx(name, d1, d2);
@@ -18043,20 +18067,22 @@ body.mcMatchOn #mcGameOver{display:none!important}
       var tp = document.getElementById('diceTurnPlayer'); if(tp && name) tp.textContent = name;
       if(typeof window.monocityDiceLanded !== 'function') return;
       fxAllow = Date.now();
-      window.monocityDiceLanded(d1+'+'+d2+'='+(d1+d2));
+      window.monocityDiceLanded(d2 ? d1+'+'+d2+'='+(d1+d2) : String(d1));
       var all = document.querySelectorAll('.mcDiceNum'), el = all[all.length-1];
-      if(el){ var fs = parseFloat(el.style.fontSize) || 60; el.style.fontSize = Math.max(30, Math.round(fs*0.55))+'px'; el.style.whiteSpace = 'nowrap'; el.classList.add('mcD2Num'); }
+      if(el && d2){ var fs = parseFloat(el.style.fontSize) || 60; el.style.fontSize = Math.max(30, Math.round(fs*0.55))+'px'; el.style.whiteSpace = 'nowrap'; el.classList.add('mcD2Num'); }
     }catch(e){}
   }
   /* çift zar modunda tek zarın eski "5" bildirimi (misafirde) çift görünmesin */
   new MutationObserver(function(ms){
-    if(!dbl()) return;
-    ms.forEach(function(m){ m.addedNodes && Array.prototype.forEach.call(m.addedNodes, function(n){ if(n.classList && n.classList.contains('mcDiceNum') && /^\d+$/.test(n.textContent||'')) n.remove(); }); });
+    var sg = cssOne() && M && M.role === 'guest';
+    if(!dbl() && !sg) return;
+    ms.forEach(function(m){ m.addedNodes && Array.prototype.forEach.call(m.addedNodes, function(n){ if(n.classList && n.classList.contains('mcDiceNum') && /^\d+$/.test(n.textContent||'') && (dbl() || Date.now() - fxAllow > 200)) n.remove(); }); });
   }).observe(document.body, {childList:true});
+  function cssOne(){ return !!(M && !M.settled && M.cfg.zar !== 2); }
   function wrapDice(){
     var f = window.showDiceAnimation; if(typeof f !== 'function' || f.__mc) return;
     var w = function(done){
-      if(!dbl()){ if(hostCoop()) return syncRoll(done); return f.apply(this, arguments); }
+      if(!dbl()){ if(cssOne()) return oneRoll(done); if(hostCoop()) return syncRoll(done); return f.apply(this, arguments); }
       var p = (window.players||[])[window.currentPlayer], d1 = 1 + Math.floor(Math.random()*6), d2 = 1 + Math.floor(Math.random()*6);
       if(hostCoop()){ try{ var cc = window.MONOCITY_COOP; d2seq = Date.now(); db.ref('rooms/'+cc.code+'/mcDice2').set({seq:d2seq, name:p ? p.name : '', d1:d1, d2:d2}); }catch(e){} }
       var tl = document.getElementById('turnInfo'); if(tl && p) tl.innerHTML = '🎯 SIRA: <b style="text-transform:uppercase">'+esc(p.name)+'</b> — ZAR ATILIYOR...';
@@ -18069,6 +18095,23 @@ body.mcMatchOn #mcGameOver{display:none!important}
     w.__mc = true; window.showDiceAnimation = w;
   }
   wrapDice(); setTimeout(wrapDice, 1500);
+  /* tek zar: çift zarla aynı küp animasyonu; online'da sonuç atış anında yayınlanır */
+  function oneRoll(done){
+    var p = (window.players||[])[window.currentPlayer], name = p ? p.name : '', v = 1 + Math.floor(Math.random()*6), cc = window.MONOCITY_COOP, seq = 0;
+    if(hostCoop()){
+      seq = window.MONOCITY_COOP_ROLL_SEQ = (window.MONOCITY_COOP_ROLL_SEQ || 0) + 1;
+      window.MONOCITY_COOP_SENT_RESULT_SEQ = seq;
+      try{ d2seq = Date.now(); db.ref('rooms/'+cc.code+'/mcDice2').set({seq:d2seq, name:name, d1:v, d2:0}); }catch(e){}
+      try{ db.ref('rooms/'+cc.code+'/rollStart').set({name:name, seq:seq, ts:Date.now()}); }catch(e){}
+    }
+    var tl = document.getElementById('turnInfo'); if(tl && p) tl.innerHTML = '🎯 SIRA: <b style="text-transform:uppercase">'+esc(name)+'</b> — ZAR ATILIYOR...';
+    showDice2(skinOf(p), v, 0, name, function(){
+      if(seq){ try{ db.ref('rooms/'+cc.code+'/rollResult').set({seq:seq, value:v, name:name, ts:Date.now()}); }catch(e){} }
+      var dr = document.getElementById('diceResult'); if(dr) dr.innerHTML = '🎲 SONUÇ: <strong>'+v+'</strong>';
+      if(tl && p) tl.innerHTML = '🎯 <b style="text-transform:uppercase">'+esc(name)+'</b> <span style="color:#ffd54f"> '+v+' ATTI!</span>';
+      done(v);
+    });
+  }
   /* ---- zar herkeste aynı anda: sonuç atış anında belirlenir, hemen yayınlanır ---- */
   var d2seq = 0;
   function hostCoop(){ var cc = window.MONOCITY_COOP; return !!(cc && cc.role === 'host' && cc.code && db); }
@@ -18134,10 +18177,11 @@ body.mcMatchOn #mcGameOver{display:none!important}
       var v = sn && sn.val();
       if(d2Seen === null){ d2Seen = v ? v.seq : -1; return; }
       if(!v || v.seq === d2Seen) return; d2Seen = v.seq;
-      if(!(M && M.role === 'guest' && !M.settled && M.cfg.zar === 2)) return;
+      if(!(M && M.role === 'guest' && !M.settled)) return;
+      if(M.cfg.zar === 2 ? !v.d2 : !!v.d2) return;
       var p = (window.players||[]).filter(function(x){ return x && x.name === v.name; })[0];
       lastD2 = {k:v.name+'|'+v.d1+'|'+v.d2, t:Date.now()};
-      showDice2(skinOf(p), +v.d1, +v.d2, v.name);
+      showDice2(skinOf(p), +v.d1, +v.d2 || 0, v.name);
     });
   }
   setInterval(function(){ try{ watchD2(); }catch(e){} }, 700);
@@ -18186,8 +18230,9 @@ body.mcMatchOn #mcGameOver{display:none!important}
     var rows = order.map(function(i, k){
       var place = k + 1, p = ps[i], team = c.tur === '2v2' ? teamOfIdx(i) : null, win = team ? (team === winT) : (place === 1);
       var pf = c.tur === '2v2' ? (M.tsnap[team] || {d:0,r:0,s:0,t:0}) : (M.snap[i] || {d:0,r:0,s:0,t:0});
-      return { seat:realSeat(i), name:p.name, uid:uidOfSeat(i), bot:!(p.human || p.remote), place:place, team:team, win:win,
-               coin:coinFor(c, place, win), rp:rpFor(c, place, win), pf:(c.mod === 'rank' ? pf : {d:0,r:0,s:0,t:0}) };
+      var afk = !!(p.autoBot || p.mcAfk);
+      return { seat:realSeat(i), name:p.name, uid:uidOfSeat(i), bot:!(p.human || p.remote) && !afk, afk:afk, place:place, team:team, win:win,
+               coin:afk ? 0 : coinFor(c, place, win), rp:rpFor(c, place, win), pf:(c.mod === 'rank' ? pf : {d:0,r:0,s:0,t:0}) };
     });
     var res = { mid:M.mid, cfg:c, rows:rows, winT:(c.tur === '2v2' ? winT : null), ts:Date.now() };
     M.settled = true;
@@ -18251,22 +18296,21 @@ body.mcMatchOn #mcGameOver{display:none!important}
   /* ---- sonuç ekranı ---- */
   var rEl = null;
   function showResult(res, row, info, forf){
+    if(M && res && res.mid && M.mid !== res.mid) return;   /* başka (eski) maçın sonucu */
     if(!rEl){ rEl = document.createElement('div'); rEl.id = 'mcResult'; document.body.appendChild(rEl); }
-    var c = res.cfg, mi = metroIco(), title, sub = (c.mod === 'rank' ? 'RANK' : 'KLASİK')+' · '+({'1v1':'1 vs 1','2v2':'2 vs 2','4':'4 Kişilik'}[c.tur])+' · Giriş '+fmt(c.ucr)+' Metro';
+    var c = res.cfg, mi = metroIco(), title, sub = (c.mod === 'rank' ? 'RANK' : 'KLASİK')+' · '+({'1v1':'1 vs 1','2v2':'2 vs 2','4':'4 Kişilik'}[c.tur]);
     if(forf) title = '🏳️ OYUNDAN ÇIKTIN';
     else if(!row) title = '🏁 OYUN BİTTİ';
     else if(c.tur === '2v2') title = row.win ? '🏆 TAKIMIN KAZANDI!' : '💥 TAKIMIN KAYBETTİ';
     else title = row.place === 1 ? '🏆 KAZANDIN!' : (row.place === 2 && c.tur === '4' ? '🥈 2. OLDUN' : (row.place === 3 ? '🥉 3. OLDUN' : '💥 KAYBETTİN'));
     var list = (res.rows||[]).map(function(r){
       var tm = r.team ? '<span class="tm '+(isBlue(r.team, c) ? 'A' : 'B')+'">'+tName(r.team, c)+'</span>' : '';
-      return '<div class="rw'+(row && r.seat === row.seat ? ' me' : '')+'"><em class="p'+r.place+'">'+r.place+'</em><span class="n">'+esc(r.name)+(r.bot ? '<small>🤖</small>' : '')+tm+'</span><span class="cn'+(r.coin ? '' : ' z')+'">'+mi+'+'+fmt(r.coin)+'</span></div>';
+      return '<div class="rw'+(row && r.seat === row.seat ? ' me' : '')+'"><em class="p'+r.place+'">'+r.place+'</em><span class="n">'+esc(r.name)+(r.bot ? '<small>🤖</small>' : '')+(r.afk ? '<small class="mcAfk">AFK</small>' : '')+tm+'</span><span class="cn'+(r.coin ? '' : ' z')+'">'+mi+'+'+fmt(r.coin)+'</span></div>';
     }).join('');
     var right = '';
     if(row){
-      var net = row.coin - c.ucr;
-      right += '<div class="card"><div class="kv"><span>Ödül</span><b>'+mi+' +'+fmt(row.coin)+'</b></div><div class="kv"><span>Giriş ücreti</span><b class="neg">−'+fmt(c.ucr)+'</b></div>' +
-        '<div class="kv tot"><span>Net</span><b class="'+(net >= 0 ? 'pos' : 'neg')+'">'+(net >= 0 ? '+' : '−')+fmt(Math.abs(net))+' Metro</b></div>' +
-        (c.mod === 'rank' ? '<div class="note">Kasadan %10 kesinti yapıldı ('+fmt(pot(c).cut)+')</div>' : '') + '</div>';
+      right += '<div class="card"><div class="kv tot"><span>Maç ödülü</span><b class="'+(row.coin > 0 ? 'pos' : 'neg')+'">'+mi+' +'+fmt(row.coin)+' Metro</b></div>' +
+        ((forf || row.afk) ? '<div class="note">AFK kalan / maçtan çıkan oyuncu ödül alamaz.</div>' : '') + '</div>';
       if(c.mod === 'rank' && info){
         var pf = row.pf || {d:0,r:0,s:0,t:0}, sg = function(v){ return (v > 0 ? '+' : (v < 0 ? '−' : '')) + Math.abs(v); };
         var oV = rankView(info.old), nV = rankView(info.nr);
@@ -18357,14 +18401,14 @@ body.mcMatchOn #mcGameOver{display:none!important}
           '<div class="o" data-k="para" data-v="3">'+SVG.m('#2e8f3e','#3fb150','#63d06f')+'3M</div><div class="o" data-k="para" data-v="4">'+SVG.m('#2b5fae','#3a78d4','#6ea4f0')+'4M</div><div class="o" data-k="para" data-v="5">'+SVG.m('#6a2fae','#8544d4','#b07cf0')+'5M</div></div></div>' +
         '<div class="box" id="mcSuZar" style="flex:.72"><h3>ZAR <span class="fx">🔒 SABİT</span></h3><div class="opts">' +
           '<div class="o" data-k="zar" data-v="1">'+SVG.z1+'TEK</div><div class="o" data-k="zar" data-v="2">'+SVG.z2+'ÇİFT</div></div></div>' +
-        '<div class="box" style="flex:1.45"><h3>GİRİŞ ÜCRETİ</h3><div class="chips">'+chips+'</div><div class="info" id="mcSuInfo"></div></div>' +
+        '<div class="box" style="flex:1.45"><h3>ÖDÜLLER <small>Giriş ücretsiz</small></h3><div class="mcPz" id="mcSuPz"></div><div class="info" id="mcSuInfo"></div></div>' +
       '</div></div>' +
       '<div class="bot"><div class="sum" id="mcSuSum"></div><div class="go" id="mcSuGo">OYUNA BAŞLA ▶</div></div></div>';
     document.body.appendChild(sEl);
     sEl.addEventListener('click', function(e){
       var t = e.target.closest('[data-k]'); if(!t) return;
       var k = t.getAttribute('data-k'), v = t.getAttribute('data-v');
-      if(t.classList.contains('lk') || t.classList.contains('dis')) { if(k === 'ucr') toast('🔒 Bu giriş için en az '+fmt((+v)*3)+' Metro gerekli.'); else if(k === 'tur') toast('Lobide çok oyuncu var; önce oyuncu sayısını azalt.'); return; }
+      if(t.classList.contains('lk') || t.classList.contains('dis')) { if(k === 'tur') toast('Lobide çok oyuncu var; önce oyuncu sayısını azalt.'); return; }
       if((k === 'para' || k === 'zar') && ST.mod === 'rank') { toast('🔒 Rank maçlarında 4M ve çift zar sabittir.'); return; }
       ST[k] = (k === 'para' || k === 'zar' || k === 'ucr') ? +v : v;
       if(k === 'mod' && v === 'rank'){ ST.para = 4; ST.zar = 2; ST._rk = true; }
@@ -18379,8 +18423,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
   function lobbyGuestCount(){ try{ var st = API && API.state(); return (st && st.guests) ? st.guests.length : 0; }catch(e){ return 0; } }
   function paintSetup(){
     var el = sEl, c = ST;
-    var mf = maxFee();
-    if(c.ucr && metro() < c.ucr*3) ST.ucr = c.ucr = null;
+    var mf = 1; c.ucr = 0;
     var gc = flow === 'edit' ? lobbyGuestCount() : 0;
     el.querySelectorAll('.o[data-k]').forEach(function(o){
       var k = o.getAttribute('data-k'), v = o.getAttribute('data-v');
@@ -18390,8 +18433,8 @@ body.mcMatchOn #mcGameOver{display:none!important}
     el.querySelectorAll('.c[data-k]').forEach(function(o){ var v = +o.getAttribute('data-v'); o.classList.toggle('on', v === c.ucr); o.classList.toggle('lk', metro() < v*3); });
     var rk = c.mod === 'rank';
     ['mcSuPara','mcSuZar'].forEach(function(id){ var b = el.querySelector('#'+id); b.classList.toggle('isFixed', rk); b.querySelector('.opts').classList.toggle('fixed', rk); });
-    var lockedNext = FEES.filter(function(f){ return metro() < f*3; })[0];
-    el.querySelector('#mcSuInfo').innerHTML = mf === 0 ? '🔒 Oynamak için en az <b>'+fmt(3000)+'</b> Metro gerekli' : (lockedNext ? '🔒 '+(lockedNext/1000)+'K için en az <b>'+fmt(lockedNext*3)+'</b> gerekli' : '✅ Tüm girişler açık');
+    el.querySelector('#mcSuInfo').innerHTML = '⚠️ AFK kalan veya maçtan çıkan: <b>0</b>';
+    el.querySelector('#mcSuPz').innerHTML = pzHtml(c);
     var miss = missing(c), mi = metroIco();
     var go = el.querySelector('#mcSuGo'); go.classList.toggle('off', mf === 0 || !!miss);
     go.textContent = flow === 'edit' ? 'KAYDET ✓' : (flow === 'quick' ? 'HIZLI BAŞLA ▶' : 'LOBİ KUR ▶');
@@ -18399,19 +18442,26 @@ body.mcMatchOn #mcGameOver{display:none!important}
     el.querySelector('#mcSuMetro').innerHTML = metroIco()+fmt(metro());
     var pp0 = prof(); el.querySelector('#mcSuDia').innerHTML = ico('diamond')+fmt(pp0 ? pp0.diamonds : 0);
     var rv0 = rankView(rankState().r); var rp0 = el.querySelector('#mcSuRank'); rp0.style.color = rv0.c; rp0.innerHTML = (rv0.img ? '<img class="mcLgI" alt="" src="'+rv0.img+'">' : '<i></i>')+esc(rv0.t); rp0.title = 'Sezon '+season()+' · '+seasonLeft()+' kaldı';
-    if(!c.tur || !c.mod || !c.ucr){ el.querySelector('#mcSuSum').innerHTML = '<span style="color:#9fb0dd">👆 '+esc(miss || 'Seçimlerini yap')+' — kasa ve ödüller burada görünecek</span>'; return; }
-    var P = pot(c), items = '', cols = ['#ffcc3d','#cfd8e8','#d08a4a','#7a86a8'];
-    if(c.tur === '1v1') items = '<span><em style="background:#ffcc3d">1</em>'+mi+fmt(coinFor(c,1,true))+'</span><span style="color:#9fb0dd">Kazanan hepsini alır</span>';
+    if(!c.tur || !c.mod){ el.querySelector('#mcSuSum').innerHTML = '<span style="color:#9fb0dd">👆 '+esc(miss || 'Seçimlerini yap')+' — ödüller burada görünecek</span>'; return; }
+    var items = '', cols = ['#ffcc3d','#cfd8e8','#d08a4a','#7a86a8'];
+    if(c.tur === '1v1') items = '<span><em style="background:#ffcc3d">1</em>'+mi+fmt(coinFor(c,1,true))+'</span><span><em style="background:#cfd8e8">2</em>'+mi+fmt(coinFor(c,2,false))+'</span>';
     else if(c.tur === '2v2') items = '<span>Kazanan takım: '+mi+fmt(coinFor(c,1,true))+'<small style="color:#9fb0dd">&nbsp;/kişi</small></span><span>Kaybeden: '+mi+fmt(coinFor(c,3,false))+'<small style="color:#9fb0dd">&nbsp;/kişi</small></span>';
     else for(var i=1;i<=4;i++) items += '<span><em style="background:'+cols[i-1]+'">'+i+'</em>'+mi+fmt(coinFor(c,i))+'</span>';
-    el.querySelector('#mcSuSum').innerHTML = 'KASA '+mi+'<b>'+fmt(P.kasa)+'</b><div class="pz">'+items+'</div>'+(rk ? '<span class="tag">%10 kesinti</span>' : '<span class="tag g">kesinti yok</span>');
+    el.querySelector('#mcSuSum').innerHTML = 'ÖDÜL <div class="pz">'+items+'</div><span class="tag g">giriş ücretsiz</span>';
+  }
+  function pzHtml(c){
+    var mi = metroIco(), md = c.mod === 'rank' ? 'rank' : 'klasik', cols = ['#ffcc3d','#cfd8e8','#d08a4a','#7a86a8'];
+    var rows = [['1v1','1 vs 1'],['2v2','2 vs 2'],['4','4 Kişi']].map(function(t){
+      var L = PRIZE[md][t[0]], cells = L.map(function(v, k){ return '<span><em style="background:'+cols[t[0] === '2v2' ? k*2 : k]+'">'+(k+1)+'</em>'+(v >= 1000 ? (v/1000).toLocaleString('tr-TR')+'K' : v)+'</span>'; }).join('');
+      return '<div class="r'+(c.tur === t[0] ? ' on' : '')+'"><b>'+t[1]+'</b>'+cells+'</div>';
+    }).join('');
+    return '<div class="hd">'+(md === 'rank' ? 'RANK' : 'KLASİK')+' '+mi+'</div>'+rows;
   }
   function missing(c){
     if(!c.tur) return 'Önce oyun türünü seç';
     if(!c.mod) return 'Modu seç (Klasik / Rank)';
     if(!c.para) return 'Başlangıç parasını seç';
     if(!c.zar) return 'Zar türünü seç';
-    if(!c.ucr) return 'Giriş ücretini seç';
     return '';
   }
   function openSetup(f){
@@ -18431,7 +18481,6 @@ body.mcMatchOn #mcGameOver{display:none!important}
   function goSetup(){
     var ms = missing(ST); if(ms){ toast('👆 '+ms+'.'); return; }
     var c = norm(ST);
-    if(metro() < c.ucr*3){ toast('🔒 Bu giriş için en az '+fmt(c.ucr*3)+' Metro gerekli.'); return; }
     if(flow === 'edit'){
       if(roomCfg && roomCfg.hc) c.hc = roomCfg.hc;
       if(c.tur === '1v1' && lobbyGuestCount() > 1){ toast('1 vs 1 için lobide en fazla 1 misafir olabilir.'); return; }
@@ -18645,7 +18694,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
     if(!bar){ bar = document.createElement('div'); bar.id = 'mcLbSet'; el.appendChild(bar);
       bar.addEventListener('click', function(e){ if(e.target.closest('.ch')) openSetup('edit'); }); }
     var P = pot(c);
-    var html = '<span class="t '+(c.mod === 'rank' ? 'r' : 'k')+'">'+(c.mod === 'rank' ? 'RANK' : 'KLASİK')+'</span><span class="t">'+({'1v1':'1 vs 1','2v2':'2 vs 2','4':'4 Kişilik'}[c.tur])+'</span><span class="t">'+c.para+'M</span><span class="t">'+(c.zar === 2 ? 'ÇİFT ZAR' : 'TEK ZAR')+'</span><span class="t">'+mi+' '+fmt(c.ucr)+' giriş</span><span class="ks">Kasa '+mi+' '+fmt(P.kasa)+(c.mod === 'rank' ? ' · %10 kesinti' : ' · kesinti yok')+'</span>'+(st.role === 'host' ? '<button type="button" class="ch">✎ DEĞİŞTİR</button>' : '');
+    var html = '<span class="t '+(c.mod === 'rank' ? 'r' : 'k')+'">'+(c.mod === 'rank' ? 'RANK' : 'KLASİK')+'</span><span class="t">'+({'1v1':'1 vs 1','2v2':'2 vs 2','4':'4 Kişilik'}[c.tur])+'</span><span class="t">'+c.para+'M</span><span class="t">'+(c.zar === 2 ? 'ÇİFT ZAR' : 'TEK ZAR')+'</span><span class="ks">1. '+mi+' '+fmt(coinFor(c,1,true))+' · giriş ücretsiz</span>'+(st.role === 'host' ? '<button type="button" class="ch">✎ DEĞİŞTİR</button>' : '');
     if(bar.__h !== html){ bar.__h = html; bar.innerHTML = html; }
     el.classList.add('mcHasSet'); el.classList.toggle('mcM1', c.tur === '1v1'); el.classList.toggle('mcM2', c.tur === '2v2');
     var seats = el.querySelector('#lbSeats'); if(!seats) return;
@@ -22502,10 +22551,11 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
     var mid = [byY[1], byY[2]].sort(function(a, b){ return cs[a].x - cs[b].x; }), left = mid[0], right = mid[1];
     var set = function(el, x, y, w, h, z){ el.style.width = w+'px'; el.style.height = h+'px'; el.style.transform = 'translate('+(x - w/2).toFixed(1)+'px,'+(y - h).toFixed(1)+'px)'; el.style.zIndex = String(z); };
     var shadow = function(el, pt, w){ set(el, pt.x, pt.y + w*0.08, w, w*0.28, 1001); };
-    var pt = at(bot, 0.27), w = U*1.0;  shadow(sp.wS, pt, w*0.9); set(sp.w, pt.x, pt.y, w, w*1.15, 1000 + Math.round(pt.y));
-    pt = at(right, 0.44); w = U*1.15;   shadow(sp.pS, pt, w*0.8); set(sp.p, pt.x, pt.y, w, w*0.72, 1000 + Math.round(pt.y));
-    pt = at(left, 0.47); w = U*0.85;    shadow(sp.gS, pt, w*0.8); set(sp.g, pt.x, pt.y - U*0.25, w, w*1.07, 1000 + Math.round(pt.y));
-    pt = at(top, 0.56); w = U*1.4;      set(sp.b, pt.x, pt.y, w, w*0.66, 1000 + Math.round(pt.y));
+    /* T7: süsler kenar kare yazılarının üstüne binmesin — biraz içeri ve küçük */
+    var pt = at(bot, 0.33), w = U*0.95;  shadow(sp.wS, pt, w*0.9); set(sp.w, pt.x, pt.y, w, w*1.15, 1000 + Math.round(pt.y));
+    pt = at(right, 0.56); w = U*1.0;     shadow(sp.pS, pt, w*0.8); set(sp.p, pt.x, pt.y, w, w*0.72, 1000 + Math.round(pt.y));
+    pt = at(left, 0.6); w = U*0.72;      shadow(sp.gS, pt, w*0.8); set(sp.g, pt.x, pt.y - U*0.08, w, w*1.07, 1000 + Math.round(pt.y));
+    pt = at(top, 0.64); w = U*1.25;      set(sp.b, pt.x, pt.y, w, w*0.66, 1000 + Math.round(pt.y));
   }
   function decFrame(){
     DEC.raf = 0;
@@ -23154,7 +23204,7 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
 <style id="monocity-fix5-css">
 /* =============== T6 · TOPLU PÜRÜZLER =============== */
 /* 1) tahta: bölge şeritleri yok; tapulu kare sahibin renginde */
-html body.mcIso #game #monocityGameUI #mgBoardWrap #board > .cell .iso .g{display:none!important}
+html body.mcIso #game #monocityGameUI #mgBoardWrap #board > .cell.mcDeed .iso .g{display:none!important}
 html body.mcIso #game #monocityGameUI #mgBoardWrap #board > .cell.mcDeed{background:linear-gradient(135deg,var(--dl),var(--dc))!important}
 html body.mcIso #game #monocityGameUI #mgBoardWrap #board > .cell.mcDeed .iso .l b,html body.mcIso #game #monocityGameUI #mgBoardWrap #board > .cell.mcDeed .iso .l i{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.8),0 0 3px rgba(0,0,0,.55)}
 html body.mcIso #game #monocityGameUI #mgBoardWrap #board > .cell.mcDeed .iso .o{opacity:0}
@@ -23356,7 +23406,6 @@ html body #openModal.mcF5 .openActionRow button:disabled{filter:grayscale(.7);op
     for(var i=0;i<n;i++){
       var c = cells[i], t = board[i], o = null;
       var l = c.querySelector(':scope > .iso > .l');
-      if(l && !l.__f5 ){ l.__f5 = 1; l.style.transform = l.style.transform.replace(/\s*translate[XY]\([^)]*\)/, ''); }
       if(window.cities && cities[t]){ try{ o = getOwner(t); }catch(e){} }
       var deed = !!(o && (lvlOf(o, t) & 8));
       if(deed){
@@ -24876,6 +24925,299 @@ html body #openModal.mcF5 .openActionRow button:disabled{filter:grayscale(.7);op
   setInterval(function(){ try{ boardArt(); }catch(e){} try{ fmKick(); }catch(e){} }, 150);
   setTimeout(function(){ try{ tick(); fixBanner(); }catch(e){} }, 300);
   window.MONOCITY_ATES = { state:function(){ return S; }, save:save, give:give, owns:owns, grant:grant, IT:IT, SETK:SETK, EMO:EMO, level:level, unclaimed:unclaimed, open:open, onMatch:onMatch, pull:pullN, TEST:TEST, setCount:setCount };
+})();
+</script>
+
+<style id="mcF6css">
+/* ===== T7 (4 Ekim) oyun içi iyileştirmeler ===== */
+/* N4: oyuncu kutusu tamamen oyuncu renginde; para / mülk / konum siyah kutucuklarda */
+#mcIsoHud .ipc{background:linear-gradient(160deg,color-mix(in srgb,var(--pc) 92%,#fff),color-mix(in srgb,var(--pc) 70%,#000))!important;border-color:rgba(255,255,255,.35)!important}
+#mcIsoHud .ipc .tx b{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.8),0 0 4px rgba(0,0,0,.5)}
+#mcIsoHud .ipc .av{box-shadow:0 0 0 2.5px var(--fc,#fff),0 2px 6px rgba(0,0,0,.5)!important}
+#mcIsoHud .ipc .rk{background:#fff!important;color:#111!important}
+#mcIsoHud .ipc .tx .m,#mcIsoHud .ipc .tx .mcPl{display:inline-block;background:rgba(0,0,0,.42);border:1.5px solid rgba(0,0,0,.85);border-radius:.5em;padding:0 .45em;margin:.12em .25em .05em 0;color:#fff!important;text-shadow:0 1px 2px #000;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:top}
+#mcIsoHud .ipc .tx .m{color:#ffe27a!important}
+#mcIsoHud .ipc .tx small{overflow:hidden!important;color:#fff!important}
+
+/* N6: telefon yazma çubuğu (ekranın en üstünde; klavye ekranı küçültse de görünür kalır) */
+#mcKbs{position:fixed;inset:0;z-index:2147483000;display:none;font-family:Arial,Helvetica,sans-serif}
+#mcKbs.show{display:block}
+#mcKbs .bk{position:absolute;inset:0;background:rgba(3,6,16,.72)}
+#mcKbs .bar{position:absolute;left:0;right:0;top:0;padding:6px 8px 8px;background:linear-gradient(180deg,#1b2540,#0d1428);border-bottom:2px solid #ffcc3d;box-shadow:0 6px 18px rgba(0,0,0,.6)}
+#mcKbs .tt{display:flex;align-items:center;justify-content:space-between;color:#cfd8f5;font-size:12px;font-weight:900;margin-bottom:5px;letter-spacing:.04em}
+#mcKbs .tt button{border:0;background:#2b3657;color:#fff;border-radius:8px;width:28px;height:24px;font-size:14px;font-weight:900;padding:0;margin:0;min-height:0}
+#mcKbs .rw{display:flex;gap:6px}
+#mcKbs input{flex:1;min-width:0;height:40px;border-radius:10px;border:2px solid #ffcc3d;background:#060a16;color:#fff;font-size:16px;font-weight:800;padding:0 10px;outline:none;box-sizing:border-box;margin:0}
+#mcKbs .go{flex:0 0 auto;height:40px;border:0;border-radius:10px;padding:0 14px;font-size:14px;font-weight:1000;color:#1a1300;background:linear-gradient(180deg,#ffd84d,#f5a300);margin:0;min-height:0}
+#mcKbs .ctx{max-height:84px;overflow:hidden;margin-bottom:5px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px}
+#mcKbs .ctx div{color:#dbe3ff;font-size:12px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mcKbs .ctx b{color:#ffd23d}
+/* N6: teklif için oyun içi sayı tuşları (telefon klavyesi hiç açılmaz) */
+#mcNp{position:fixed;inset:0;z-index:2147483001;display:none;align-items:center;justify-content:center;background:rgba(3,6,16,.6);font-family:Arial,Helvetica,sans-serif}
+#mcNp.show{display:flex}
+#mcNp .bx{width:min(300px,86vw);background:linear-gradient(180deg,#1b2540,#0d1428);border:2px solid #ffcc3d;border-radius:16px;padding:10px;box-shadow:0 10px 30px rgba(0,0,0,.7)}
+#mcNp .dp{height:42px;border-radius:10px;background:#060a16;border:1.5px solid #34467a;color:#ffe27a;font-size:22px;font-weight:1000;display:flex;align-items:center;justify-content:flex-end;padding:0 12px;margin-bottom:8px;letter-spacing:.02em}
+#mcNp .dp small{color:#7f8db3;font-size:12px;margin-right:auto;font-weight:800}
+#mcNp .gd{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+#mcNp .gd button{height:38px;border:0;border-radius:10px;background:#16213d;border:1px solid #2a3a63;color:#fff;font-size:17px;font-weight:1000;margin:0;padding:0;min-height:0}
+#mcNp .gd button.ok{background:linear-gradient(180deg,#22c55e,#15803d);grid-column:span 2}
+#mcNp .gd button.x{background:#3b2433}
+</style>
+<script>
+(function(){
+  'use strict';
+  function M(){ try{ return window.MONOCITY_MATCH ? window.MONOCITY_MATCH() : null; }catch(e){ return null; } }
+  function rseat(i){ try{ return window.monocityRealSeat ? window.monocityRealSeat(i) : i; }catch(e){ return i; } }
+
+  /* ===== N7: "X bölgesi 2× kira" bildirimi yalnızca bölge İLK tamamlandığında =====
+     Eski kod anahtarı oyuncuya göre tutuyordu; 2v2'de takım arkadaşı herhangi bir şey
+     alınca aynı bölge "yeniden tamamlandı" sayılıyordu. Artık anahtar = bölge,
+     değer = sahip grup (2v2'de takım). */
+  var RB = {}, rbPl = null;
+  function grp(p){
+    var m = M(), ps = window.players || [], i = ps.indexOf(p);
+    if(m && !m.settled && m.cfg && m.cfg.tur === '2v2' && i >= 0) return 'T'+(rseat(i) % 2);
+    return 'P'+(p && p.id != null ? p.id : i);
+  }
+  function crc(p){
+    if(!p) return;
+    if(rbPl !== window.players){ rbPl = window.players; RB = {}; }
+    var g = grp(p);
+    try{
+      if(typeof selectedGameMode !== 'undefined' && selectedGameMode === 'wide' && typeof window.ownsAllSpecialRegions === 'function'){
+        if(window.ownsAllSpecialRegions(p)){ if(RB.__sp !== g){ RB.__sp = g; log('🌍 '+p.name+' 4 ÖZEL BÖLGEYİ TAMAMLADI — ÖZEL BÖLGE KİRALARI 2× ARTTI!'); } }
+        else if(RB.__sp === g) delete RB.__sp;
+      }
+    }catch(e){}
+    var R = window.REGIONS || (typeof REGIONS !== 'undefined' ? REGIONS : {});
+    for(var name in R){
+      var own = false; try{ own = playerOwnsRegion(p, name); }catch(e){}
+      if(own){ if(RB[name] !== g){ RB[name] = g; log('🌍 '+p.name+' '+name+' bölgesini tamamladı — bölgedeki kiralar 2 katına çıktı!'); } }
+      else if(RB[name] === g) delete RB[name];
+    }
+  }
+  crc.__f6 = true;
+  window.checkRegionCompletion = crc;
+  window.monocityF6RegionLog = function(){ return RB; };
+
+  /* ===== N8: geri sayım herkeste aynı =====
+     Host her saniye kalan süreyi rooms/{kod}/mcTmr'ye yazar; misafirlerin üstteki
+     ⏱ sayacı bunu gösterir (sırası kimde olursa olsun). */
+  function co(){ return window.MONOCITY_COOP || {}; }
+  function db(){ return window.MONOCITY_DB || null; }
+  function liveT(){ try{ return (typeof timerSeconds !== 'undefined' && timerSeconds > 0 && /^(roll|action|secretAuction|openAuction)$/.test(String(timerPhase))) ? timerSeconds : 0; }catch(e){ return 0; } }
+  var tmLast = null, tmCode = null, tmRef = null, tmCb = null, tmVal = null;
+  setInterval(function(){
+    var c = co(), d = db();
+    if(!d || !c.code){ tmVal = null; return; }
+    if(c.role === 'host'){
+      if(tmRef){ try{ tmRef.off('value', tmCb); }catch(e){} tmRef = null; tmCode = null; }
+      var v = window.gameOver ? 0 : liveT();
+      var k = c.code+':'+v;
+      if(k !== tmLast){ tmLast = k; try{ var r = d.ref('rooms/'+c.code+'/mcTmr').set({s:v, ts:Date.now()}); if(r && r.catch) r.catch(function(){}); }catch(e){} }
+    }else if(c.role === 'guest'){
+      if(tmCode !== c.code){
+        if(tmRef){ try{ tmRef.off('value', tmCb); }catch(e){} }
+        tmCode = c.code; tmVal = null; tmRef = d.ref('rooms/'+c.code+'/mcTmr');
+        tmCb = function(s){ var v = s && s.val(); tmVal = (v && typeof v.s === 'number') ? {s:v.s, at:Date.now()} : null; };
+        try{ tmRef.on('value', tmCb); }catch(e){}
+      }
+    }
+  }, 250);
+  window.monocityHudTime = function(){
+    var c = co();
+    if(c.role === 'guest' && c.code){
+      if(!tmVal) return '--';
+      var s = tmVal.s - Math.floor((Date.now() - tmVal.at)/1000);   /* yazım gecikirse kendi kendine sayar */
+      return s > 0 ? String(Math.min(s, tmVal.s)) : '--';
+    }
+    var v = liveT(); return v > 0 ? String(v) : '--';
+  };
+
+  /* Mülk Koruma (1,5× alım) kararı: 30 sn sayaç; süre dolarsa kart otomatik kullanılır */
+  function hookProt(){
+    var f = window.askPropertyProtection; if(typeof f !== 'function' || f.__f6) return;
+    var w = function(pending){
+      var r = f.apply(this, arguments);
+      try{
+        startTimer(30, 'action');
+        var my = pending;
+        setTimeout(function(){
+          try{ if(window.propertyProtectionDecision === my && !window.gameOver && typeof continueProtectedPurchase === 'function'){ log('⏱️ Süre doldu — Mülk Koruma kartı otomatik kullanıldı.'); continueProtectedPurchase('use'); } }catch(e){}
+        }, 30600);
+      }catch(e){}
+      return r;
+    };
+    w.__f6 = true; window.askPropertyProtection = w;
+    var h = window.handleWaitDecisionTimeout;
+    if(typeof h === 'function' && !h.__f6){
+      var hw = function(){ try{ if(window.propertyProtectionDecision){ var t = document.getElementById('infoTitle'); if(t && /MÜLK KORUMA/.test(t.textContent)) return; } }catch(e){} return h.apply(this, arguments); };
+      hw.__f6 = true; window.handleWaitDecisionTimeout = hw;
+    }
+  }
+  hookProt(); setTimeout(hookProt, 1500);
+
+  /* ===== N6: Telefonda klavye (Android Chrome, tam ekran) =====
+     Sorun: yazı kutusuna dokununca tam ekran modunda sayfa klavye kadar küçülüyor,
+     kutu yer değiştiriyor / görünmez oluyor → klavye kapanıp yeniden açılıyor;
+     açık artırmada kutu ortada kaldığı için sadece karanlık arka plan görünüyordu.
+     Çözüm: dokunmatik cihazlarda
+       • yazı kutuları salt-okunur olur; dokununca EKRANIN EN ÜSTÜNDE sabit bir yazma
+         çubuğu açılır (klavye ne kadar yer kaplarsa kaplasın görünür kalır)
+       • teklif kutuları için telefon klavyesi hiç açılmaz; oyun içi sayı tuşları açılır
+       • yazarken tam ekran / yön kilidi yeniden denenmez
+     Bilgisayarda hiçbir şey değişmez. */
+  var TOUCH = false;
+  try{ TOUCH = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches) || ('ontouchstart' in window && navigator.maxTouchPoints > 0); }catch(e){}
+  window.monocityKbTouch = function(v){ if(typeof v === 'boolean') TOUCH = v; return TOUCH; };
+  var NUM_IDS = {secretBid:1, openBid:1, mcRkGmIn:1};
+  function isTextIn(e){
+    if(!e || !e.tagName) return false;
+    var t = e.tagName === 'TEXTAREA' ? 'textarea' : (e.tagName === 'INPUT' ? String(e.type || 'text').toLowerCase() : '');
+    return t === 'textarea' || t === 'text' || t === 'search' || t === 'tel' || t === 'email' || t === 'url' || t === 'number';
+  }
+  function managed(e){
+    if(!TOUCH || !isTextIn(e)) return false;
+    if(e.closest('#mcKbs,#mcNp,#mcAuth')) return false;
+    if(e.type === 'password') return false;
+    if(e.readOnly && !e.hasAttribute('data-kbs')) return false;   /* zaten salt-okunur olanlar (küçük global sohbet vb.) */
+    return true;
+  }
+  function arm(e){ if(e.hasAttribute('data-kbs')) return; e.setAttribute('data-kbs', '1'); e.readOnly = true; }
+  function scan(){ if(!TOUCH) return; var all = document.querySelectorAll('input,textarea'); for(var i=0;i<all.length;i++){ var e = all[i]; if(!e.hasAttribute('data-kbs') && managed(e)) arm(e); } }
+  setInterval(scan, 700);
+
+  var kbsEl = null, kbsT = null, kbsH0 = 0, kbsSeenSmall = false;
+  function isChat(e){ return /mesaj|yorum/i.test(e.placeholder || '') || /chat|lbIn|dmInput|AlCm/i.test(e.id || ''); }
+  function ctxLines(t){
+    var src = null;
+    if(t.id === 'mcIsoChatIn') src = document.getElementById('mcIsoChatBody');
+    else if(t.id === 'cbInput') src = document.getElementById('cbList');
+    else if(/lb/i.test(t.id)) src = document.querySelector('#mcLobby2 .lbChatList,#lbChatList');
+    else if(t.id === 'dmInput') src = document.querySelector('#mcDM .dmList,#dmList');
+    if(!src) return '';
+    var rows = [].slice.call(src.children).slice(-3);
+    return rows.map(function(r){ var d = document.createElement('div'); d.textContent = (r.textContent || '').replace(/\s+/g, ' ').trim(); return d.outerHTML; }).join('');
+  }
+  function kbsBuild(){
+    if(kbsEl) return kbsEl;
+    kbsEl = document.createElement('div'); kbsEl.id = 'mcKbs';
+    kbsEl.innerHTML = '<div class="bk"></div><div class="bar"><div class="tt"><span class="lb"></span><button type="button" class="x">✕</button></div><div class="ctx"></div><div class="rw"><input type="text" autocomplete="off" enterkeyhint="send"><button type="button" class="go">GÖNDER</button></div></div>';
+    document.body.appendChild(kbsEl);
+    var inp = kbsEl.querySelector('input');
+    inp.addEventListener('input', function(){
+      var t = kbsT; if(!t) return;
+      t.value = inp.value;
+      try{ t.dispatchEvent(new Event('input', {bubbles:true})); }catch(e){}
+      if(t.value !== inp.value) inp.value = t.value;   /* kutunun kendi düzeltmesi (örn. büyük harf) */
+    });
+    inp.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); kbsSubmit(); } });
+    kbsEl.querySelector('.go').addEventListener('click', function(e){ e.preventDefault(); kbsSubmit(); });
+    kbsEl.querySelector('.x').addEventListener('click', function(e){ e.preventDefault(); kbsClose(); });
+    kbsEl.querySelector('.bk').addEventListener('click', function(e){ e.preventDefault(); kbsClose(); });
+    return kbsEl;
+  }
+  function kbsOpen(t){
+    kbsBuild(); kbsT = t; kbsSeenSmall = false; kbsH0 = Math.max(window.innerHeight, (window.visualViewport && visualViewport.height) || 0);
+    var inp = kbsEl.querySelector('input');
+    inp.maxLength = t.maxLength > 0 ? t.maxLength : 524288;
+    inp.placeholder = t.placeholder || 'Yaz...';
+    inp.setAttribute('inputmode', t.getAttribute('inputmode') || 'text');
+    inp.setAttribute('autocapitalize', t.getAttribute('autocapitalize') || 'sentences');
+    inp.value = t.value || '';
+    var chat = isChat(t);
+    kbsEl.querySelector('.go').textContent = chat ? 'GÖNDER' : 'TAMAM';
+    inp.setAttribute('enterkeyhint', chat ? 'send' : 'done');
+    kbsEl.querySelector('.lb').textContent = chat ? '💬 MESAJ' : ('✏️ ' + (t.placeholder || 'YAZ').toLocaleUpperCase('tr-TR'));
+    var cx = kbsEl.querySelector('.ctx'), ch = chat ? ctxLines(t) : ''; cx.innerHTML = ch; cx.style.display = ch ? '' : 'none';
+    kbsEl.classList.add('show'); document.body.classList.add('mcKbsOn');
+    try{ inp.focus({preventScroll:true}); }catch(e){ inp.focus(); }
+    try{ var L = inp.value.length; inp.setSelectionRange(L, L); }catch(e){}
+  }
+  function kbsClose(){
+    if(!kbsEl || !kbsEl.classList.contains('show')) return;
+    kbsEl.classList.remove('show'); document.body.classList.remove('mcKbsOn');
+    var inp = kbsEl.querySelector('input'); try{ inp.blur(); }catch(e){}
+    kbsT = null;
+  }
+  function kbsSubmit(){
+    var t = kbsT; if(!t){ kbsClose(); return; }
+    var inp = kbsEl.querySelector('input'), chat = isChat(t);
+    t.value = inp.value;
+    try{ t.dispatchEvent(new Event('input', {bubbles:true})); t.dispatchEvent(new Event('change', {bubbles:true})); }catch(e){}
+    var before = t.value;
+    try{ t.dispatchEvent(new KeyboardEvent('keydown', {key:'Enter', code:'Enter', keyCode:13, which:13, bubbles:true, cancelable:true})); }catch(e){}
+    if(chat && before && t.value === before){
+      /* Enter dinlemeyen sohbetler: yanındaki GÖNDER butonuna bas */
+      var row = t.parentElement, b = null;
+      for(var k=0;k<3 && row && !b;k++){ b = row.querySelector('button:not([data-x])'); row = row.parentElement; }
+      if(b && /GÖNDER|➤|SEND|📨/i.test(b.textContent || '')) try{ b.click(); }catch(e){}
+    }
+    if(chat){ inp.value = ''; kbsClose(); } else kbsClose();
+  }
+  /* klavye geri tuşuyla kapanırsa çubuğu da kapat */
+  function vvH(){ return Math.min(window.innerHeight, (window.visualViewport && visualViewport.height) || window.innerHeight); }
+  setInterval(function(){
+    if(!kbsEl || !kbsEl.classList.contains('show')) return;
+    var h = vvH();
+    if(h < kbsH0 * 0.8) kbsSeenSmall = true;
+    else if(kbsSeenSmall && h >= kbsH0 * 0.92) kbsClose();
+  }, 250);
+  /* dokunuş: salt-okunur kutuya basınca çubuğu / sayı tuşlarını aç (click = kullanıcı hareketi → klavye açılabilir) */
+  document.addEventListener('click', function(e){
+    if(!TOUCH) return;
+    var t = e.target && e.target.closest && e.target.closest('input[data-kbs],textarea[data-kbs]'); if(!t) return;
+    if(t.disabled) return;
+    e.preventDefault(); e.stopPropagation();
+    if(NUM_IDS[t.id] || t.type === 'number') npOpen(t); else kbsOpen(t);
+  }, true);
+
+  /* ---- sayı tuşları ---- */
+  var npEl = null, npT = null, npV = '';
+  function fmtN(s){ var n = parseInt(s, 10); return isFinite(n) ? n.toLocaleString('tr-TR') : '0'; }
+  function npPaint(){ npEl.querySelector('.dp b').textContent = fmtN(npV || '0'); }
+  function npOpen(t){
+    if(!npEl){
+      npEl = document.createElement('div'); npEl.id = 'mcNp';
+      var keys = ['1','2','3','⌫','4','5','6','C','7','8','9','000','0','00'];
+      npEl.innerHTML = '<div class="bx"><div class="dp"><small class="lb"></small><b>0</b></div><div class="gd">'+keys.map(function(k){ return '<button type="button" data-k="'+k+'"'+(k === '⌫' || k === 'C' ? ' class="x"' : '')+'>'+k+'</button>'; }).join('')+'<button type="button" class="ok" data-k="ok">TAMAM</button></div></div>';
+      document.body.appendChild(npEl);
+      npEl.addEventListener('click', function(e){
+        if(e.target === npEl){ npClose(); return; }
+        var b = e.target.closest('button[data-k]'); if(!b) return; e.preventDefault();
+        var k = b.getAttribute('data-k');
+        if(k === 'ok'){ if(npT){ npT.value = npV ? String(parseInt(npV, 10)) : ''; try{ npT.dispatchEvent(new Event('input', {bubbles:true})); npT.dispatchEvent(new Event('change', {bubbles:true})); }catch(x){} } npClose(); return; }
+        if(k === '⌫') npV = npV.slice(0, -1); else if(k === 'C') npV = ''; else if(npV.length < 12) npV = (npV + k).replace(/^0+(?=\d)/, '');
+        npPaint();
+      });
+    }
+    npT = t; npV = String(parseInt(t.value, 10) || '').replace(/^0$/, '');
+    npEl.querySelector('.lb').textContent = t.placeholder || 'Teklif';
+    npPaint(); npEl.classList.add('show');
+  }
+  function npClose(){ if(npEl) npEl.classList.remove('show'); npT = null; }
+  /* pencere kapanınca sayı tuşları açık kalmasın */
+  setInterval(function(){
+    if(npT && (!document.body.contains(npT) || npT.disabled || !npT.offsetParent)) npClose();
+    if(kbsT && !document.body.contains(kbsT)) kbsClose();
+  }, 400);
+
+  /* yazarken tam ekran / yön kilidi denemesi klavyeyi kapatıyordu → engelle */
+  function typingGuard(){ return !!(kbsEl && kbsEl.classList.contains('show')) || !!(npEl && npEl.classList.contains('show')); }
+  try{
+    var SO = window.ScreenOrientation && ScreenOrientation.prototype;
+    if(SO && SO.lock && !SO.lock.__f6){ var _lk = SO.lock; SO.lock = function(){ if(typingGuard()) return Promise.resolve(); return _lk.apply(this, arguments); }; SO.lock.__f6 = true; }
+  }catch(e){}
+  (function hookRL(){
+    var f = window.requestLandscape; if(typeof f !== 'function' || f.__f6) return;
+    var w = function(){ if(typingGuard()) return true; return f.apply(this, arguments); }; w.__f6 = true; window.requestLandscape = w;
+  })();
+  (function hookTT(){
+    var f = window.monocityIsTypingTarget; if(typeof f !== 'function' || f.__f6) return;
+    var w = function(t){ try{ if(typingGuard()) return true; if(t && t.closest && t.closest('[data-kbs],#mcKbs,#mcNp')) return true; }catch(e){} return f.apply(this, arguments); };
+    w.__f6 = true; window.monocityIsTypingTarget = w;
+  })();
+  window.monocityKbSheet = { open:function(t){ kbsOpen(t); }, close:kbsClose, numpad:function(t){ npOpen(t); }, scan:scan };
 })();
 </script>
 
