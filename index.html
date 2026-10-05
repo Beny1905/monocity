@@ -2041,7 +2041,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261005-2030';
+window.MONOCITY_VER = '20261005-2127';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -8925,8 +8925,8 @@ mportant;}
   function getCoopName(){
     /* Once odaya en son girilen ad, yoksa hesabin kullanici adi. */
     var v = '';
-    try{ v = localStorage.getItem('mc_coop_name') || ''; }catch(e){}
-    if(!v){ try{ v = (window.MONOCITY_ACCOUNT && window.MONOCITY_ACCOUNT.getName()) || ''; }catch(e){} }
+    try{ v = (window.MONOCITY_ACCOUNT && window.MONOCITY_ACCOUNT.getName()) || ''; }catch(e){}
+    if(!v){ try{ v = localStorage.getItem('mc_coop_name') || ''; }catch(e){} }
     return v;
   }
   function setCoopName(n){
@@ -20676,9 +20676,13 @@ body.mcIso #monocityGameUI .mgBoardArea.mcP2Shake #board{animation:mcP2Sh .42s e
     var items = items0;
     AVN.u = 'Fotoğrafım'; AVN.up = 'Fotoğraf Yükle';
     var paint = function(){
+      var __sg = el.querySelector('.grid'), __st = __sg ? __sg.scrollTop : 0;
+      var __src = sel === 'u' ? myPh() : (sel === 'p0' ? (window.MONOCITY_DEFAULT_AVATAR || '') : AVS[sel]);
       el.innerHTML = '<div class="p3Pan gold" style="width:min(680px,94vw)"><button class="p3X" data-p3x="1">✕</button><h3>🖼️ PROFİL RESMİ SEÇ</h3><span class="sb">Beğendiğin resme dokun, sonra KULLAN\'a bas</span>' +
-        '<div class="grid">'+(function(){ var ph = myPh(); items = [['up', '']].concat(ph ? [['u', ph]] : []).concat(items0); return ''; })()+items.map(function(it){ if(it[0] === 'up') return '<div class="it f16Up" data-k="up"><div class="im"><span>＋</span></div><small>Fotoğraf Yükle</small></div>'; return '<div class="it'+(it[0] === sel ? ' on' : '')+'" data-k="'+it[0]+'"><div class="im"><img alt="" src="'+it[1]+'"></div><small>'+esc(AVN[it[0]]||'')+'</small></div>'; }).join('')+'</div>' +
-        '<div style="display:flex;gap:10px;justify-content:center;margin-top:14px"><button class="p3B gr" data-p3x="1" style="width:150px">VAZGEÇ</button><button class="p3B g" id="p3AvOk" style="width:190px">✓ KULLAN</button></div></div>';
+        '<div class="f17Pv"><div class="im"><img alt="" src="'+(__src || '')+'"></div><div><b>'+esc(AVN[sel] || '')+'</b><br><small>'+(sel === cur ? '✓ Kullanılıyor' : 'Seçili')+'</small><br><button class="p3B g f17Use" id="p3AvOk"'+(sel === cur && !pend ? ' disabled' : '')+'>'+(sel === cur && !pend ? '✓ KULLANILIYOR' : '✓ KULLAN')+'</button></div></div>' +
+        '<div class="grid f17G">'+(function(){ var ph = myPh(); items = [['up', '']].concat(ph ? [['u', ph]] : []).concat(items0); return ''; })()+items.map(function(it){ if(it[0] === 'up') return '<div class="it f16Up" data-k="up"><div class="im"><span>＋</span></div><small>Fotoğraf Yükle</small></div>'; return '<div class="it'+(it[0] === sel ? ' on' : '')+'" data-k="'+it[0]+'"><div class="im"><img alt="" src="'+it[1]+'"></div><small>'+esc(AVN[it[0]]||'')+'</small></div>'; }).join('')+'</div>' +
+        '</div>';
+      var __ng = el.querySelector('.grid'); if(__ng && __st) __ng.scrollTop = __st;
       el.querySelectorAll('.it').forEach(function(d){ d.onclick = function(){ var k = d.getAttribute('data-k');
         if(k === 'up'){ if(window.monocityPickPhoto) monocityPickPhoto(function(ph){ pend = ph; sel = 'u'; paint(); }); return; }
         sel = k; paint(); }; });
@@ -25725,7 +25729,15 @@ html body #openModal.mcF5 .openActionRow button:disabled{filter:grayscale(.7);op
 #p3AvOv .f7Fr .pvw{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:10px}
 
 #p3AvOv .f7Fr .pvw b{font-size:15px}
-#p3AvOv .f7Fr .gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));grid-auto-rows:max-content;gap:8px;max-height:min(42vh,300px);overflow:auto;padding:4px}
+#p3AvOv .p3B.f17Use{width:auto!important;min-width:150px;margin-top:8px!important;padding:8px 18px!important;font-size:14px!important}
+#p3AvOv .p3B.f17Use[disabled]{opacity:.6}
+#p3AvOv .f17Pv{display:flex;align-items:center;justify-content:center;gap:16px;margin:2px 0 10px}
+#p3AvOv .f17Pv .im{width:clamp(64px,20vh,110px);aspect-ratio:1;border-radius:14px;overflow:hidden;border:3px solid #ffcc3d;box-shadow:0 0 12px rgba(255,204,61,.5)}
+#p3AvOv .f17Pv .im img{width:100%;height:100%;object-fit:cover;display:block}
+#p3AvOv .f17Pv b{font-size:15px;color:#fff}
+#p3AvOv .f17Pv small{color:#94a3b8}
+#p3AvOv .grid.f17G{max-height:min(40vh,290px);overflow:auto;padding:4px;margin-top:0!important}
+#p3AvOv .f7Fr .gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));grid-auto-rows:max-content;gap:8px;max-height:min(36vh,300px);overflow:auto;padding:4px}
 #p3AvOv .f7Fr .fi{position:relative;border:2px solid #34467a;border-radius:12px;background:#121a33;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
 #p3AvOv .f7Fr .fi{overflow:hidden;min-width:0}
 #p3AvOv .f7Fr .fi b{font-size:10.5px;text-align:center;line-height:1.1;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -26174,7 +26186,7 @@ body.f8MenuOn #v20HitLayer.v20HitLayer.lobbyHidden *{pointer-events:none!importa
       window.addEventListener('resize', function(){ if(el.classList.contains('show')) embPlace(); });
     }
     if(sel && /^(at|hw):/.test(sel)){ var __k = sel.slice(0, 2), __fn = __k === 'at' ? window.monocityOpenAtes : window.monocityOpenHalloween; if(typeof __fn === 'function'){ __fn(sel.slice(3)); return; } }
-    if(sel) EVT.sel = sel;
+    EVT.sel = sel || 'gen:task';  /* T17: her açılışta baştan */
     if(/^(at|hw):/.test(EVT.sel)) EVT.sel = 'gen:task';
     openPage(el); renderEv();
   }
@@ -26552,9 +26564,9 @@ body.f8MenuOn #v20HitLayer.v20HitLayer.lobbyHidden *{pointer-events:none!importa
     if(!PF.sel) PF.sel = eq;
     var sel = L.filter(function(x){ return x.id === PF.sel; })[0] || L[0];
     var __og = box.querySelector('.gr'), __st = __og ? __og.scrollTop : 0;  /* T15: seçince listenin başa atmaması */
-    box.innerHTML = '<div class="pvw">'+frameAv(sel.id, 'me', 84)+'<div><b>'+esc(sel.n)+'</b><br><small style="color:#94a3b8">'+(sel.id === eq ? '✓ Kullanılıyor' : (sel.own ? 'Sende' : '🔒 '+esc(sel.s)))+'</small></div></div>' +
+    box.innerHTML = '<div class="pvw">'+frameAv(sel.id, 'me', 84)+'<div><b>'+esc(sel.n)+'</b><br><small style="color:#94a3b8">'+(sel.id === eq ? '✓ Kullanılıyor' : (sel.own ? 'Sende' : '🔒 '+esc(sel.s)))+'</small><br><button class="p3B g f17Use" data-fuse="1"'+(sel.own && sel.id !== eq ? '' : ' disabled')+'>'+(sel.id === eq ? '✓ KULLANILIYOR' : (sel.own ? '✓ KULLAN' : '🔒 KİLİTLİ'))+'</button></div></div>' +
       '<div class="gr">'+L.map(function(x){ return '<div class="fi'+(x.id === PF.sel ? ' on' : '')+(x.id === eq ? ' eq' : '')+(x.own ? '' : ' lk')+'" data-f="'+esc(x.id)+'">'+frameAv(x.id, 'me', 50)+'<b>'+esc(x.n)+'</b><small>'+(x.id === eq ? 'KULLANILIYOR' : (x.own ? 'Sende' : esc(x.s)))+'</small></div>'; }).join('')+'</div>' +
-      '<div style="display:flex;gap:10px;justify-content:center;margin-top:12px"><button class="p3B gr" data-p3x="1" style="width:150px">KAPAT</button><button class="p3B g" data-fuse="1" style="width:190px"'+(sel.own && sel.id !== eq ? '' : ' disabled')+'>'+(sel.id === eq ? '✓ KULLANILIYOR' : '✓ KULLAN')+'</button></div>';
+''; /* T17: KULLAN önizlemenin yanında, alt sıra kalktı */
     var __ng = box.querySelector('.gr'); if(__ng && __st) __ng.scrollTop = __st;
   }
   (function watchAv(){ var t = setInterval(function(){ var ov = document.getElementById('p3AvOv'); if(!ov) return; clearInterval(t);
@@ -28021,7 +28033,8 @@ body.f8AucTh #secretModal .box::before,body.f8AucTh #openModal .box::before{cont
     if(!norm(n).replace(/\s+/g, '')) return 'Oyuncu adı geçersiz.';
     return '';
   }
-  function norm(n){ var s = String(n || ''); try{ s = s.normalize('NFKC'); }catch(e){} return s.trim().toLocaleLowerCase('tr-TR').toLowerCase(); }
+  /* T17: şekilli harfler düz harfle aynı sayılmaz (NFKC eşitlemesi kaldırıldı); büyük/küçük harf farkı yok */
+  function norm(n){ var s = String(n || ''); return s.trim().toLocaleLowerCase('tr-TR').toLowerCase(); }
   function nickKey(n){ return chars(norm(n).replace(/[.#$\[\]\/~]/g, '_')).slice(0, 40).join(''); }
   window.monocityNickCheck = nickCheck;
   window.monocityNickNorm = norm;
@@ -29412,6 +29425,9 @@ html body #monocityShop #shopGrid>*>.shopBuy{width:86%!important;min-height:0!im
 #f16AvV .ch{position:fixed;left:50%;bottom:clamp(10px,3vh,22px);transform:translateX(-50%);border:0;border-radius:12px;padding:10px 22px;background:linear-gradient(#4e8cff,#1f4fc0);color:#fff;font:1000 clamp(12px,3.6vh,16px) Arial,sans-serif;cursor:pointer;opacity:0;transition:opacity .25s}
 #f16AvV.on .rp,#f16AvV.on .ch{opacity:1}
 #mcProfileScreen #ppAv,#mcPP .hd .av{cursor:zoom-in}
+/* T17: eski lobi katmanındaki çerçeve kutusu yeni arayüzün arkasında görünüyordu (Klasik çerçeve parçaları) */
+html body #mcLobbyFrame{visibility:hidden!important}
+html body #mcLobbyFrame::after,html body #mcLobbyFrame::before{visibility:hidden!important}
 </style>
 <script id="mc-fix16-js">
 (function(){
@@ -29531,6 +29547,23 @@ html body #monocityShop #shopGrid>*>.shopBuy{width:86%!important;min-height:0!im
     requestAnimationFrame(function(){ v.el.classList.add('on'); v.im.style.transform = 'translate('+T.x+'px,'+T.y+'px)'; v.im.style.borderRadius = '14px'; });
   };
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeView(); });
+
+  /* ================= T17: pencereler her açılışta baştan ================= */
+  (function hookShopOpen(){
+    var o = window.openMonocityShop; if(typeof o !== 'function') return setTimeout(hookShopOpen, 600); if(o.__f17) return;
+    var w = function(){ var r = o.apply(this, arguments);
+      try{ var b0 = document.querySelector('#monocityShop [data-cat]'), c0 = b0 && b0.getAttribute('data-cat'); if(window.selectCat) window.selectCat(c0 || 'dice'); var g = document.querySelector('#monocityShop .shopGrid'); if(g) g.scrollTop = 0; }catch(e){}
+      return r; };
+    for(var k in o) try{ w[k] = o[k]; }catch(e){}
+    w.__f17 = true; window.openMonocityShop = w;
+  })();
+  function profFirstTab(){ try{ var t = document.querySelector('#mcProfileScreen .ppTab'); if(t && !t.classList.contains('active')) t.click(); }catch(e){} }
+  ['showV23Profile','monocityOpenProfile'].forEach(function(fn){
+    (function hk(){ var o = window[fn]; if(typeof o !== 'function') return setTimeout(hk, 600); if(o.__f17) return;
+      var w = function(){ var r = o.apply(this, arguments); profFirstTab(); return r; };
+      for(var k in o) try{ w[k] = o[k]; }catch(e){}
+      w.__f17 = true; window[fn] = w; })();
+  });
 
   /* hangi oyuncunun paneli / profili açık */
   var ppU = null, profU = null;
