@@ -2041,7 +2041,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261005-2127';
+window.MONOCITY_VER = '20261005-2158';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -3510,7 +3510,7 @@ var p=players[seat];
 stopTimer();
 waiting=false;
 document.getElementById("infoModal").style.display="none";
-log("⏭️ "+(p?p.name:"Oyuncu")+" işlem yapmak istemedi ve PAS geçti.");
+log("⏭️ "+(p?p.name:"Oyuncu")+" işlem yapmak istemedi ve PAS geçti.");if(typeof comboReset==="function")comboReset();
 renderBoard();
 setTimeout(nextTurn,DELAY);
 }
@@ -3836,7 +3836,7 @@ function projectedRentInfo(s,k){
 }
 function comboRender(){
  var s=comboState(),box=document.getElementById("comboPurchase"),grid=document.getElementById("comboGrid"),rentInfoEl=document.getElementById("comboRentInfo"),totalEl=document.getElementById("comboTotal"),buy=document.getElementById("comboBuyBtn");if(!box||!grid||!totalEl||!buy)return;
- if(!s){box.style.display="none";return} box.style.display="block";grid.innerHTML="";var title=document.getElementById("comboTitle");if(title)title.innerHTML="🏙️ "+s.cityName.toLocaleUpperCase("tr-TR")+(s.team?'<span class="mcTeamHelp">🤝 ARKADAŞ YARDIMI · Sahibi: '+String(s.own.name||'').replace(/[&<>"']/g,'')+'</span>':'');box.classList.toggle("mcTeamBox",!!s.team);
+ if(!s){box.style.display="none";window.__comboKey=null;return} var __ck=s.cityName+"|"+(s.own||s.p&&s.p.id||"")+"|"+s.mask;if(window.__comboKey!==__ck){window.__comboKey=__ck;comboSelection={land:false,house:false,hotel:false,deed:false};} box.style.display="block";grid.innerHTML="";var title=document.getElementById("comboTitle");if(title)title.innerHTML="🏙️ "+s.cityName.toLocaleUpperCase("tr-TR")+(s.team?'<span class="mcTeamHelp">🤝 ARKADAŞ YARDIMI · Sahibi: '+String(s.own.name||'').replace(/[&<>"']/g,'')+'</span>':'');box.classList.toggle("mcTeamBox",!!s.team);
  var items=[["land","🏠 ARSA"],["house","🏡 EV"],["hotel","🏨 OTEL"],["deed","📜 TAPU"]],total=0,any=false;
  items.forEach(function(it){var k=it[0],ok=comboAllowed(k,s),sel=comboSelection[k];if(ok){any=true;if(sel)total+=comboPrice(k,s)}var owned=(k==="land"&&(s.mask&LAND_BIT))||(k==="house"&&(s.mask&HOUSE_BIT))||(k==="hotel"&&(s.mask&HOTEL_BIT))||(k==="deed"&&(s.mask&DEED_BIT));var ri=projectedRentInfo(s,k);var status=ok?"<b>"+money(comboPrice(k,s))+"</b>":(owned?"✅ ALINDI":(k==="deed"&&((s.own||s.p).laps||0)<1?(s.team?"🔒 "+s.own.name+" 1. turu bitirmedi":"🔒 1. tur bitmedi"):(k==="deed"?"🔒 Arsa+Ev+Otel gerekli":"UYGUN DEĞİL")));var b=document.createElement("button");b.type="button";b.className="comboItem "+(sel?"selected ":"")+(ok?"":"locked");b.disabled=!ok;b.innerHTML='<span class="ciChk">'+(sel?"✓":"")+'</span><span class="ciName">'+it[1]+'</span><span class="ciRight"><span class="ciPrice">'+status+'</span><span class="ciRent">Kira '+money(ri.rent)+(ri.bonus?" · 🌍 2×":"")+'</span></span>';if(ok)b.onclick=function(){
   /* Kombinasyon serbest: birden fazla uygun mülk aynı işlemde seçilebilir. */
@@ -18550,7 +18550,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
   function openSetup(f){
     flow = f || 'kur';
     if(flow === 'edit'){ ST = norm(roomCfg || CFG); ST._rk = ST.mod === 'rank'; }
-    else ST = {tur:null, mod:null, para:null, zar:null, ucr:null, thb:'tr'};
+    else ST = {tur:null, mod:null, para:null, zar:null, ucr:null, thb:null};  /* T17: tahta işaretsiz başlar (seçilmezse Türkiye) */
     buildSetup(); paintSetup();
     try{ if(typeof setLobbyHitLayerVisible === 'function') setLobbyHitLayerVisible(false); }catch(e){}
     sEl.classList.add('show');
