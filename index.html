@@ -2041,7 +2041,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261018-0350';
+window.MONOCITY_VER = '20261018-0407';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -33900,19 +33900,25 @@ html body .f25Tk .tq>img.tg{position:absolute!important;top:6px!important;right:
   var GK = 'mc_gfx';
   function autoGfx(){ try{ var c = navigator.hardwareConcurrency || 4, m = navigator.deviceMemory || 4; if(c <= 2 || m <= 2) return 'low'; if(c <= 4 || m <= 3) return 'mid'; return 'high'; }catch(e){ return 'high'; } }
   function gfx(){ var v = null; try{ v = localStorage.getItem(GK); }catch(e){} return /^(low|mid|high|ultra)$/.test(v || '') ? v : autoGfx(); }
-  function setGfx(v){ try{ localStorage.setItem(GK, v); }catch(e){} R.reset(); }
+  function setGfx(v){ try{ localStorage.setItem(GK, v); }catch(e){} R.pending = true; if(!R.play && !(R.fx && R.fx.length)) R.reset(); }
   window.monocityGfx = gfx; window.monocitySetGfx = setGfx;
   var GN = {low:'DÜŞÜK', mid:'ORTA', high:'YÜKSEK', ultra:'ULTRA'};
-  setInterval(function(){
-    var row = document.getElementById('mgTiltRow'); if(!row || document.getElementById('f26Gfx')) return;
-    var h = document.createElement('div');
-    h.innerHTML = '<div class="propertySummary" style="margin-top:8px"><div class="propertySummaryTitle">🖥️ GRAFİK</div><div class="propertySummarySub">Düşük: hızlı 2B zar · Orta: 3D zar · Yüksek: + gölge ve hologram · Ultra: en keskin görüntü</div></div><div id="f26Gfx">' +
-      ['low','mid','high','ultra'].map(function(k){ return '<button type="button" data-g="'+k+'">'+GN[k]+'</button>'; }).join('')+'</div>';
-    row.parentNode.insertBefore(h, row.nextSibling);
-    var paint = function(){ var g = gfx(); h.querySelectorAll('button[data-g]').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-g') === g); }); };
+  function gfxBlock(lobby){
+    var h = document.createElement('div'); h.className = 'f26GfxW';
+    h.innerHTML = (lobby ? '<div style="font-weight:1000;color:#ffd36b;margin:10px 0 2px">🖥️ GRAFİK</div><div style="font-size:11px;color:#9fb0cf">Düşük: hızlı 2B zar · Orta: 3D zar · Yüksek: + gölge ve hologram · Ultra: en keskin görüntü</div>'
+      : '<div class="propertySummary" style="margin-top:8px"><div class="propertySummaryTitle">🖥️ GRAFİK</div><div class="propertySummarySub">Düşük: hızlı 2B zar · Orta: 3D zar · Yüksek: + gölge ve hologram · Ultra: en keskin görüntü</div></div>') +
+      '<div class="f26Gfx" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px">' + ['low','mid','high','ultra'].map(function(k){ return '<button type="button" data-g="'+k+'" style="border:1.5px solid #3b4f8a;border-radius:10px;background:#1b2550;color:#fff;font-weight:900;padding:8px 0;cursor:pointer">'+GN[k]+'</button>'; }).join('')+'</div>';
+    var paint = function(){ var g = gfx(); h.querySelectorAll('button[data-g]').forEach(function(b){ var on = b.getAttribute('data-g') === g; b.style.background = on ? '#2e9bff' : '#1b2550'; b.style.borderColor = on ? '#9fd0ff' : '#3b4f8a'; }); };
     h.addEventListener('click', function(e){ var b = e.target.closest('button[data-g]'); if(!b) return; e.preventDefault(); e.stopPropagation(); setGfx(b.getAttribute('data-g')); paint(); try{ window.MONOCITY_PROFILE.toast('🖥️ Grafik: '+GN[gfx()]); }catch(x){} });
-    paint();
-  }, 400);
+    paint(); return h;
+  }
+  /* oyun içi ve lobi ayarlarında aynı seçenek */
+  setInterval(function(){
+    var row = document.getElementById('mgTiltRow');
+    if(row && !(row.parentNode && row.parentNode.querySelector('.f26GfxW'))) row.parentNode.insertBefore(gfxBlock(false), row.nextSibling);
+    var ls = document.querySelector('#f14Set .bx');
+    if(ls && !ls.querySelector('.f26GfxW')){ var note = ls.lastElementChild; ls.insertBefore(gfxBlock(true), note); }
+  }, 300);
 
   /* ---------------- 3D fizik zar ---------------- */
   var OVAL = function(skin){ return /^(zd_|vip$|lg_)/.test(String(skin || '')); };
@@ -33940,8 +33946,8 @@ html body .f25Tk .tq>img.tg{position:absolute!important;top:6px!important;right:
       var dx = v.x - cx, dy = v.y - cy, dz = v.z - cz, L = Math.sqrt(dx*dx + dy*dy + dz*dz); if(L > 1e-6) pos.setXYZ(i, cx + dx/L*r, cy + dy/L*r, cz + dz/L*r); }
     g.computeVertexNormals(); GEO[k] = g; return g;
   }
-  var R = { inited:false, q:null, reset:function(){ if(R.r){ try{ R.r.dispose(); }catch(e){} } R.inited = false; R.r = null; if(R.cv && R.cv.parentNode) R.cv.parentNode.removeChild(R.cv); R.cv = null; } };
-  var TRAY = 2.0, DIE = 0.62;
+  var R = { inited:false, q:null, reset:function(){ R.pending = false; R.play = null; R.fx = []; R.dice = []; if(R.r){ try{ R.r.dispose(); }catch(e){} } R.inited = false; R.r = null; if(R.cv && R.cv.parentNode) R.cv.parentNode.removeChild(R.cv); R.cv = null; } };
+  var TRAY = 1.6, DIE = 0.46;
   var QY = null, RC = Math.cos(Math.PI/4), RS = Math.sin(Math.PI/4);
   function rotP(x, z){ return [x*RC + z*RS, -x*RS + z*RC]; }   /* Y ekseni etrafında 45° */
   function rotQ(a){ if(!QY) QY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0), Math.PI/4); return QY.clone().multiply(new THREE.Quaternion(a[3], a[4], a[5], a[6])); }
@@ -33970,7 +33976,7 @@ html body .f25Tk .tq>img.tg{position:absolute!important;top:6px!important;right:
     R.r.setSize(W, H*1.35, false);
     /* tahta baklavası: genişlik W, yükseklik H → kamera eğimi */
     var e = Math.asin(Math.max(0.25, Math.min(0.999, H / W)));
-    var B = TRAY / 0.70;                       /* iç alan tahtanın ~%70'i */
+    var B = 2.0 / 0.70;                        /* tahta ölçeği sabit; zarlar ortadaki iç alanda */
     var halfW = B * Math.SQRT2, halfH = halfW * (H*1.35) / W;
     var cam = R.cam; cam.left = -halfW; cam.right = halfW; cam.top = halfH; cam.bottom = -halfH;
     var D = 30; cam.position.set(0, Math.sin(e)*D, Math.cos(e)*D); cam.up.set(0, 1, 0); cam.lookAt(0, 0, 0);
@@ -33994,10 +34000,10 @@ html body .f25Tk .tq>img.tg{position:absolute!important;top:6px!important;right:
     for(var i=0;i<n;i++){
       var b = new CANNON.Body({mass:1, material:dm, shape:new CANNON.Box(new CANNON.Vec3(DIE/2, DIE/2, DIE/2)), linearDamping:0.12, angularDamping:0.18, allowSleep:true});
       b.sleepSpeedLimit = 0.25; b.sleepTimeLimit = 0.3;
-      var off = (n === 1 ? 0 : (i ? 0.55 : -0.55)) + (Math.random()-0.5)*0.4;
+      var off = (n === 1 ? 0 : (i ? 0.45 : -0.45)) + (Math.random()-0.5)*0.4;
       var px = -T + DIE*0.8, pz = off;                 /* yerel: -x kenarından +x yönüne */
       b.position.set(px*ca - pz*sa, 0.9 + Math.random()*0.4 + i*0.15, px*sa + pz*ca);
-      var vx = 7.5 + Math.random()*2.2, vz = (Math.random()-0.5)*2.2;
+      var vx = 6.2 + Math.random()*2, vz = (Math.random()-0.5)*2.2;
       b.velocity.set(vx*ca - vz*sa, 0.6 + Math.random()*0.8, vx*sa + vz*ca);
       var q = new CANNON.Quaternion(); q.setFromEuler(Math.random()*6.28, Math.random()*6.28, Math.random()*6.28); b.quaternion.copy(q);
       b.angularVelocity.set((Math.random()-0.5)*16, (Math.random()-0.5)*16, (Math.random()-0.5)*16);
@@ -34054,7 +34060,7 @@ html body .f25Tk .tq>img.tg{position:absolute!important;top:6px!important;right:
     var ultra = R.q === 'ultra';
     var beam = new THREE.Mesh(new THREE.PlaneGeometry(DIE*1.1, DIE*3.2), new THREE.MeshBasicMaterial({map:beamTex(), transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, opacity:ultra ? 0.95 : 0.75}));
     beam.position.y = DIE*1.6; g.add(beam);
-    var fig = new THREE.Mesh(new THREE.PlaneGeometry(DIE*2.6, DIE*2.6*1194/1220), new THREE.MeshBasicMaterial({map:t, transparent:true, depthWrite:false, opacity:0}));
+    var fig = new THREE.Mesh(new THREE.PlaneGeometry(DIE*2.2, DIE*2.2*1194/1220), new THREE.MeshBasicMaterial({map:t, transparent:true, depthWrite:false, opacity:0}));
     fig.position.y = DIE*1.9; g.add(fig);
     var ring = new THREE.Mesh(new THREE.RingGeometry(DIE*0.45, DIE*0.62, 32), new THREE.MeshBasicMaterial({color:0xffd36b, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, opacity:0.8, side:THREE.DoubleSide}));
     ring.rotation.x = -Math.PI/2; ring.position.y = 0.02; g.add(ring);
@@ -34075,7 +34081,7 @@ html body .f25Tk .tq>img.tg{position:absolute!important;top:6px!important;right:
   function clearDice(){ (R.dice || []).forEach(function(d){ R.scene.remove(d.mesh); if(d.sh) R.scene.remove(d.sh); if(Array.isArray(d.mesh.material)) d.mesh.material.forEach(function(m){ if(m.map) m.map.dispose(); if(m.emissiveMap) m.emissiveMap.dispose(); m.dispose(); }); }); R.dice = []; }
   var raf = 0, hideT = 0;
   function loop(){
-    raf = 0; var now = performance.now(), live = false;
+    raf = 0; if(!R.r){ return; } var now = performance.now(), live = false;
     if(R.play){
       var P = R.play, f = Math.min(P.frames.length - 1, Math.floor((now - P.t0)/1000*60));
       R.dice.forEach(function(d, i){ var a = P.frames[f][i], xz = rotP(a[0], a[2]); d.mesh.position.set(xz[0], a[1], xz[1]); d.mesh.quaternion.copy(rotQ(a));
@@ -34085,13 +34091,14 @@ html body .f25Tk .tq>img.tg{position:absolute!important;top:6px!important;right:
       live = true;
     }
     if(R.fx.length){ tickFx(now); live = true; }
-    if(!live && now > hideT){ clearDice(); R.cv.classList.remove('show'); return; }
+    if(!live && now > hideT){ clearDice(); R.cv.classList.remove('show'); if(R.pending) R.reset(); return; }
     if(R.dice.length || R.fx.length) R.r.render(R.scene, R.cam);
     raf = requestAnimationFrame(loop);
   }
   /* d1, d2: önceden belirlenmiş (online'da herkeste aynı) sonuçlar; d2 = 0 → tek zar */
   window.monocityRoll3D = function(skin, d1, d2, name, cb){
     try{
+      if(R.pending && !R.play) R.reset();
       if(gfx() === 'low') return false;
       if(!init()) return false;
       var g = document.getElementById('game'); if(!g || getComputedStyle(g).display === 'none') return false;
