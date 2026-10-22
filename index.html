@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head><script>window.__I=window.__I||[];window.__IN=5;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261022-1850"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
+<head><script>window.__I=window.__I||[];window.__IN=5;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261022-1910"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0a0e26">
@@ -2041,7 +2041,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261022-1850';
+window.MONOCITY_VER = '20261022-1910';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -7592,7 +7592,7 @@ html body #mcLobby2 .lbChat .lbChatList .mcCm{margin:0!important;transform:scale
 #f19Ov.f46 .cd .row{flex:1 1 auto!important;min-height:0}
 #f19Ov.f46 .cd .bd{flex:0 0 36%!important}
 #f19Ov.f46 .cd img.tg{height:clamp(12px,3.2vh,20px)!important;top:.4vh!important;right:.4vh!important}
-#f19Ov.f46 .cd .sl>img{padding:2.4vh .4vh 2.2vh!important}
+#f19Ov.f46 .cd .sl>img:not(.tg){padding:2.4vh .4vh 2.2vh!important}
 #f19Ov.f46 .cd .lb{bottom:.3vh!important}
 #f19Ov.f46 .cd .pr{margin-top:.6vh!important}
 /* biyografi: boş alanın ortasında, kalem yanında */
@@ -7992,7 +7992,9 @@ html body #infoModal.modal.f8Ch.th-zd #infoText{--ts:0 1px 3px rgba(0,0,0,.9)}
     }
     PS47.on = on;
     if(!on){ ps.classList.remove('f47Ld'); return; }
-    if(ps.classList.contains('f47Ld') && (n - PS47.last > 320 || n - PS47.t > 1600)) ps.classList.remove('f47Ld');
+    if(ps.classList.contains('f47Ld')){
+      var g47 = ps.querySelector('.ppChar.f8Vit .gr'); if(!ps.classList.contains('f45Sub') && g47 && !g47.classList.contains('f20Sel')) PS47.last = n;   /* yükleniyor / rozetler henüz dikeye geçmedi */
+      if(n - PS47.last > 250 || n - PS47.t > 3000) ps.classList.remove('f47Ld'); }
   }, 80);
 
 /* ================= T47: Zodyak burç ödülleri (4 şans kartı · 8 çerçeve · 12 sohbet balonu) + sürüm etiketi ================= */
