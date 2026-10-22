@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head><script>window.__I=window.__I||[];window.__IN=5;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261022-1600"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
+<head><script>window.__I=window.__I||[];window.__IN=5;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261022-1720"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0a0e26">
@@ -2041,7 +2041,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261022-1600';
+window.MONOCITY_VER = '20261022-1720';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -7563,8 +7563,8 @@ html body #mcProfileScreen.f18P .ppBio.f46Bio{display:flex!important;flex:1 1 au
 html body #mcProfileScreen .ppBio.f46Bio.f46Hide{visibility:hidden!important}
 #mcProfileScreen:not(.isMe) .ppBio.f46Bio .ppPen{display:none!important}
 /* ===== T46 · lobi sohbeti ince + ses/mikrofon ===== */
-#mcLobby2 .lbChat{top:auto!important;bottom:4.5%!important;height:9%!important;width:56%!important;border-radius:999px!important;flex-direction:row!important;align-items:center}
-#mcLobby2 .lbChat .lbChatList{display:flex;align-items:center;padding:0 2vh!important;white-space:nowrap}
+html[data-lobv] #mcLobby2 .lbChat,html #mcLobby2.mcHasSet .lbChat,html body #mcLobby2 .lbChat{top:auto!important;bottom:4.5%!important;height:9%!important;max-height:9%!important;width:56%!important;border-radius:999px!important;flex-direction:row!important;align-items:center}
+html body #mcLobby2 .lbChat .lbChatList{height:100%;display:flex;align-items:center;padding:0 2vh!important;white-space:nowrap}
 #mcLobby2 .lbChat .lbChatList>*:not(:last-child){display:none!important}
 #mcLobby2 .lbChat .lbChatList .empty{padding:0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #mcLobby2 .lbChat .lbChatIn{display:none!important}
@@ -7579,9 +7579,34 @@ html body #mcPP .arr{display:none!important}
 html body #f7Net #f7NetL.ctl{position:fixed!important;left:auto!important;right:12px!important;top:118px!important;bottom:auto!important}
 html body.f45PL #f7Net .wrap{margin-left:-7vw}
 /* profil sekme yazıları eşit */
-#mcProfileScreen .ppTabs .ppTab.f46Sub,#mcProfileScreen .ppTabs .ppTab.f46Sub *{font-size:calc(2.5*var(--u))!important}
+#mcProfileScreen .ppTabs .ppTab.f46Sub,#mcProfileScreen .ppTabs .ppTab.f46Sub *{font-size:calc(2.7*var(--u))!important}
 #mcProfileScreen .ppTabs .ppTab.f46Sub img{height:calc(3.2*var(--u))!important;width:auto!important}
 #mcPP .f44Rk small{display:none!important}
+
+html body #mcLobby2 .lbChat .p3Hint{top:50%!important;transform:translateY(-50%)}
+html body #mcLobby2 .lbChat .lbChatList .mcCm{margin:0!important;transform:scale(.85);transform-origin:left center}
+/* liderlik / kulüp satırları: çerçeve üstten kesilmesin */
+#f29 .row{overflow:visible!important;height:72px!important;margin-bottom:9px!important}
+#f29 .avw{margin-top:8px!important}
+/* yükleme ekranı: piyon/zar kutuları uzasın, etiketler küçük */
+#f19Ov.f46 .cd .row{flex:1 1 auto!important;min-height:0}
+#f19Ov.f46 .cd .bd{flex:0 0 36%!important}
+#f19Ov.f46 .cd img.tg{height:clamp(12px,3.2vh,20px)!important;top:.4vh!important;right:.4vh!important}
+#f19Ov.f46 .cd .sl>img{padding:2.4vh .4vh 2.2vh!important}
+#f19Ov.f46 .cd .lb{bottom:.3vh!important}
+#f19Ov.f46 .cd .pr{margin-top:.6vh!important}
+/* biyografi: boş alanın ortasında, kalem yanında */
+html body #mcProfileScreen.f18P .ppBio.f46Bio{justify-content:center!important}
+#mcProfileScreen .ppBio.f46Bio span{flex:0 1 auto!important;max-width:100%}
+#mcProfileScreen .ppSub #ppCtry,#mcProfileScreen .ppSub .ctry{margin-left:0!important}
+/* profil sol menü: mağazadaki gibi */
+#mcProfileScreen .ppTabs{gap:calc(1.2*var(--u))!important;justify-content:flex-start}
+#mcProfileScreen .ppTabs>.ppTab,#mcProfileScreen .ppTabs .f46G>.ppTab{height:calc(11.2*var(--u))!important;font-size:calc(3.1*var(--u))!important}
+#mcProfileScreen .ppTabs .f46Gw{gap:calc(.8*var(--u));margin:calc(.8*var(--u)) 0 0 calc(2.4*var(--u))}
+#mcProfileScreen .ppTabs .f46Gw>.ppTab{height:calc(7.4*var(--u))!important;margin:0!important;padding-left:calc(2*var(--u))!important;border-radius:calc(1.2*var(--u))!important;border-left:2px solid #6b4fa8!important;background:rgba(40,20,80,.45)!important;color:#d8c8ff!important;box-shadow:none!important}
+#mcProfileScreen .ppTabs .f46Gw>.ppTab.active,#mcProfileScreen .ppTabs .f46Gw>.ppTab.f46On{background:linear-gradient(90deg,#3b82f6,#1d4ed8)!important;color:#fff!important;border-left-color:#bfdbfe!important}
+#mcProfileScreen .ppTabs.f46FvOn .f46Gw>.ppTab.active:not(.f46FavT){background:rgba(40,20,80,.45)!important;color:#d8c8ff!important}
+#mcProfileScreen .ppTabs .f46G.open>.f46Gh{background:linear-gradient(90deg,#a855f7,#7c3aed)!important;color:#fff!important;border-radius:calc(1.4*var(--u))!important}
 
 </style>
 <script id="mc-t44-js">
@@ -7663,7 +7688,9 @@ html body.f45PL #f7Net .wrap{margin-left:-7vw}
   function COL(){ return window.MONOCITY_COL || null; }
   function ownList0(c){ var C = COL(); if(CV.me){ var mc = C && C.myCol ? C.myCol() : {}; return (mc[c] || []).filter(function(x){ return x && x !== 'white'; }); }
     var o = (CV.own || {})[c]; return Array.isArray(o) ? o.filter(Boolean) : (o && typeof o === 'object' ? Object.keys(o).map(function(k){ return o[k]; }) : []); }
-  function ownList(c){ var L = ownList0(c), C = COL(); if(!C || !C.colItems) return L; var o = {}, ok = {}; o[c] = L; try{ C.colItems(o).forEach(function(x){ ok[x.id] = 1; }); }catch(e){ return L; } return L.filter(function(id){ if(!ok[id]) return false; try{ var inf = C.itemInfo(c, id); return inf && inf.h && inf.h !== '🎁'; }catch(e){ return false; } }); }
+  var OLC = {};
+  function ownList(c){ var ck = (CV.uid || '')+':'+c, hit = OLC[ck]; if(hit && Date.now() - hit.t < 15000) return hit.v; var v = ownList1(c); OLC[ck] = {t:Date.now(), v:v}; return v; }
+  function ownList1(c){ var L = ownList0(c), C = COL(); if(!C || !C.colItems) return L; var o = {}, ok = {}; o[c] = L; try{ C.colItems(o).forEach(function(x){ ok[x.id] = 1; }); }catch(e){ return L; } return L.filter(function(id){ if(!ok[id]) return false; try{ var inf = C.itemInfo(c, id); return inf && inf.h && inf.h !== '🎁'; }catch(e){ return false; } }); }
   function bestOf(c){ var C = COL(), L = ownList(c); if(!L.length || !C) return null; var PTS = C.PTS || {};
     var b = null, bp = -1; L.forEach(function(id){ var p = PTS[C.itemTag ? C.itemTag(c, id) : 'temel'] || 0; if(/^(zd_|vip|at_|hw_)/.test(id)) p += 1000; if(p > bp){ bp = p; b = id; } }); return b; }
   function cvPaint(){
@@ -7799,7 +7826,7 @@ html body.f45PL #f7Net .wrap{margin-left:-7vw}
   window.monocityUseAdd = function(){
     try{
       var U = useData(), sn = curSn(); U.a = U.a || {}; if(!U.s || U.s.sn !== sn) U.s = {sn:sn};
-      var eq = {dice:lsGet('mc_equipped_dice') || 'white', pawn:lsGet('mc_equipped_pawn') || 'white', board:(window.monocityBoardThemeNow ? monocityBoardThemeNow() : '') || lsGet('mc_equipped_board') || 'default'};
+      var eq = {dice:lsGet('mc_equipped_dice') || 'white', pawn:lsGet('mc_equipped_pawn') || 'white', board:lsGet('mc_equipped_board') || 'white'};
       Object.keys(eq).forEach(function(c){ var id = String(eq[c]).replace(/[.#$\/\[\]]/g, '_'); [U.a, U.s].forEach(function(o){ o[c] = o[c] || {}; o[c][id] = (o[c][id] || 0) + 1; }); });
       lsSet(useKey(), JSON.stringify(U));
       var db = window.MONOCITY_DB, u = meUid(); if(db && u) db.ref('prv/'+u+'/use').set(U).catch(function(){});
@@ -7828,6 +7855,8 @@ html body.f45PL #f7Net .wrap{margin-left:-7vw}
   }
   setInterval(function(){ try{ tabsDeco(); fvPlace(); }catch(e){} }, 300);
   window.addEventListener('click', function(e){
+    var any = e.target && e.target.closest ? e.target.closest('#mcProfileScreen .ppTab, #mcProfileScreen .ppBack') : null;
+    if(any && !any.classList.contains('f46Gh') && !any.classList.contains('f46FavT')){ fvClose(); setTimeout(tabsDeco, 0); return; }
     var t = e.target && e.target.closest ? e.target.closest('#mcProfileScreen .f46Gh, #mcProfileScreen .f46FavT') : null; if(!t) return;
     e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation();
     if(t.classList.contains('f46FavT')){ fvOpen(); tabsDeco(); return; }
@@ -7861,10 +7890,10 @@ html body.f45PL #f7Net .wrap{margin-left:-7vw}
     var src = FV.sez === 's' ? (FV.data.s && FV.data.s.sn === curSn() ? FV.data.s : {}) : (FV.data.a || {}), cnt = src[FV.cat] || {};
     var own = []; if(FV.me){ try{ own = (C.myCol() || {})[FV.cat] || []; }catch(x){} } else { var o = (FV.own || {})[FV.cat]; own = Array.isArray(o) ? o : (o && typeof o === 'object' ? Object.keys(o).map(function(k){ return o[k]; }) : []); }
     var ids = own.slice(); Object.keys(cnt).forEach(function(k){ if(ids.indexOf(k) < 0) ids.push(k); });
-    ids = validIds(FV.cat, ids.filter(function(x){ return x && x !== 'white' && x !== 'default'; }));
+    ids = validIds(FV.cat, ids.filter(function(x){ return x && x !== 'default' && (cnt[x] || 0) > 0; }));
     ids.sort(function(a, b){ return (cnt[b] || 0) - (cnt[a] || 0); });
     var g = ids.map(function(id){ var inf = {n:id, h:'🎁'}; try{ inf = C.itemInfo(FV.cat, id); }catch(x){} return '<div class="c"><div class="v">'+inf.h+'</div><b>'+esc(inf.n)+'</b><small><span>Maç</span><i>'+(cnt[id] || 0)+'</i></small></div>'; }).join('');
-    e.innerHTML = h + (g ? '<div class="gr">'+g+'</div>' : '<div class="em">Bu kategoride henüz eşya yok.</div>');
+    e.innerHTML = h + (g ? '<div class="gr">'+g+'</div>' : '<div class="em">'+(FV.sez === 's' ? 'Bu sezon bu kategoride henüz maç oynanmadı.' : 'Bu kategoride henüz maç oynanmadı.')+'</div>');
   }
 
   /* ---------- 9) biyografi ---------- */
@@ -8004,7 +8033,8 @@ html body.f45PL #f7Net .wrap{margin-left:-7vw}
     var el = ST.el, now = Date.now();
     if(!ly || !gameVisible()){ el.style.display = 'none'; return; }
     var cp = window.currentPlayer, p = players[cp], mode = '';
-    if(p && !p.bankrupt){ if(window.__f46Think) mode = window.__f46Think; else if(window.rollInProgress) mode = ''; else if(window.waiting) mode = 'act'; else mode = 'roll'; }
+    var __bot = false; try{ __bot = !!p && !((typeof isInteractiveSeat === 'function') ? isInteractiveSeat(p) : p.human); }catch(e){}
+    if(p && !p.bankrupt){ if(__bot) mode = window.__f46Think || ''; else if(window.rollInProgress) mode = ''; else if(window.waiting) mode = 'act'; else mode = 'roll'; }
     var pw = ly.querySelector('.mcPwn[data-pi="'+cp+'"]');
     if(pw){ var tf = pw.style.transform; if(ST.tf[cp] !== tf){ ST.tf[cp] = tf; ST.mv[cp] = now; } }
     if(!mode || !pw || pw.querySelector('.f31Pw') || now - (ST.mv[cp] || 0) < 900 || document.getElementById('diceFX') && getComputedStyle(document.getElementById('diceFX')).display !== 'none' && document.getElementById('diceFX').classList.contains('show')){ el.style.display = 'none'; return; }
