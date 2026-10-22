@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head><script>window.__I=window.__I||[];window.__IN=5;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261022-1830"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
+<head><script>window.__I=window.__I||[];window.__IN=5;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261022-1850"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0a0e26">
@@ -2041,7 +2041,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261022-1830';
+window.MONOCITY_VER = '20261022-1850';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -7633,6 +7633,10 @@ html body #infoModal.modal.f8Ch.th-zd #infoText{--ts:0 1px 3px rgba(0,0,0,.9)}
 #f25CRes .f47P .c button.on{background:#15803d}
 /* ===== T47 · sürüm etiketi ===== */
 #f14Set .f47Ver{margin:10px 0 2px;text-align:center;font:800 10px Arial;color:#6b7aa6;letter-spacing:.04em;opacity:.85}
+/* ===== T47 · profil açılışında titreme yok ===== */
+#mcProfileScreen .ppMid{transition:opacity .2s ease}
+#mcProfileScreen.f47Ld .ppMid{opacity:0!important}
+#f45St.rent,#f45St.sell{--c:#ffa94d;--g:rgba(255,169,77,.45)}
 
 </style>
 <script id="mc-t44-js">
@@ -7975,6 +7979,22 @@ html body #infoModal.modal.f8Ch.th-zd #infoText{--ts:0 1px 3px rgba(0,0,0,.9)}
     }
   })();
 
+  /* ---------- T47: profil her açılışta sıfırdan (gruplar kapalı) + içerik hazır olunca tek seferde ---------- */
+  var PS47 = {on:false, t:0, last:0, mo:null, node:null};
+  setInterval(function(){
+    var ps = document.getElementById('mcProfileScreen'); if(!ps) return; var on = ps.classList.contains('show'), n = Date.now();
+    var m = ps.querySelector('.ppMid');
+    if(m && PS47.node !== m){ if(PS47.mo) PS47.mo.disconnect(); PS47.node = m; PS47.mo = new MutationObserver(function(){ PS47.last = Date.now(); }); PS47.mo.observe(m, {childList:true, subtree:true, characterData:true}); }
+    if(on && !PS47.on){
+      try{ fvClose(); }catch(e){}
+      ps.querySelectorAll('.f46G').forEach(function(g){ g.classList.remove('open'); g.__u = 0; });
+      ps.classList.add('f47Ld'); PS47.t = n; PS47.last = n;
+    }
+    PS47.on = on;
+    if(!on){ ps.classList.remove('f47Ld'); return; }
+    if(ps.classList.contains('f47Ld') && (n - PS47.last > 320 || n - PS47.t > 1600)) ps.classList.remove('f47Ld');
+  }, 80);
+
 /* ================= T47: Zodyak burç ödülleri (4 şans kartı · 8 çerçeve · 12 sohbet balonu) + sürüm etiketi ================= */
 (function(){
   var I7 = window.__I || [];
@@ -8020,7 +8040,7 @@ html body #infoModal.modal.f8Ch.th-zd #infoText{--ts:0 1px 3px rgba(0,0,0,.9)}
   (function reg(){
     var FR = window.MONOCITY_FRAME_IMG, CT = window.MONOCITY_CHAT_THEMES; if(!FR || !CT || !window.MONOCITY_EXTRA_SETS || !window.MONOCITY_ZD4) return setTimeout(reg, 500);
     FR.zd_cer = I7[329]; if(window.MONOCITY_FRAME_NAME) MONOCITY_FRAME_NAME.zd_cer = 'ZODYAK ÇERÇEVE';
-    var H = [-60, -60, -60, -60]; if(window.MONOCITY_FRAME_HOLE) MONOCITY_FRAME_HOLE.zd_cer = H;
+    var H = [-27, -27, -27, -27];   /* T47b: yeni ince çerçeve */ if(window.MONOCITY_FRAME_HOLE) MONOCITY_FRAME_HOLE.zd_cer = H;
     CT.zd = 'ZODYAK';
     var SEL = ':is(.avatarCircle,#mcLobbyFrame,.mcFrameDemo,.mcCmAv,.mcpAvatar,.f8Ov)';
     var st = document.createElement('style'); st.id = 'mc-t47-vars';
@@ -8182,12 +8202,17 @@ html body #infoModal.modal.f8Ch.th-zd #infoText{--ts:0 1px 3px rgba(0,0,0,.9)}
     var cp = window.currentPlayer, p = players[cp], mode = '';
     var __bot = false; try{ __bot = !!p && !((typeof isInteractiveSeat === 'function') ? isInteractiveSeat(p) : p.human); }catch(e){}
     if(p && !p.bankrupt){ if(__bot) mode = window.__f46Think || ''; else if(window.rollInProgress) mode = ''; else if(window.waiting) mode = 'act'; else mode = 'roll'; }
+    /* T47: otomatik kareler (vergi, başkasının şehri = kira) balon yok; satış paneli açıksa yazsın */
+    if(p && mode === 'act'){ try{ var __t = (typeof board !== 'undefined' && board) ? board[p.pos] : ''; var __c = (typeof cities !== 'undefined' && cities) ? cities[__t] : null;
+      if(__c){ var __o = (typeof getOwner === 'function') ? getOwner(__t) : null; if(__o && __o !== p) mode = ''; }
+      else if(!/MÜZAYEDE|AÇIK ARTIRMA|DÜNYA TURU|ŞEHİR TURU|ŞANS|PARK CEZASI|HAPİSHANE/.test(String(__t || ''))) mode = ''; }catch(e){} }
+    var __sl = document.getElementById('mcSale'); if(p && !p.bankrupt && __sl && __sl.classList.contains('show')){ var __rent = false; try{ var __t2 = board[p.pos], __o2 = cities[__t2] && getOwner(__t2); __rent = !!(__o2 && __o2 !== p); }catch(e){} mode = __rent ? 'rent' : 'sell'; }
     var pw = ly.querySelector('.mcPwn[data-pi="'+cp+'"]');
     if(pw){ var tf = pw.style.transform; if(ST.tf[cp] !== tf){ ST.tf[cp] = tf; ST.mv[cp] = now; } }
     if(!mode || !pw || pw.querySelector('.f31Pw') || now - (ST.mv[cp] || 0) < 900 || document.getElementById('diceFX') && getComputedStyle(document.getElementById('diceFX')).display !== 'none' && document.getElementById('diceFX').classList.contains('show')){ el.style.display = 'none'; return; }
     if(mode === 'roll'){ var rb = document.getElementById('mcIsoRoll'); if(rb && getComputedStyle(rb).pointerEvents !== 'none' && +getComputedStyle(rb).opacity > 0.5){ el.style.display = 'none'; return; } }
     var r = pw.getBoundingClientRect(); if(!r.width){ el.style.display = 'none'; return; }
-    if(el.__m !== mode){ el.__m = mode; el.className = 'f44St '+mode; el.innerHTML = mode === 'roll' ? '🎲 <span>Zar atıyor</span><s>…</s>' : '🛒 <span>İşlem yapıyor</span><s>…</s>'; }
+    if(el.__m !== mode){ el.__m = mode; el.className = 'f44St '+mode; el.innerHTML = mode === 'roll' ? '🎲 <span>Zar atıyor</span><s>…</s>' : (mode === 'rent' ? '💸 <span>Kira ödeniyor</span><s>…</s>' : (mode === 'sell' ? '🏚️ <span>Mülk satılıyor</span><s>…</s>' : '🛒 <span>İşlem yapıyor</span><s>…</s>')); }
     el.style.display = 'block'; el.style.left = (r.left + r.width/2)+'px'; el.style.top = (r.top - 4)+'px';
   }, 200);
 
@@ -13845,7 +13870,7 @@ mportant;}
 <script id="monocity-chatrow-js">
 (function(){
   var TIER = {red:'diamond',yellow:'diamond',green:'diamond',purple:'ticket',pink:'ticket',blue:'ticket',orange:'metro',black:'metro',brown:'metro'};
-  var OK = /^(white|red|yellow|green|purple|pink|blue|orange|black|brown|hw|at|at_kral|at_halka|at_ejder|at_kul|neon|kral|vip|buz)$/;
+  var OK = /^(white|red|yellow|green|purple|pink|blue|orange|black|brown|hw|at|at_kral|at_halka|at_ejder|at_kul|neon|kral|vip|buz|zd|zd_cer)$/;
   function esc(t){ return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   window.monocityChatMeta = function(){
     var f='white', l=1, u=null;
@@ -37125,16 +37150,17 @@ html body.f30Md #mcLobbyUI .mclPlay,html body.f30Md #mcLobbyUI .mclQuick,html bo
   function uid(){ return (window.MONOCITY_AUTH && MONOCITY_AUTH.uid) || null; }
   var MODES = ['klasik','rank','ozel','eglence'];
   function okM(m){ return MODES.indexOf(m) >= 0 ? m : 'klasik'; }
-  function getMode(){ try{ return okM(localStorage.getItem(KEY)); }catch(e){ return 'klasik'; } }
+  var CURM = 'klasik';   /* T47: her açılışta Klasik */
+  function getMode(){ return okM(CURM); }
   function setMode(m, noSync){
-    m = okM(m); try{ localStorage.setItem(KEY, m); }catch(e){}
+    m = okM(m); CURM = m; try{ localStorage.setItem(KEY, m); }catch(e){}
     if(!noSync){ var db = window.MONOCITY_DB, u = uid(); if(db && u && !window.MONOCITY_GUEST) try{ db.ref('users/'+u+'/ev/mode').set(m).catch(function(){}); }catch(e){} }
     paint();
   }
   /* hesaptan son mod (başka cihazda seçildiyse) */
   var pulled = null;
   setInterval(function(){ var u = uid(), db = window.MONOCITY_DB; if(!u || !db || pulled === u) return; pulled = u;
-    try{ db.ref('users/'+u+'/ev/mode').once('value').then(function(s){ var v = s && s.val(); if(MODES.indexOf(v) >= 0){ if(v !== getMode()) setMode(v, true); } else setMode(getMode()); }).catch(function(){}); }catch(e){} }, 2500);
+    try{ db.ref('users/'+u+'/ev/mode').once('value').then(function(s){ var v = s && s.val(); setMode(getMode(), true); }).catch(function(){}); }catch(e){} }, 2500);
 
   var RN = ['','I','II','III','IV','V'];
   function rankInfo(){
