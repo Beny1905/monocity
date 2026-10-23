@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head><script>window.__I=window.__I||[];window.__IN=6;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261023-1800"></script><script src="gorsel_6.js?v=20261023-1800"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
+<head><script>window.__I=window.__I||[];window.__IN=6;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261023-2000"></script><script src="gorsel_6.js?v=20261023-2000"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0a0e26">
@@ -2041,7 +2041,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261023-1800';
+window.MONOCITY_VER = '20261023-2000';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -9880,12 +9880,22 @@ html body .mcpName.f9Pl.p-lgf,html body .mcpName.f9Pl.p-lgi{--ph:1.02em!importan
 #monocityShop .lgShopC .lgCtW{width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
 #monocityShop .lgShopC .lgCtW .mcCtPrev{transform:scale(.62);transform-origin:center}
 
+/* T53: sohbet balonları uzun mesajda alt satıra geçer */
+html body .mcCm .mcCmT{white-space:normal!important;overflow-wrap:anywhere!important;word-break:break-word!important;max-width:min(78vw,520px)!important;height:auto!important;text-overflow:clip!important}
+html body #mcDm .mcCm .mcCmT{max-width:calc(100% - 90px)!important}
+html body .mcCm .mcCmB,html body .mcCm .mcCmBody{min-width:0;max-width:100%}
+/* T53: Legend Çarkı mağazaya gömülüyken soldaki butonlar sığsın */
+#lgW.f26Emb .side{top:44px;gap:6px}
+#lgW.f26Emb .sb{width:76px;font-size:9.5px;gap:2px}
+#lgW.f26Emb .sb i{width:clamp(30px,8.5vh,40px);width:clamp(30px,8.5cqh,40px);height:clamp(30px,8.5vh,40px);height:clamp(30px,8.5cqh,40px);font-size:17px}
+html body .mcCtPrev .mcCm .mcCmT,html body .f21Ct .mcCm .mcCmT,html body .lgCtW .mcCm .mcCmT{white-space:nowrap!important;max-width:none!important}
+
 </style>
 <script id="mc-t51-js">
 (function(){
   'use strict';
   if(window.__mcT51) return; window.__mcT51 = true;
-  var MAP = {"tf1": 340, "tf2": 341, "ti1": 342, "ti2": 343, "vf": 344, "vi": 345, "kfc": 346, "kfm": 347, "kfs": 348, "kic": 349, "kim": 350, "kis": 351, "kfab": 352, "kfaf": 353, "kiab": 354, "kiaf": 355, "amf": 356, "ami": 357, "z_f_y_1": 358, "z_f_y_2": 359, "z_f_y_3": 360, "z_f_y_4": 361, "z_f_y_5": 362, "z_f_y_6": 363, "z_f_k_1": 364, "z_f_k_2": 365, "z_f_k_3": 366, "z_f_k_4": 367, "z_f_k_5": 368, "z_f_k_6": 369, "z_i_y_1": 370, "z_i_y_2": 371, "z_i_y_3": 372, "z_i_y_4": 373, "z_i_y_5": 374, "z_i_y_6": 375, "z_i_k_1": 376, "z_i_k_2": 377, "z_i_k_3": 378, "z_i_k_4": 379, "z_i_k_5": 380, "z_i_k_6": 381, "pf": 382, "pfc": 383, "pi": 384, "pic": 385, "crf": 386, "cri": 387, "skf": 388, "ski": 389, "rzf": 390, "rzi": 391, "blf": 392, "bli": 393, "plf": 394, "pli": 395, "emf": 396, "emi": 397, "tas": 398, "zif": 399, "zii": 400, "bdf": 401, "bdi": 402, "rf": 403, "ri": 404, "tpf": 405, "tpi": 406}, SZ = {"tf1": [1024, 1024], "tf2": [1024, 1024], "ti1": [1024, 1024], "ti2": [1024, 1024], "vf": [720, 719], "vi": [900, 853], "kfc": [520, 492], "kfm": [560, 507], "kfs": [520, 431], "kic": [520, 495], "kim": [560, 481], "kis": [520, 417], "kfab": [460, 588], "kfaf": [460, 588], "kiab": [460, 610], "kiaf": [460, 610], "amf": [256, 256], "ami": [256, 256], "z_f_y_1": [256, 256], "z_f_y_2": [256, 256], "z_f_y_3": [256, 256], "z_f_y_4": [256, 256], "z_f_y_5": [256, 256], "z_f_y_6": [256, 256], "z_f_k_1": [256, 256], "z_f_k_2": [256, 256], "z_f_k_3": [256, 256], "z_f_k_4": [256, 256], "z_f_k_5": [256, 256], "z_f_k_6": [256, 256], "z_i_y_1": [256, 256], "z_i_y_2": [256, 256], "z_i_y_3": [256, 256], "z_i_y_4": [256, 256], "z_i_y_5": [256, 256], "z_i_y_6": [256, 256], "z_i_k_1": [256, 256], "z_i_k_2": [256, 256], "z_i_k_3": [256, 256], "z_i_k_4": [256, 256], "z_i_k_5": [256, 256], "z_i_k_6": [256, 256], "pf": [420, 450], "pfc": [420, 495], "pi": [420, 503], "pic": [420, 495], "crf": [560, 539], "cri": [560, 537], "skf": [1000, 560], "ski": [1000, 590], "rzf": [256, 256], "rzi": [256, 256], "blf": [570, 196], "bli": [586, 195], "plf": [700, 129], "pli": [700, 89], "emf": [160, 160], "emi": [160, 160], "tas": [256, 256], "zif": [292, 310], "zii": [292, 310], "bdf": [560, 296], "bdi": [560, 296], "rf": [300, 268], "ri": [300, 303], "tpf": [300, 364], "tpi": [300, 364]};
+  var MAP = {"tf1": 340, "tf2": 341, "ti1": 342, "ti2": 343, "vf": 344, "vi": 345, "kfc": 346, "kfm": 347, "kfs": 348, "kic": 349, "kim": 350, "kis": 351, "kfab": 352, "kfaf": 353, "kiab": 354, "kiaf": 355, "amf": 356, "ami": 357, "z_f_y_1": 358, "z_f_y_2": 359, "z_f_y_3": 360, "z_f_y_4": 361, "z_f_y_5": 362, "z_f_y_6": 363, "z_f_k_1": 364, "z_f_k_2": 365, "z_f_k_3": 366, "z_f_k_4": 367, "z_f_k_5": 368, "z_f_k_6": 369, "z_i_y_1": 370, "z_i_y_2": 371, "z_i_y_3": 372, "z_i_y_4": 373, "z_i_y_5": 374, "z_i_y_6": 375, "z_i_k_1": 376, "z_i_k_2": 377, "z_i_k_3": 378, "z_i_k_4": 379, "z_i_k_5": 380, "z_i_k_6": 381, "pf": 382, "pfc": 383, "pi": 384, "pic": 385, "crf": 386, "cri": 387, "skf": 388, "ski": 389, "rzf": 390, "rzi": 391, "blf": 392, "bli": 393, "plf": 394, "pli": 395, "emf": 396, "emi": 397, "tas": 398, "zif": 399, "zii": 400, "bdf": 401, "bdi": 402, "rf": 403, "ri": 404, "tpf": 405, "tpi": 406}, SZ = {"tf1": [1024, 1024], "tf2": [1024, 1024], "ti1": [1024, 1024], "ti2": [1024, 1024], "vf": [720, 719], "vi": [900, 853], "kfc": [520, 492], "kfm": [560, 507], "kfs": [520, 431], "kic": [520, 495], "kim": [560, 481], "kis": [520, 417], "kfab": [460, 588], "kfaf": [460, 588], "kiab": [460, 610], "kiaf": [460, 610], "amf": [256, 256], "ami": [256, 256], "z_f_y_1": [256, 256], "z_f_y_2": [256, 256], "z_f_y_3": [256, 256], "z_f_y_4": [256, 256], "z_f_y_5": [256, 256], "z_f_y_6": [256, 256], "z_f_k_1": [256, 256], "z_f_k_2": [256, 256], "z_f_k_3": [256, 256], "z_f_k_4": [256, 256], "z_f_k_5": [256, 256], "z_f_k_6": [256, 256], "z_i_y_1": [256, 256], "z_i_y_2": [256, 256], "z_i_y_3": [256, 256], "z_i_y_4": [256, 256], "z_i_y_5": [256, 256], "z_i_y_6": [256, 256], "z_i_k_1": [256, 256], "z_i_k_2": [256, 256], "z_i_k_3": [256, 256], "z_i_k_4": [256, 256], "z_i_k_5": [256, 256], "z_i_k_6": [256, 256], "pf": [420, 450], "pfc": [420, 495], "pi": [420, 503], "pic": [420, 495], "crf": [560, 539], "cri": [560, 537], "skf": [1000, 560], "ski": [1000, 590], "rzf": [256, 256], "rzi": [256, 256], "blf": [570, 196], "bli": [586, 195], "plf": [700, 129], "pli": [700, 89], "emf": [160, 160], "emi": [160, 160], "tas": [256, 256], "zif": [292, 310], "zii": [292, 310], "bdf": [560, 296], "bdi": [560, 296], "rf": [300, 268], "ri": [300, 303], "tpf": [300, 299], "tpi": [300, 282]};
   /* T52: büyük data: görselleri bir kez blob adresine çevir (HTML kısa kalır, profil hızlı açılır) */
   var BU = {};
   window.__mcBU = function(u){ if(!u || u.length < 2048 || u.slice(0, 5) !== 'data:') return u; var k = u.length+':'+u.slice(-48), c = BU[k]; if(c) return c;
@@ -10436,6 +10446,13 @@ html body .mcpName.f9Pl.p-lgf,html body .mcpName.f9Pl.p-lgi{--ph:1.02em!importan
         return h + '<img class="pw" alt="" src="'+IM(S0.img.p)+'"></div>'; }
       return o.apply(this, arguments); };
     w.__lgR = true; window.monocityWalkPreview = w; setTimeout(hookWP, 3000); })();
+  /* T53: sol alttaki özel mesaj çipi her basışta o kişinin sohbetini açar */
+  (function(){ var last = null;
+    setInterval(function(){ var U = window.MONOCITY_DM_UNREAD; if(U && U.u) last = U.u; }, 500);
+    ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click'].forEach(function(ev){
+      window.addEventListener(ev, function(e){ var b = e.target && e.target.closest ? e.target.closest('#f33DmB.on') : null; if(!b) return;
+        e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        if(ev === 'click'){ e.preventDefault(); var U = window.MONOCITY_DM_UNREAD || {}, u = U.u || last; if(u && window.monocityOpenDm) monocityOpenDm(u); } }, true); }); })();
   window.MONOCITY_LG = { EMO:[{e:EMF, name:'ATEŞ ANKASI'}, {e:EMI, name:'BUZ ANKASI'}], open:open, close:close, stones:function(){ load(); return S.stones; }, img:IM, owns:ownsSet, sets:SETS, IT:LGIT, state:function(){ load(); return S; }, buy:buySet };
   window.monocityOpenLegend = open;
 })();
@@ -17847,7 +17864,7 @@ body.mcPawnLayerOn #board .cell.mcStep{animation:mcStepGlow .38s ease-out!import
         var x = v[u] || {};
         var so2 = S(); if(so2 && so2.blocked && so2.blocked[u]){ knownTs[u] = x.ts; return; }
         if(!first && x.from && x.from !== uid && x.ts && x.ts !== knownTs[u] && (x.unread|0) > 0 && !(el && el.classList.contains('show') && cur === u)){
-          var so = S(); (so && so.getUser ? so.getUser(u) : Promise.resolve()).then(function(){ toast('💬 '+nameOf(u)+': '+x.last); try{ if(window.monocityDmPing) monocityDmPing(); }catch(e50){} });
+          var so = S(); (so && so.getUser ? so.getUser(u) : Promise.resolve()).then(function(){ try{ if(window.monocityDmPing) monocityDmPing(); }catch(e50){} });
         }
         knownTs[u] = x.ts;
       });
@@ -28888,10 +28905,13 @@ html body #openModal.mcF5.f32Sec .box{border-color:#60a5fa!important;box-shadow:
     if(t.id === 'mcIsoChatIn') src = document.getElementById('mcIsoChatBody');
     else if(t.id === 'cbInput') src = document.getElementById('cbList');
     else if(/lb/i.test(t.id)) src = document.querySelector('#mcLobby2 .lbChatList,#lbChatList');
-    else if(t.id === 'dmInput') src = document.querySelector('#mcDM .dmList,#dmList');
+    else if(t.id === 'dmInput') src = document.querySelector('#dmMsgs');
     if(!src) return '';
     var rows = [].slice.call(src.children).slice(-3);
-    return rows.map(function(r){ var d = document.createElement('div'); d.textContent = (r.textContent || '').replace(/\s+/g, ' ').trim(); return d.outerHTML; }).join('');
+    return rows.map(function(r){ var d = document.createElement('div'), nm = r.querySelector('.who, .tx b, .nm, b'), tx = r.querySelector('.mcCmT, .tx small, small');
+      var cl = function(e){ return ((e && e.textContent) || '').replace(/\s+/g, ' ').trim(); };
+      var a = cl(nm), b = cl(tx); if(r.classList && r.classList.contains('me') && !a) a = 'Sen';
+      d.textContent = (a && b && a !== b) ? a+': '+b : cl(r); if(!d.textContent || r.classList.contains('dmEmpty')) return ''; return d.outerHTML; }).join('');
   }
   function kbsBuild(){
     if(kbsEl) return kbsEl;
@@ -28948,6 +28968,7 @@ html body #openModal.mcF5.f32Sec .box{border-color:#60a5fa!important;box-shadow:
       if(b && /GÖNDER|➤|SEND|📨/i.test(b.textContent || '')) try{ b.click(); }catch(e){}
     }
     if(chat){ inp.value = ''; kbsClose(); } else kbsClose();
+    [350, 900].forEach(function(ms){ setTimeout(function(){ try{ window.scrollTo(0, 0); var de = document.documentElement; de.style.opacity = '0.999'; requestAnimationFrame(function(){ de.style.opacity = ''; }); }catch(x){} }, ms); });
   }
   /* klavye geri tuşuyla kapanırsa çubuğu da kapat */
   function vvH(){ return Math.min(window.innerHeight, (window.visualViewport && visualViewport.height) || window.innerHeight); }
@@ -33690,7 +33711,7 @@ html body .mcCm .mcCmN b.who.f9Pl.p-def{padding:0!important}
       Object.defineProperty(window, 'innerWidth', {configurable:true, enumerable:true, get:function(){ return KB.on ? KB.w : dw.get.call(window); }, set:function(){}});
     }catch(e){ return; }
     function isTxt(el){ return !!(el && (el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && /^(text|search|email|number|tel|url|password|)$/i.test(el.type || '')))); }
-    document.addEventListener('focusin', function(e){ if(!isTxt(e.target) || !document.body.classList.contains('mcIso') || KB.on) return; KB.w = dw.get.call(window); KB.h = dh.get.call(window); KB.on = true; }, true);
+    document.addEventListener('focusin', function(e){ if(!isTxt(e.target) || KB.on) return; KB.w = dw.get.call(window); KB.h = dh.get.call(window); KB.on = true; }, true);
     document.addEventListener('focusout', function(e){ if(!KB.on) return; setTimeout(function(){ if(isTxt(document.activeElement)) return; KB.on = false; try{ window.dispatchEvent(new Event('resize')); }catch(x){} }, 350); }, true);
     window.monocityKbState = function(){ return {on:KB.on, w:KB.w, h:KB.h}; };
   })();
