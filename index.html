@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head><script>window.__I=window.__I||[];window.__IN=6;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261023-2030"></script><script src="gorsel_6.js?v=20261023-2030"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
+<head><script>window.__I=window.__I||[];window.__IN=6;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261025-0400"></script><script src="gorsel_6.js?v=20261025-0400"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0a0e26">
@@ -2041,7 +2041,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261023-2030';
+window.MONOCITY_VER = '20261025-0400';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -2701,7 +2701,7 @@ function getPlayerDiceSkin(p){
 }
 
 function money(n){n=Math.max(0,Math.floor(n))+"";return n.replace(/\B(?=(\d{3})+(?!\d))/g,".")}
-function log(t){var e=document.getElementById("log");e.innerHTML+="<div class='logLine'>"+t+"</div>";e.scrollTop=e.scrollHeight}
+function log(t){var e=document.getElementById("log");if(!e)return;e.insertAdjacentHTML("beforeend","<div class='logLine'>"+t+"</div>");while(e.childElementCount>250)e.removeChild(e.firstElementChild);e.scrollTop=e.scrollHeight}
 function getOwner(city){for(var i=0;i<players.length;i++)if(players[i].properties&&players[i].properties[city]!==undefined)return players[i];return null}
 /* Koltuk gerçek bir insan mı yoksa (host tarafında) coop misafirlerinden
    birinin koltuğu mu? Her ikisi de "interaktif" sayılır: karar ekranı
@@ -6852,7 +6852,7 @@ document.addEventListener("keydown",function(e){
       var __sb=((typeof window.ownsAllSpecialRegions==="function")?window.ownsAllSpecialRegions(owner):allFourOwned(owner)), __rm=(window.monocityRentMult?monocityRentMult():1);
       var rent=(__sb?SPECIAL_RENT*2:SPECIAL_RENT)*__rm;
       collectRent(p,owner,rent);
-      log("🚉 "+p.name+" "+tile+" için "+owner.name+" oyuncusuna "+money(rent)+" kira ödedi."+(__sb?" 4 ÖZEL BÖLGE BONUSU: 2× kira.":"")+(__rm>1?" ⏰ 15. dakika: 2× kira.":""));
+      log("🚉 "+p.name+" "+tile+" için "+owner.name+" oyuncusuna "+money(rent)+" kira ödedi."+(__sb?" 4 ÖZEL BÖLGE BONUSU: 2× kira.":"")+(__rm>1?" ⏰ 12. dakika: 2× kira.":""));
       renderBoard();
       return setTimeout(nextTurn,DELAY);
     }
@@ -9900,13 +9900,29 @@ html body .mcCtPrev .mcCm .mcCmT,html body .f21Ct .mcCm .mcCmT,html body .lgCtW 
 /* T53: mini panel — eski hali bir an görünmesin (yeni ikonlar gelene kadar gizli, en geç 0,45 sn) */
 #mcPP.show:not(:has(.f44Ic)){visibility:hidden;animation:lgPPv 0s .45s forwards}
 @keyframes lgPPv{to{visibility:visible}}
+/* T54: ayarlar üst çubuğu — iki buton aynı boyda, sayaç yer kaplamasın */
+#infoModal .infoTopBar:has(#settingsEndTop:not([style*="none"])) #infoActionTimer{display:none!important}
+#infoModal .infoTopBar:has(#settingsEndTop:not([style*="none"])) :is(#closeInfoTop,#settingsEndTop){height:44px!important;padding:0 10px!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:14px!important;margin:0!important;box-sizing:border-box!important}
+/* T54: Legend plakası dar yerlerde küçük */
+html body .mclFrRow .f9Pl.p-lgf,html body .mclFrRow .f9Pl.p-lgi,html body #mcPP .f9Pl.p-lgf,html body #mcPP .f9Pl.p-lgi{--ph:.92em!important;font-size:.95em}
+html body #mcPP .nm{padding-right:34px!important;box-sizing:border-box}
+/* T54: çanta — görsel ile isim üst üste binmesin, isim 2 satıra sığsın */
+html body #f7Bag .cd.c48{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;gap:2px!important}
+html body #f7Bag .cd.c48 .e{flex:0 0 52%!important;height:52%!important;min-height:0!important;overflow:hidden}
+html body #f7Bag .cd.c48 b{flex:0 0 auto;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.15!important;max-height:2.35em!important;font-size:clamp(8px,2.1vh,10.5px)!important;word-break:break-word;text-align:center;position:relative;z-index:2}
+html body #f7Bag .cd.c48 small{flex:0 0 auto;line-height:1.1}
+
+#monocityShop .lgShopC .lgFrI{max-width:72%!important;max-height:80%!important}
+#monocityShop .lgShopC .lgPvI{max-width:92%!important;max-height:84%!important}
+.lgWkP2{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.lgWkP2 img{max-width:94%;max-height:90%;object-fit:contain}
 
 </style>
 <script id="mc-t51-js">
 (function(){
   'use strict';
   if(window.__mcT51) return; window.__mcT51 = true;
-  var MAP = {"tf1": 340, "tf2": 341, "ti1": 342, "ti2": 343, "vf": 344, "vi": 345, "kfc": 346, "kfm": 347, "kfs": 348, "kic": 349, "kim": 350, "kis": 351, "kfab": 352, "kfaf": 353, "kiab": 354, "kiaf": 355, "amf": 356, "ami": 357, "z_f_y_1": 358, "z_f_y_2": 359, "z_f_y_3": 360, "z_f_y_4": 361, "z_f_y_5": 362, "z_f_y_6": 363, "z_f_k_1": 364, "z_f_k_2": 365, "z_f_k_3": 366, "z_f_k_4": 367, "z_f_k_5": 368, "z_f_k_6": 369, "z_i_y_1": 370, "z_i_y_2": 371, "z_i_y_3": 372, "z_i_y_4": 373, "z_i_y_5": 374, "z_i_y_6": 375, "z_i_k_1": 376, "z_i_k_2": 377, "z_i_k_3": 378, "z_i_k_4": 379, "z_i_k_5": 380, "z_i_k_6": 381, "pf": 382, "pfc": 383, "pi": 384, "pic": 385, "crf": 386, "cri": 387, "skf": 388, "ski": 389, "rzf": 390, "rzi": 391, "blf": 392, "bli": 393, "plf": 394, "pli": 395, "emf": 396, "emi": 397, "tas": 398, "zif": 399, "zii": 400, "bdf": 401, "bdi": 402, "rf": 403, "ri": 404, "tpf": 405, "tpi": 406}, SZ = {"tf1": [1024, 1024], "tf2": [1024, 1024], "ti1": [1024, 1024], "ti2": [1024, 1024], "vf": [720, 719], "vi": [900, 853], "kfc": [520, 492], "kfm": [560, 507], "kfs": [520, 431], "kic": [520, 495], "kim": [560, 481], "kis": [520, 417], "kfab": [460, 588], "kfaf": [460, 588], "kiab": [460, 610], "kiaf": [460, 610], "amf": [256, 256], "ami": [256, 256], "z_f_y_1": [256, 256], "z_f_y_2": [256, 256], "z_f_y_3": [256, 256], "z_f_y_4": [256, 256], "z_f_y_5": [256, 256], "z_f_y_6": [256, 256], "z_f_k_1": [256, 256], "z_f_k_2": [256, 256], "z_f_k_3": [256, 256], "z_f_k_4": [256, 256], "z_f_k_5": [256, 256], "z_f_k_6": [256, 256], "z_i_y_1": [256, 256], "z_i_y_2": [256, 256], "z_i_y_3": [256, 256], "z_i_y_4": [256, 256], "z_i_y_5": [256, 256], "z_i_y_6": [256, 256], "z_i_k_1": [256, 256], "z_i_k_2": [256, 256], "z_i_k_3": [256, 256], "z_i_k_4": [256, 256], "z_i_k_5": [256, 256], "z_i_k_6": [256, 256], "pf": [420, 450], "pfc": [420, 495], "pi": [420, 503], "pic": [420, 495], "crf": [560, 539], "cri": [560, 537], "skf": [1000, 560], "ski": [1000, 590], "rzf": [256, 256], "rzi": [256, 256], "blf": [570, 196], "bli": [586, 195], "plf": [700, 129], "pli": [700, 89], "emf": [160, 160], "emi": [160, 160], "tas": [256, 256], "zif": [292, 310], "zii": [292, 310], "bdf": [560, 296], "bdi": [560, 296], "rf": [300, 268], "ri": [300, 303], "tpf": [300, 299], "tpi": [300, 282]};
+  var MAP = {"tf1": 340, "tf2": 341, "ti1": 342, "ti2": 343, "vf": 344, "vi": 345, "kfc": 346, "kfm": 347, "kfs": 348, "kic": 349, "kim": 350, "kis": 351, "kfab": 352, "kfaf": 353, "kiab": 354, "kiaf": 355, "amf": 356, "ami": 357, "z_f_y_1": 358, "z_f_y_2": 359, "z_f_y_3": 360, "z_f_y_4": 361, "z_f_y_5": 362, "z_f_y_6": 363, "z_f_k_1": 364, "z_f_k_2": 365, "z_f_k_3": 366, "z_f_k_4": 367, "z_f_k_5": 368, "z_f_k_6": 369, "z_i_y_1": 370, "z_i_y_2": 371, "z_i_y_3": 372, "z_i_y_4": 373, "z_i_y_5": 374, "z_i_y_6": 375, "z_i_k_1": 376, "z_i_k_2": 377, "z_i_k_3": 378, "z_i_k_4": 379, "z_i_k_5": 380, "z_i_k_6": 381, "pf": 382, "pfc": 383, "pi": 384, "pic": 385, "crf": 386, "cri": 387, "skf": 388, "ski": 389, "rzf": 390, "rzi": 391, "blf": 392, "bli": 393, "plf": 394, "pli": 395, "emf": 396, "emi": 397, "tas": 398, "zif": 399, "zii": 400, "bdf": 401, "bdi": 402, "pvf": 403, "pvi": 404, "rf": 405, "ri": 406, "tpf": 407, "tpi": 408}, SZ = {"tf1": [1024, 1024], "tf2": [1024, 1024], "ti1": [1024, 1024], "ti2": [1024, 1024], "vf": [720, 719], "vi": [900, 853], "kfc": [520, 492], "kfm": [560, 507], "kfs": [520, 431], "kic": [520, 495], "kim": [560, 481], "kis": [520, 417], "kfab": [460, 588], "kfaf": [460, 588], "kiab": [460, 610], "kiaf": [460, 610], "amf": [256, 256], "ami": [256, 256], "z_f_y_1": [256, 256], "z_f_y_2": [256, 256], "z_f_y_3": [256, 256], "z_f_y_4": [256, 256], "z_f_y_5": [256, 256], "z_f_y_6": [256, 256], "z_f_k_1": [256, 256], "z_f_k_2": [256, 256], "z_f_k_3": [256, 256], "z_f_k_4": [256, 256], "z_f_k_5": [256, 256], "z_f_k_6": [256, 256], "z_i_y_1": [256, 256], "z_i_y_2": [256, 256], "z_i_y_3": [256, 256], "z_i_y_4": [256, 256], "z_i_y_5": [256, 256], "z_i_y_6": [256, 256], "z_i_k_1": [256, 256], "z_i_k_2": [256, 256], "z_i_k_3": [256, 256], "z_i_k_4": [256, 256], "z_i_k_5": [256, 256], "z_i_k_6": [256, 256], "pf": [420, 450], "pfc": [420, 495], "pi": [420, 503], "pic": [420, 495], "crf": [560, 539], "cri": [560, 537], "skf": [1000, 560], "ski": [1000, 590], "rzf": [256, 256], "rzi": [256, 256], "blf": [570, 196], "bli": [586, 195], "plf": [700, 129], "pli": [700, 89], "emf": [160, 160], "emi": [160, 160], "tas": [256, 256], "zif": [292, 310], "zii": [292, 310], "bdf": [560, 296], "bdi": [560, 296], "pvf": [520, 220], "pvi": [520, 357], "rf": [300, 268], "ri": [300, 303], "tpf": [300, 299], "tpi": [300, 282]};
   /* T52: büyük data: görselleri bir kez blob adresine çevir (HTML kısa kalır, profil hızlı açılır) */
   var BU = {};
   window.__mcBU = function(u){ if(!u || u.length < 2048 || u.slice(0, 5) !== 'data:') return u; var k = u.length+':'+u.slice(-48), c = BU[k]; if(c) return c;
@@ -9941,8 +9957,8 @@ html body .mcCtPrev .mcCm .mcCmT,html body .f21Ct .mcCm .mcCmT,html body .lgCtW 
   /* ===================== SETLER ===================== */
   var EMF = '🐦‍🔥', EMI = '🧊🐦';
   var SETS = {
-    fire:{k:'fire', n:'FIRE PHOENIX', sh:'Ateş Ankası', cls:'f', bd:'lg_fire', ct:'lgf', em:EMF, img:{v:'vf', am:'amf', p:'pf', cr:'crf', sk:'skf', rz:'rzf', bl:'blf', pl:'plf', z:'z_f_k_6', zi:'zif', bi:'bdf', rg:'rf', tp:'tpf', t1:'tf1', t2:'tf2'}},
-    ice: {k:'ice',  n:'ICE PHOENIX',  sh:'Buz Ankası',  cls:'i', bd:'lg_ice',  ct:'lgi', em:EMI, img:{v:'vi', am:'ami', p:'pi', cr:'cri', sk:'ski', rz:'rzi', bl:'bli', pl:'pli', z:'z_i_k_6', zi:'zii', bi:'bdi', rg:'ri', tp:'tpi', t1:'ti1', t2:'ti2'}}
+    fire:{k:'fire', n:'FIRE PHOENIX', sh:'Ateş Ankası', cls:'f', bd:'lg_fire', ct:'lgf', em:EMF, img:{v:'vf', am:'amf', p:'pf', cr:'crf', sk:'skf', rz:'rzf', bl:'blf', pl:'plf', z:'z_f_k_6', zi:'zif', bi:'bdf', rg:'rf', pv:'pvf', tp:'tpf', t1:'tf1', t2:'tf2'}},
+    ice: {k:'ice',  n:'ICE PHOENIX',  sh:'Buz Ankası',  cls:'i', bd:'lg_ice',  ct:'lgi', em:EMI, img:{v:'vi', am:'ami', p:'pi', cr:'cri', sk:'ski', rz:'rzi', bl:'bli', pl:'pli', z:'z_i_k_6', zi:'zii', bi:'bdi', rg:'ri', pv:'pvi', tp:'tpi', t1:'ti1', t2:'ti2'}}
   };
   function setIT(S){ var src = 'Legend Mağazası · 1 Legend Taşı';
     return {
@@ -9952,7 +9968,7 @@ html body .mcCtPrev .mcCm .mcCmT,html body .f21Ct .mcCm .mcCmT,html body .lgCtW 
       frame: {c:'frame', id:S.bd, n:S.n+' ÇERÇEVE', t:'legend', s:src, img:IM(S.img.cr)},
       ct:    {c:'ct',    id:S.ct, n:S.n+' SOHBET BALONU', t:'legend', s:src, img:IM(S.img.bl)},
       plate: {c:'plate', id:S.ct, n:S.n+' İSİM PLAKASI',  t:'legend', s:src, img:IM(S.img.pl)},
-      fx:    {c:'fx',    id:S.bd, n:S.n+' YÜRÜME İZİ',    t:'legend', s:src, img:IM(S.img.rg)}
+      fx:    {c:'fx',    id:S.bd, n:S.n+' YÜRÜME İZİ',    t:'legend', s:src, img:IM(S.img.pv)}
     }; }
   var LGIT = {fire:setIT(SETS.fire), ice:setIT(SETS.ice)};
   function ownsSet(k){ var IT = LGIT[k]; return Object.keys(IT).every(function(q){ return q === 'fx' || ownsId(IT[q].c, IT[q].id); }); }
@@ -10038,6 +10054,9 @@ html body .mcCtPrev .mcCm .mcCmT,html body .f21Ct .mcCm .mcCmT,html body .lgCtW 
     if(!k){ if(LB.on) lbOff(); return; }
     var bd = document.getElementById('board'), wrap = document.getElementById('mgBoardWrap'), Iso = window.MONOCITY_ISO, ly = document.getElementById('mcPawnLayer');
     if(!bd || !wrap || !Iso || !ly){ LB.raf = requestAnimationFrame(lbFrame); return; }
+    /* T54: performans — yerleşim 8 kez/sn, kıvılcım 30 kare/sn */
+    if(LB.on && now - (LB.lh || 0) < 120){ if(now - (LB.ls || 0) >= 33){ LB.ls = now; sparks(now, k, (typeof board !== 'undefined' && board) ? board.length : 40, Iso); } LB.raf = requestAnimationFrame(lbFrame); return; }
+    LB.lh = now;
     LB.on = true; document.body.classList.add('lgOn'); document.body.classList.toggle('lgF', k === 'fire'); document.body.classList.toggle('lgI', k === 'ice');
     var i = cpI(), evo = evolved(i) && lgOf(i) === k, S = SETS[k];
     /* orta görsel */
@@ -10129,7 +10148,7 @@ html body .mcCtPrev .mcCm .mcCmT,html body .f21Ct .mcCm .mcCmT,html body .lgCtW 
     });
     Object.keys(IC.glow).forEach(function(q){ if(!seen[q]){ IC.glow[q].remove(); delete IC.glow[q]; } });
   }
-  (function icLoop(){ try{ icFrame(); }catch(e){} requestAnimationFrame(icLoop); })();
+  (function icLoop(){ var n = performance.now(); if(n - (icLoop.t || 0) >= 66){ icLoop.t = n; try{ icFrame(); }catch(e){} } requestAnimationFrame(icLoop); })();
 
   /* ===================== ZAR ===================== */
   var FIM = {};
@@ -10205,7 +10224,7 @@ html body .mcCtPrev .mcCm .mcCmT,html body .f21Ct .mcCm .mcCmT,html body .lgCtW 
         if(pe){ pe.classList.add('lgFast'); clearTimeout(pe.__lgT); pe.__lgT = setTimeout(function(){ pe.classList.remove('lgFast'); }, 520); }
         if(B && !document.hidden){ var rg = document.createElement('i'); rg.className = 'lgWind lg-'+s; rg.style.left = B.x+'px'; rg.style.top = B.y+'px'; rg.style.width = (B.w*2.2)+'px'; rg.style.height = (B.w*0.9)+'px'; document.body.appendChild(rg); setTimeout(function(){ rg.remove(); }, 700);
           for(var q = 0; q < (last ? 7 : 2); q++){ var f = document.createElement('i'); f.className = 'lgFth lg-'+s; f.style.left = (B.x + (Math.random()-.5)*B.w)+'px'; f.style.top = (B.y - B.h*(0.3 + Math.random()*0.5))+'px'; f.style.setProperty('--dx', ((Math.random()-.5)*B.w*1.6)+'px'); f.style.setProperty('--dy', (B.h*(0.3 + Math.random()*0.5))+'px'); f.style.setProperty('--r', (Math.random()*360)+'deg'); document.body.appendChild(f); (function(e){ setTimeout(function(){ e.remove(); }, 1000); })(f); } }
-        var nw = performance.now(); if(last || !window.__lgSfxT || nw - __lgSfxT > 300){ window.__lgSfxT = nw; sfx('flap'); } } }catch(e){}
+        sfx('flap'); } }catch(e){}
       return r; };
     w.__lg = true; window.monocityStepFx = w; setTimeout(hookStep, 2500);
   })();
@@ -10321,7 +10340,7 @@ html body .mcCtPrev .mcCm .mcCmT,html body .f21Ct .mcCm .mcCmT,html body .lgCtW 
       '<label class="skp"><input type="checkbox" id="lgSkip"'+(SKIP ? ' checked' : '')+'><span>Animasyonu atla</span></label>' +
       '<div class="note">200 çekilişte 1 Legend Taşı · Taşla Fire veya Ice setinin tamamını al'+(v ? '' : '<br>👑 VIP\'te 10x 450 · hafta sonu 10x 400 ve günün ilk çekilişi 25')+'</div>';
   }
-  function itemsRow(k){ var S0 = SETS[k], L = [['bi','Tahta'],['zi','Zar'],['p','Piyon'],['cr','Çerçeve'],['sk','Şans Kartı'],['rz','Rozet'],['bl','Sohbet Balonu'],['pl','İsim Plakası'],['rg','Yürüme İzi']];
+  function itemsRow(k){ var S0 = SETS[k], L = [['bi','Tahta'],['zi','Zar'],['p','Piyon'],['cr','Çerçeve'],['sk','Şans Kartı'],['rz','Rozet'],['bl','Sohbet Balonu'],['pl','İsim Plakası'],['pv','Yürüme İzi']];
     return L.map(function(x){ var cov = /^(sk)$/.test(x[0]); return '<div class="it"><div style="background-image:url('+IM(S0.img[x[0]])+');background-size:'+(cov ? 'cover' : 'contain')+'"></div>'+x[1]+'</div>'; }).join('') + '<div class="it"><div style="background-image:url('+IM(S0.img.tp)+');background-size:cover"></div>'+(k === 'fire' ? 'Alevli' : 'Buzlu')+' Tapu</div>'; }
   function paintShop(){
     load(); var b = W.el.querySelector('#lgBody'), k = W.shopK, S0 = SETS[k], own = ownsSet(k);
@@ -10408,10 +10427,10 @@ html body .mcCtPrev .mcCm .mcCmT,html body .f21Ct .mcCm .mcCmT,html body .lgCtW 
     if(c === 'dice') return '<img class="atImg" alt="" src="'+IM(S0.img.zi)+'">';
     if(c === 'pawn') return '<img class="atImg" alt="" src="'+IM(S0.img.p)+'">';
     if(c === 'board') return '<img class="lgBrd" alt="" src="'+IM(S0.img.bi)+'">';
-    if(c === 'frame') return '<span class="atFrm lgFrm"><img alt="" src="'+IM(S0.img.cr)+'"><i>🧑🏻‍💻</i></span>';
+    if(c === 'frame') return '<img class="atIc lgFrI" alt="" src="'+IM(S0.img.cr)+'">';
     if(c === 'ct'){ var h = ''; try{ h = window.monocityChatRow ? monocityChatRow({n:'Beny', t:'Selam!', l:24, f:'white', ct:S0.ct}, false) : ''; }catch(e){} return '<div class="lgCtW"><div class="mcCtPrev">'+h+'</div></div>'; }
     if(c === 'emo') return '<img class="atIc" alt="" src="'+IM(k === 'fire' ? 'emf' : 'emi')+'">';
-    if(c === 'fx') return '<img class="atIc lgRgI" alt="" src="'+IM(S0.img.rg)+'">';
+    if(c === 'fx') return '<img class="atIc lgPvI" alt="" src="'+IM(S0.img.pv)+'">';
     return ''; }
   function shopLg(){
     var sh = document.getElementById('monocityShop'); if(!sh || !sh.classList.contains('show')) return;
@@ -10452,9 +10471,7 @@ html body .mcCtPrev .mcCm .mcCmT,html body .f21Ct .mcCm .mcCmT,html body .lgCtW 
     for(var q in o) try{ w[q] = o[q]; }catch(e){}
     w.__lgR = w.__f27 = w.__at = w.__hw = true; window.monocityFxExtra = w; setTimeout(hookFx, 3000); })();
   (function hookWP(){ var o = window.monocityWalkPreview; if(typeof o !== 'function') return setTimeout(hookWP, 700); if(o.__lgR) return setTimeout(hookWP, 3000);
-    var w = function(id){ if(id === 'lg_fire' || id === 'lg_ice'){ var S0 = SETS[id === 'lg_fire' ? 'fire' : 'ice'], h = '<div class="lgWkP lg-'+S0.cls+'">';
-        for(var q = 0; q < 4; q++) h += '<span style="left:'+(8 + q*22)+'%;animation-delay:'+(q*0.45).toFixed(2)+'s"><img alt="" src="'+IM(S0.img.rg)+'"></span>';
-        return h + '<img class="pw" alt="" src="'+IM(S0.img.p)+'"></div>'; }
+    var w = function(id){ if(id === 'lg_fire' || id === 'lg_ice'){ var S0 = SETS[id === 'lg_fire' ? 'fire' : 'ice']; return '<div class="lgWkP2"><img alt="" src="'+IM(S0.img.pv)+'"></div>'; }
       return o.apply(this, arguments); };
     w.__lgR = true; window.monocityWalkPreview = w; setTimeout(hookWP, 3000); })();
   /* T53: sol alttaki özel mesaj çipi her basışta o kişinin sohbetini açar */
@@ -10471,6 +10488,25 @@ html body .mcCtPrev .mcCm .mcCmT,html body .f21Ct .mcCm .mcCmT,html body .lgCtW 
     document.querySelectorAll('#mcLobbyUI .mclFrRow[data-uid]').forEach(function(r){ var u = r.getAttribute('data-uid'), n = ((I[u] || {}).unread|0), b = r.querySelector('.lgDmB');
       if(n > 0){ if(!b){ b = document.createElement('span'); b.className = 'lgDmB'; b.setAttribute('data-u', u); var nm = r.querySelector('.nm'); (nm || r).appendChild(b); } var t = '💬 '+(n > 99 ? '99+' : n); if(b.textContent !== t) b.textContent = t; }
       else if(b) b.remove(); }); }, 1000);
+  /* T54: misafirde de açık artırma / müzayede 3-2-1 bildirimi */
+  (function aucN(){ var lg = document.getElementById('log'); if(!lg || typeof window.monocityNotify !== 'function') return setTimeout(aucN, 1000);
+    var o = window.monocityNotify, last = {};
+    if(!o.__t54){ var w = function(x){ try{ if(x && x.t) last[x.t] = Date.now(); }catch(e){} return o.apply(this, arguments); }; w.__t54 = true; window.monocityNotify = w; }
+    var R = [[/AÇIK ARTIRMA BAŞLIYOR/, {c:'green', ic:'🔨', t:'AÇIK ARTIRMA BAŞLIYOR', s:'Hazır ol!', cd:3}], [/TÜM OYUNCULARLA MÜZAYEDE BAŞLIYOR/, {c:'blue', ic:'🔨', t:'TÜM OYUNCULARLA MÜZAYEDE BAŞLIYOR', s:'Hazır ol!', cd:3}]];
+    new MutationObserver(function(ms){ var c = window.MONOCITY_COOP || {}; if(!(c.code && c.role === 'guest')) return;
+      ms.forEach(function(m){ var A = m.addedNodes || []; if(!A.length || A.length > 3) return; [].forEach.call(A, function(nd){ var tx = (nd.textContent || ''); R.forEach(function(r){ if(r[0].test(tx) && Date.now() - (last[r[1].t] || 0) > 4000){ last[r[1].t] = Date.now(); try{ window.monocityNotify(Object.assign({}, r[1])); }catch(e){} } }); }); }); })
+      .observe(lg, {childList:true}); })();
+  /* T54: ses — aynı ses 70 ms içinde tekrar çalmaz, 300 ms'de en fazla 6 ses (uzun maçta üst üste binmesin) */
+  (function sfxLim(){ var o = window.monocitySfx; if(typeof o !== 'function') return setTimeout(sfxLim, 800); if(o.__t54) return setTimeout(sfxLim, 3000);
+    var last = {}, win = [];
+    var w = function(k){ var n = performance.now(); if(document.hidden) return; if(last[k] && n - last[k] < 70) return; win = win.filter(function(t){ return n - t < 300; }); if(win.length >= 6 && k !== 'win' && k !== 'turn') return;
+      last[k] = n; win.push(n); return o.apply(this, arguments); };
+    for(var q in o) try{ w[q] = o[q]; }catch(e){}
+    w.__t54 = true; window.monocitySfx = w; setTimeout(sfxLim, 3000); })();
+  /* T54: Legend plakası sığmıyorsa küçülür (arkadaş listesi, lobi, mini panel) */
+  setInterval(function(){ document.querySelectorAll('.f9Pl.p-lgf, .f9Pl.p-lgi').forEach(function(e){ if(!e.offsetParent) return; var p = e.parentElement; if(!p) return;
+      var cur = parseFloat(e.style.getPropertyValue('--ph')) || 0, cut = e.scrollWidth > e.clientWidth + 2 || e.getBoundingClientRect().right > p.getBoundingClientRect().right + 2;
+      if(cut){ var nv = cur ? cur - 0.08 : 0.9; if(nv >= 0.6) e.style.setProperty('--ph', nv.toFixed(2)+'em', 'important'); } }); }, 700);
   window.MONOCITY_LG = { EMO:[{e:EMF, name:'ATEŞ ANKASI'}, {e:EMI, name:'BUZ ANKASI'}], open:open, close:close, stones:function(){ load(); return S.stones; }, img:IM, owns:ownsSet, sets:SETS, IT:LGIT, state:function(){ load(); return S; }, buy:buySet };
   window.monocityOpenLegend = open;
 })();
@@ -20296,7 +20332,7 @@ body.mcIso #mcIsoHud{display:block}
           try{ rm = window.monocityRentMult ? monocityRentMult() : 1; }catch(e){} try{ out = window.monocityCityOut ? monocityCityOut(t) : 0; }catch(e){}
           try{ bb = (typeof mcBuybackPrice === 'function') ? mcBuybackPrice(t, mask) : 0; }catch(e){}
           var rent = out ? 0 : pr(mask)*rm, tg = [];
-          if(out) tg.push('⚡ Elektrik kesik · kira yok'); else { if(bonus) tg.push('🌍 Bölge 2×'); if(rm > 1) tg.push('⏰ 15. dk 2×'); }
+          if(out) tg.push('⚡ Elektrik kesik · kira yok'); else { if(bonus) tg.push('🌍 Bölge 2×'); if(rm > 1) tg.push('⏰ 12. dk 2×'); }
           var mine = me0 && o === me0, poor = !mine && me0 && me0.money < bb;
           return '<div class="f44K"><div class="r"><span>💰 ŞU ANKİ KİRA'+(tg.length ? '<em>'+tg.join(' · ')+'</em>' : '')+'</span><b>'+fmt(rent)+'</b></div>' +
             (deed ? '<div class="g lk"><span>↩️ GERİ ALIM<em>Tapulu şehir</em></span><b>🔒 TAPULU</b></div>'
@@ -33308,7 +33344,7 @@ html body #mcLobbyFrame::after,html body #mcLobbyFrame::before{visibility:hidden
 .mcLm .pl{display:none!important}
 /* çerçeveli avatarda fotoğraf çerçeveyi doldursun (köşeler kare + hafif büyük) */
 :is(.avatarCircle,#mcLobbyFrame,.mcFrameDemo,.mcCmAv,.mcpAvatar).f10Fr:not(.f10Rnd)>img{border-radius:6%!important;transform:scale(1.07);transform-origin:50% 50%}
-/* banner (10. tur / 15. dakika) */
+/* banner (7. tur / 12. dakika) */
 #f18Ban{position:fixed;left:50%;top:16vh;transform:translate(-50%,-30px) scale(.8);z-index:2147482500;pointer-events:none;opacity:0;transition:opacity .35s ease,transform .35s cubic-bezier(.2,1.4,.4,1);
   background:linear-gradient(180deg,rgba(60,18,4,.96),rgba(26,8,2,.96));border:2.5px solid #ffcc3d;border-radius:18px;padding:1.4vh 3.4vh;text-align:center;color:#fff;font-family:Arial,Helvetica,sans-serif;box-shadow:0 0 30px rgba(255,170,40,.55),0 10px 28px rgba(0,0,0,.6)}
 #f18Ban.show{opacity:1;transform:translate(-50%,0) scale(1)}
@@ -33457,7 +33493,7 @@ html body .mcCm .mcCmN b.who.f9Pl.p-def{padding:0!important}
       var r = o.apply(this, arguments);
       try{ var s = String(t || ''), m;
         if((m = /^🔥 (.+?) 10\. tura ulaştı/.exec(s))) banner('🔥 '+esc(m[1])+' 10. TURDA!', 'Başlangıçtan geçme ödülü artık 2×');
-        else if(/^⏰ 15\. DAKİKA/.test(s)) banner('⏰ 15. DAKİKA!', 'Tüm kiralar oyun sonuna kadar 2×');
+        else if(/^⏰ 15\. DAKİKA/.test(s)) banner('⏰ 12. DAKİKA!', 'Tüm kiralar oyun sonuna kadar 2×');
       }catch(e){}
       return r; };
     for(var k in o) try{ w[k] = o[k]; }catch(e){}
@@ -33465,15 +33501,15 @@ html body .mcCm .mcCmN b.who.f9Pl.p-def{padding:0!important}
     try{ log = w; }catch(e){}
   })();
 
-  /* ================= 2) 10. tur: başlangıç ödülü 2× ================= */
+  /* ================= 2) 7. tur: başlangıç ödülü 2× ================= */
   var LAP = {mid:null, told:{}};
   (function hookStart(){
     var o = window.getStartReward; if(typeof o !== 'function') return setTimeout(hookStart, 400); if(o.__f18) return;
     var w = function(p){
       var r = o.apply(this, arguments);
-      try{ if(p && (p.laps || 0) + 1 >= 10){ r = r*2;
+      try{ if(p && (p.laps || 0) + 1 >= 7){ r = r*2;
         var m = M(), mid = (m && m.mid) || 'x'; if(LAP.mid !== mid){ LAP.mid = mid; LAP.told = {}; }
-        if(!LAP.told[p.id] && !isGuest()){ LAP.told[p.id] = 1; var nm = p.name; setTimeout(function(){ try{ log('🔥 '+nm+' 10. tura ulaştı — başlangıçtan geçme ödülü artık 2×!'); }catch(e){} }, 0); }
+        if(!LAP.told[p.id] && !isGuest()){ LAP.told[p.id] = 1; var nm = p.name; setTimeout(function(){ try{ log('🔥 '+nm+' 7. tura ulaştı — başlangıçtan geçme ödülü artık 2×!'); }catch(e){} }, 0); }
       } }catch(e){}
       return r; };
     for(var k in o) try{ w[k] = o[k]; }catch(e){}
@@ -33481,11 +33517,11 @@ html body .mcCm .mcCmN b.who.f9Pl.p-def{padding:0!important}
     try{ getStartReward = w; }catch(e){}
   })();
 
-  /* ================= 3) 15. dakika: tüm kiralar 2× ================= */
+  /* ================= 3) 12. dakika: tüm kiralar 2× ================= */
   var RM = {mid:null, told:false};
   function rentMult(){
     var m = M(); if(!m || !m.t0 || m.settled || window.gameOver) return 1;
-    return (Date.now() - m.t0 >= 15*60000) ? 2 : 1;
+    return (Date.now() - m.t0 >= 12*60000) ? 2 : 1;
   }
   window.monocityRentMult = rentMult;
   (function hookRent(){
@@ -33499,7 +33535,7 @@ html body .mcCm .mcCmN b.who.f9Pl.p-def{padding:0!important}
     try{
       if(isGuest() || !inGame()) return;
       var m = M(); if(!m) return; if(RM.mid !== m.mid){ RM.mid = m.mid; RM.told = false; }
-      if(!RM.told && rentMult() > 1){ RM.told = true; log('⏰ 15. DAKİKA! Tüm kiralar artık 2× (oyun sonuna kadar).'); }
+      if(!RM.told && rentMult() > 1){ RM.told = true; log('⏰ 12. DAKİKA! Tüm kiralar artık 2× (oyun sonuna kadar).'); }
     }catch(e){}
   }, 1000);
 
@@ -34924,11 +34960,11 @@ html body #monocityShop .shopClose,html body #mcRankScr .hd .x,html body #mcRank
     if(!inGame() || !M()){ if(el) el.style.display = 'none'; return; }
     if(!el){ el = document.createElement('span'); el.className = 'pill t'; el.id = 'f20Clk'; var tm = document.getElementById('mcIsoTime'); if(tm && tm.nextSibling) top.insertBefore(el, tm.nextSibling); else top.appendChild(el); }
     el.style.display = '';
-    var e = elapsed(), x2 = e >= 15*60000, warn = !x2 && e >= 14*60000;
+    var e = elapsed(), x2 = e >= 12*60000, warn = !x2 && e >= 11*60000;
     var h = '🕐 '+fmt(e)+(x2 ? '<em>2× KİRA</em>' : '');
     if(el.__h !== h){ el.__h = h; el.innerHTML = h; }
     el.classList.toggle('x2', x2); el.classList.toggle('warn', warn);
-    el.title = x2 ? '15. dakika geçti: tüm kiralar 2×' : 'Oyun süresi · 15. dakikada tüm kiralar 2× olur';
+    el.title = x2 ? '12. dakika geçti: tüm kiralar 2×' : 'Oyun süresi · 12. dakikada tüm kiralar 2× olur';
   }, 500);
 
   /* ---------- profil: hazır olana kadar gizle ---------- */
