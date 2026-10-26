@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head><script>window.__I=window.__I||[];window.__IN=8;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261026-0200"></script><script src="gorsel_6.js?v=20261026-0200"></script><script src="gorsel_7.js?v=20261026-0200"></script><script src="gorsel_8.js?v=20261026-0200"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
+<head><script>window.__I=window.__I||[];window.__IN=8;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261026-0330"></script><script src="gorsel_6.js?v=20261026-0330"></script><script src="gorsel_7.js?v=20261026-0330"></script><script src="gorsel_8.js?v=20261026-0330"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,interactive-widget=resizes-visual">
 <meta name="theme-color" content="#0a0e26">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2041,7 +2041,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261026-0200';
+window.MONOCITY_VER = '20261026-0330';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -10394,6 +10394,7 @@ html body #f7Bag .cd.c48 small{flex:0 0 auto;line-height:1.1}
     else if(a === 'rcl'){ roadClaim(+t.getAttribute('data-n')); res(roadHtml()); hdr(); }
     else if(a === 'rall'){ roadClaim(); res(roadHtml()); hdr(); }
     else if(a === 'd10' && (S.jt || 0) > 0 && S.jt < 10 && window.monocityAsk){ load(); var c3 = Math.max(0, price(10) - S.jt*50); monocityAsk('<b>'+S.jt+' Legend Jetonu</b> + <b>'+c3+' 💎</b> ile 10x çekilsin mi?<br><small>1 jeton = 50 💎 sayılır</small>', function(){ var o4 = draw(10, true); if(!o4) return; hdr(); paintWheel(); anim(o4, W.vi); }); }
+    else if(a === 'rr1' || a === 'rr10'){ var r0 = W.el.querySelector('#lgRes'); if(r0){ r0.classList.remove('show'); r0.innerHTML = ''; } var bt = W.el.querySelector('#lgBody [data-a="'+(a === 'rr1' ? 'd1' : 'd10')+'"]'); if(bt) bt.click(); }
     else if(a === 'd1' || a === 'd10'){ var n = a === 'd1' ? 1 : 10, outs = draw(n); if(!outs) return; hdr(); paintWheel(); anim(outs, W.vi); }
     else if(a === 'sk'){ W.shopK = t.getAttribute('data-k'); paint(); }
     else if(a === 'buy'){ var k = W.shopK; if(ownsSet(k)) return; if(S.stones < 1){ toast('💠 Legend Taşın yok.'); return; }
@@ -10423,7 +10424,7 @@ html body #f7Bag .cd.c48 small{flex:0 0 auto;line-height:1.1}
     return '<div class="rcell '+(o.cls || '')+'">'+v+'<b>'+esc(o.bar && !o.st ? 'LEGEND TAŞI' : o.t)+'</b>'+(o.bar && !o.st ? '<small>+ '+esc(o.t)+'</small>' : '')+'</div>'; }
   var SKIP = false; try{ SKIP = localStorage.getItem('mc_lg_skip') === '1'; }catch(e){}
   function showRes(outs){ var st = outs.filter(function(o){ return o.st || o.bar; }).length;
-    res('<div class="pop rs"><h3>'+(st ? '💠 LEGEND TAŞI! 💠' : '🔥 LEGEND ÇARKI ❄️')+'</h3><div class="rg n'+outs.length+'">'+outs.map(cellHtml).join('')+'</div><div class="gg2"><button type="button" class="ok" data-a="rok">TAMAM</button>'+(st ? '<button type="button" class="gs" data-a="shop">💠 MAĞAZAYA GİT</button>' : '')+'</div></div>'); hdr(); }
+    res('<div class="pop rs"><h3>'+(st ? '💠 LEGEND TAŞI! 💠' : '🔥 LEGEND ÇARKI ❄️')+'</h3><div class="rg n'+outs.length+'">'+outs.map(cellHtml).join('')+'</div><div class="gg2"><button type="button" class="ok" data-a="rok">TAMAM</button>'+(st ? '<button type="button" class="gs" data-a="shop">💠 MAĞAZAYA GİT</button>' : '<button type="button" class="gs" data-a="rr'+outs.length+'">'+outs.length+'x ÇEK</button>')+'</div></div>'); hdr(); }
   function anim(outs, k){
     var st = outs.some(function(o){ return o.st || o.bar; }), S0 = SETS[k];
     if(SKIP){ showRes(outs); return; }
@@ -10438,7 +10439,7 @@ html body #f7Bag .cd.c48 small{flex:0 0 auto;line-height:1.1}
     setTimeout(fin, st ? 4300 : 2400);
   }
   /* T52: Legend eşyaları mağazanın tüm kategorilerinde */
-  var SHC = {dice:'dice', pawn:'pawn', board:'board', frame:'frame', chat:'ct', emoji:'emo', walk:'fx'};
+  var SHC = {dice:'dice', pawn:'pawn', board:'board', frame:'frame', chat:'ct', emoji:'emo', walk:'fx', effects:'nfx'};
   function shopVis(c, k){ var S0 = SETS[k], it = LGIT[k][c];
     if(c === 'dice') return '<img class="atImg" alt="" src="'+IM(S0.img.zi)+'">';
     if(c === 'pawn') return '<img class="atImg" alt="" src="'+IM(S0.img.p)+'">';
@@ -10447,6 +10448,7 @@ html body #f7Bag .cd.c48 small{flex:0 0 auto;line-height:1.1}
     if(c === 'ct'){ var h = ''; try{ h = window.monocityChatRow ? monocityChatRow({n:'Beny', t:'Selam!', l:24, f:'white', ct:S0.ct}, false) : ''; }catch(e){} return '<div class="lgCtW"><div class="mcCtPrev">'+h+'</div></div>'; }
     if(c === 'emo') return '<img class="atIc" alt="" src="'+IM(k === 'fire' ? 'emf' : 'emi')+'">';
     if(c === 'fx') return '<img class="atIc lgPvI" alt="" src="'+IM(S0.img.pv)+'">';
+    if(c === 'nfx') return '<span class="nfx mkLgN lg-'+S0.cls+'" style="font-size:clamp(40px,13vh,64px)">6</span>';
     return ''; }
   function shopLg(){
     var sh = document.getElementById('monocityShop'); if(!sh || !sh.classList.contains('show')) return;
@@ -10456,7 +10458,7 @@ html body #f7Bag .cd.c48 small{flex:0 0 auto;line-height:1.1}
     try{ TG = (window.MONOCITY_SHOP5 && MONOCITY_SHOP5.TAG && MONOCITY_SHOP5.TAG.legend) || (window.MONOCITY_TAG_IMG || {}).legend || ''; }catch(e){}
     var fr = document.createDocumentFragment();
     ['fire','ice'].forEach(function(k){
-      var it = c === 'emo' ? {c:'emo', id:(k === 'fire' ? EMF : EMI), n:(k === 'fire' ? 'ATEŞ ANKASI ÇIKARTMASI' : 'BUZ ANKASI ÇIKARTMASI')} : LGIT[k][c]; if(!it) return;
+      var it = c === 'emo' ? {c:'emo', id:(k === 'fire' ? EMF : EMI), n:(k === 'fire' ? 'ATEŞ ANKASI ÇIKARTMASI' : 'BUZ ANKASI ÇIKARTMASI')} : (c === 'nfx' ? {c:'fx', id:SETS[k].bd, n:SETS[k].n+' BİLDİRİM'} : LGIT[k][c]); if(!it) return;
       var own = ownsId(it.c, it.id), el = document.createElement('div'), tg = TG ? '<img class="'+(dicey ? 'mc5Tag' : 'atTagS')+'" alt="legend" src="'+TG+'">' : '';
       var st = own ? '' : (c === 'emo' ? '🎁 Ödül Yolu · 200 çekiliş' : '💠 Legend Taşı ile');
       var bt = '<button class="shopBuy'+(own ? ' owned' : '')+'" type="button">'+(own ? '✓ SATIN ALINDI' : 'ÇARKA GİT')+'</button>';
@@ -11883,6 +11885,73 @@ html body #mcLobby2.mkLb .mkEq .sl .f18WalkPv{transform:none!important}
 html body #mcLobby2.mkLb .mkEq .sl span.nfx{font-size:7cqh!important;margin-bottom:18%!important}
 html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn.filled{padding:0 4px!important}
 html body #mcLobby2.mkLb .mkEq{width:84%!important}
+/* ===== T57 ===== */
+/* ana ekran düzeni: profil büyük · simgeler/afişler aşağı · sohbet tek satır · VIP kartı lobi kutusuyla hizalı */
+html body.f23 #mcProfileCard#mcProfileCard{height:15.5%!important}
+html body.f23 #mcLobbyUI#mcLobbyUI .mclMenu{top:17.4%!important}
+html body.f23 #mcLobbyUI#mcLobbyUI #f7Bans{top:57.6%!important}
+html body.f23 #mcLobbyUI#mcLobbyUI .mclChat{top:74.4%!important;height:7.6%!important}
+html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmAv,html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmN .lv,html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmN .h{display:none!important}
+html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCm{display:flex!important;flex-direction:row!important}
+html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmB{flex-direction:row!important;align-items:center!important;gap:.35em!important;min-width:0!important;overflow:hidden}
+html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmN{display:flex!important;flex:0 0 auto!important;margin:0!important;padding:0!important}
+html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmN b.who.who{border:0!important;border-image:none!important;background:none!important;padding:0!important;margin:0!important;height:auto!important;min-width:0!important;max-width:none!important;font:1000 calc(2.3*var(--mcu,1vh)) Arial!important;color:#ffd66e!important;text-shadow:0 1px 2px #000!important;-webkit-text-fill-color:#ffd66e!important;line-height:1.2!important}
+html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmN b.who.who:after{content:':'}
+html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmT.mcCmT{border:0!important;border-image:none!important;background:none!important;box-shadow:none!important;padding:0!important;margin:0!important;color:#e5ecff!important;font:700 calc(2.3*var(--mcu,1vh)) Arial!important;min-height:0!important;height:auto!important;max-width:none!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmT.mcCmT:before,html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmT.mcCmT:after{display:none!important}
+#f23Vip{top:85.1%!important;height:11.6%!important}
+#f23Vip img{width:calc(8.6*var(--mcu,1vh))!important;height:calc(8.6*var(--mcu,1vh))!important}
+#f23Vip b{font-size:calc(3.7*var(--mcu,1vh))!important}
+#f23Vip small{font-size:calc(2.2*var(--mcu,1vh))!important;margin-top:calc(.4*var(--mcu,1vh))!important}
+#f23Vip em{bottom:calc(1.1*var(--mcu,1vh))!important}
+#f23Vip .mkVs b.mkVl{display:none!important}
+#f23Vip .mkVStar{position:absolute;right:calc(1.4*var(--mcu,1vh));top:calc(.6*var(--mcu,1vh));transform:skewX(8deg);width:calc(6.4*var(--mcu,1vh));height:calc(6.4*var(--mcu,1vh));display:flex;align-items:center;justify-content:center;font:1000 calc(2.4*var(--mcu,1vh))/1 'Arial Black',Arial;color:#3a2203;z-index:2;padding-top:calc(.4*var(--mcu,1vh));box-sizing:border-box}
+#f23Vip .mkVStar:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(#fff3b0,#ffcf4a 55%,#e08a10);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+/* mod kutusu: oklar içeride · Şampiyon yıldızı */
+#f30Bar#f30Bar .ar.l{left:calc(1.2*var(--mcu))!important}
+#f30Bar#f30Bar .ar.r{right:calc(1.2*var(--mcu))!important}
+#f30Bar#f30Bar .ar{width:calc(4.8*var(--mcu))!important;height:calc(4.8*var(--mcu))!important;margin-top:calc(-2.4*var(--mcu))!important;z-index:3}
+#f30Bar#f30Bar .ic{margin-left:calc(7*var(--mcu))!important}
+#f30Bar#f30Bar .tx{padding-right:calc(7.5*var(--mcu))!important}
+#f30Bar#f30Bar .mkStz{font:1000 calc(3.6*var(--mcu)) 'Arial Black',Arial;color:#7c2d12;text-shadow:0 1px 0 rgba(255,255,255,.5);line-height:1.1}
+/* büyük sohbet: MLBB düzeni */
+#mcChatBig#mcChatBig.mkCB #cbList .mcCm,#mcChatBig#mcChatBig.mkCB .f27Alt .mcCm{flex-direction:row!important;justify-content:flex-start!important;align-items:flex-start!important;gap:8px!important;margin:0!important;padding:4px 2px!important;font-size:13px!important}
+#mcChatBig#mcChatBig.mkCB .mcCm .mcCmAv{width:44px!important;height:44px!important;flex:0 0 44px!important;order:0!important}
+#mcChatBig#mcChatBig.mkCB .mcCm .mcCmB{order:1!important;align-items:flex-start!important;max-width:calc(100% - 56px)!important;min-width:0}
+#mcChatBig#mcChatBig.mkCB .mcCm .mcCmN{display:flex!important;align-items:center!important;gap:5px!important;flex-direction:row!important;justify-content:flex-start!important;font-size:12px!important;margin-bottom:3px!important}
+#mcChatBig#mcChatBig.mkCB .mcCm .mcCmN b.who{font-size:12px!important;max-width:60%!important}
+#mcChatBig#mcChatBig.mkCB .mcCm .mcCmN .lv{font-size:9px!important;padding:1px 4px!important;order:3}
+#mcChatBig#mcChatBig.mkCB .mcCm .mcCmN .h{font-size:9px!important;opacity:.6;order:4}
+#mcChatBig#mcChatBig.mkCB .mkRkP{display:inline-flex;align-items:center;gap:3px;flex:0 0 auto}
+#mcChatBig#mcChatBig.mkCB .mkRkI{width:20px;height:20px;object-fit:contain}
+#mcChatBig#mcChatBig.mkCB .mkRkP .mcTag,#mcChatBig#mcChatBig.mkCB .mkRkP>*:not(img){font-size:10px!important}
+#mcChatBig#mcChatBig.mkCB .mcCm .mcCmT{font-size:12.5px!important;max-width:100%!important;text-align:left!important}
+/* lobi afişi v3 */
+html body #mcLobby2.mkLb .lbSeat.mkBn>.tag{font-size:0!important;width:7.5cqh!important;height:7.5cqh!important;padding:0!important;left:5%!important;right:auto!important;transform:none!important;top:2.4cqh!important;border-radius:50%!important;display:flex!important;align-items:center;justify-content:center;background:rgba(8,12,30,.88)!important;border:1px solid #ffd36b!important}
+html body #mcLobby2.mkLb .lbSeat.mkBn>.tag:before{font-size:4cqh;line-height:1}
+html body #mcLobby2.mkLb .lbSeat.mkBn>.tag.host:before{content:'👑'}
+html body #mcLobby2.mkLb .lbSeat.mkBn>.tag.ok:before{content:'👤'}
+html body #mcLobby2.mkLb .lbSeat.mkBn>.tag.wait:before{content:'👤';opacity:.55}
+html body #mcLobby2.mkLb .lbSeat.mkBn>.tag.ok{border-color:#4ade80!important;box-shadow:0 0 6px #4ade80}
+html body #mcLobby2.mkLb .lbSeat.mkBn>.tag.wait{border-color:#94a3b8!important}
+html body #mcLobby2.mkLb .lbSeat.mkBn.filled>.mkRim{background:linear-gradient(180deg,#f7d77a,#b98a2a 40%,#f7d77a 70%,#a77818)!important;filter:drop-shadow(0 0 6px rgba(247,215,122,.45))!important}
+html body #mcLobby2.mkLb .lbSeat.mkBn.filled>.mkFlag:before{background:linear-gradient(90deg,transparent,rgba(255,226,140,.8),transparent)!important}
+html body #mcLobby2.mkLb .lbSeat.mkBn.filled>.av{margin-top:4cqh!important;height:19cqh!important}
+html body #mcLobby2.mkLb .lbSeat.mkBn.filled>b{margin-top:2.4cqh!important}
+html body #mcLobby2.mkLb .mkEq{margin:1.8cqh 0 15cqh!important;width:90%!important;gap:1.4cqh 3cqw!important}
+html body #mcLobby2.mkLb .mkEq .sl:not(.em)>span:last-child{display:none!important}
+html body #mcLobby2.mkLb .mkEq .sl:not(.em)>img:not(.tg){padding:6%!important}
+html body #mcLobby2.mkLb .mkPal.me{background:#fff!important;animation:none}
+html body #mcLobby2.mkLb .mkPal.me:after{display:none!important}
+html body #mcLobby2.mkLb .mkPal.me.pk{background:var(--sc,#3b82f6)!important}
+html body #mcLobby2.mkLb .lbSeat.mkBn.empty.f19Bot{padding-top:16cqh!important;justify-content:flex-start!important}
+html body #mcLobby2.mkLb .lbSeat.mkBn.empty>*:not(.mkRim):not(.mkFlag){max-width:90%}
+/* parça mağazası: yeni piyonlar ortada */
+.f28Pz .c .v .mv{display:flex!important;align-items:center!important;justify-content:center!important;width:100%}
+.f28Pz img.mkPzI{margin:0 auto!important;display:block}
+html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList{justify-content:center!important}
+html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCm{align-items:center!important;margin:auto 0!important}
+html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmB{padding:0!important}
 
 </style>
 <script id="mc-t54-js">
@@ -12100,13 +12169,42 @@ html body #mcLobby2.mkLb .mkEq{width:84%!important}
       if(a === 'g_dia') addCur('diamonds', 5000); else if(a === 'g_bl') s2[e.tk] = (s2[e.tk] || 0) + 10; else if(a === 'g_jt') s2[e.jk] = (s2[e.jk] || 0) + 1000; else if(a === 'g_p') s2.pulls = (s2.pulls || 0) + 50; else if(a === 'g_rd') s2.erd = {};
       save(); res(gmHtml()); hdr(); }
   }
-  /* ---------------- VIP PASS kartı: yıldızın içinde seviye ---------------- */
-  setInterval(function(){ var v = document.getElementById('f23Vip'); if(!v) return; var im = v.querySelector('.in img'); if(!im) return;
+  /* ---------------- VIP PASS kartı: sağ üst köşede yıldız + seviye ---------------- */
+  setInterval(function(){ var v = document.getElementById('f23Vip'); if(!v) return;
     var lv = 0; try{ lv = window.monocityVipTest ? monocityVipTest.level() : 0; }catch(e){}
-    var w = im.parentNode.classList.contains('mkVs') ? im.parentNode : null;
-    if(!w){ w = document.createElement('span'); w.className = 'mkVs'; im.parentNode.insertBefore(w, im); w.appendChild(im); }
-    var b = w.querySelector('b.mkVl'); if(!b){ b = document.createElement('b'); b.className = 'mkVl'; w.appendChild(b); }
-    var t = String(lv); if(b.textContent !== t) b.textContent = t; }, 1000);
+    var st = v.querySelector(':scope > .mkVStar'); if(!st){ st = document.createElement('span'); st.className = 'mkVStar'; v.appendChild(st); }
+    var t = String(lv); if(st.textContent !== t) st.textContent = t; }, 1000);
+  /* ---------------- klavye açılınca ekran ölçeği sabit kalsın (siyah ekran olmasın) ---------------- */
+  (function(){
+    var R = document.documentElement, W0 = 0;
+    function typing(){ var a = document.activeElement; return !!(a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.isContentEditable)); }
+    function fix(force){ var w = innerWidth, h = innerHeight; if(!force && typing() && Math.abs(w - W0) < 40) return; W0 = w; R.style.setProperty('--mcu', Math.min(h*0.01, w*0.0045).toFixed(3)+'px'); }
+    fix(true); window.addEventListener('resize', function(){ fix(false); }); window.addEventListener('orientationchange', function(){ setTimeout(function(){ fix(true); }, 300); });
+    document.addEventListener('focusout', function(){ setTimeout(function(){ if(!typing()) fix(true); }, 600); });
+  })();
+  /* ---------------- büyük sohbet: rank logosu + kulüp kısa adı (MLBB düzeni) ---------------- */
+  var RKC2 = {};
+  function rankImgOf(u, cb){ if(RKC2[u] !== undefined) return cb(RKC2[u]); var me = myUid();
+    if(u === me){ try{ var v = monocityMyRank(); RKC2[u] = (v && v.img) || ''; }catch(e){ RKC2[u] = ''; } return cb(RKC2[u]); }
+    RKC2[u] = ''; try{ if(window.monocityRankOf) monocityRankOf(u, function(v){ var img = ''; try{ img = v && !v.none ? (v.img || (window.monocityRankView ? monocityRankView(v.r).img : '')) : ''; }catch(e){} RKC2[u] = img; cb(img); }); }catch(e){} }
+  function decoChat(){ var box = document.getElementById('mcChatBig'); if(!box || !box.classList.contains('show')) return;
+    box.classList.add('mkCB');
+    box.querySelectorAll('.mcCm').forEach(function(row){ var w = row.querySelector('.mcCmN .who[data-u]'); if(!w) return; var u = w.getAttribute('data-u'); var n = row.querySelector('.mcCmN');
+      var tg = window.monocityTagHtmlU ? (monocityTagHtmlU(u) || '') : '';
+      var pre = n.querySelector('.mkRkP'); if(!pre){ pre = document.createElement('span'); pre.className = 'mkRkP'; n.insertBefore(pre, n.firstChild); }
+      rankImgOf(u, function(img){ var h = (img ? '<img class="mkRkI" alt="" src="'+img+'">' : '')+tg; if(pre.__h !== h){ pre.__h = h; pre.innerHTML = h; } }); }); }
+  setInterval(decoChat, 900);
+  (function cbObs(){ var b = document.getElementById('mcChatBig'); if(!b) return setTimeout(cbObs, 1000); new MutationObserver(function(){ clearTimeout(cbObs.t); cbObs.t = setTimeout(decoChat, 30); }).observe(b, {childList:true, subtree:true}); })();
+  /* ---------------- mağaza Tahtalar: etiket sırasına göre ---------------- */
+  var TORD = {duz:0, elit:1, special:2, epik:3, pass:4, mistik:5, volk:6, halloween:6, zodyak:7, vip:8, legend:9};
+  function cardTag(c){ var TI = window.MONOCITY_TAG_IMG || {}, im = c.querySelector('img.mc5Tag, img.atTagS, img.hwTagS, img.f10Tag, img.tg, img.tgs, img.atTag, img.hwTag');
+    if(!im){ var nm = ((c.querySelector('.shopItemName, .diceName') || {}).textContent || '').toLocaleUpperCase('tr-TR'); if(/YAKUT|BUZ|GECE|GALAKS/.test(nm)) return 'special'; if(/ÇÖL|ALTIN|ŞEKER|ORMAN/.test(nm)) return 'elit'; return 'duz'; }
+    var a = (im.getAttribute('alt') || '').toLowerCase(); if(TORD[a] != null) return a; var src = im.getAttribute('src'); for(var k in TI) if(TI[k] === src) return k; return 'duz'; }
+  setInterval(function(){ var sh = document.getElementById('monocityShop'); if(!sh || !sh.classList.contains('show') || sh.getAttribute('data-shop-cat') !== 'board') return;
+    var g = document.getElementById('shopGrid'); if(!g) return; var K = [].slice.call(g.children); if(K.length < 2) return;
+    var A = K.map(function(c, i){ return {c:c, i:i, o:(TORD[cardTag(c)] != null ? TORD[cardTag(c)] : 0)}; }), B = A.slice().sort(function(x, y){ return x.o - y.o || x.i - y.i; });
+    if(B.every(function(x, i){ return x.c === K[i]; })) return; B.forEach(function(x){ g.appendChild(x.c); }); }, 500);
+
   window.MONOCITY_EVW = { open:open, close:close, paint:function(){ if(W.el && W.el.classList.contains('show')) paint(); } };
   /* tedarik / takas kapanınca açık ekran tazelensin */
   setInterval(function(){ if(W.el && W.el.classList.contains('show') && !W.el.querySelector('#evRes.show')){ var s = S() || {}, e = E(), sig = (s[e.tk] || 0)+'|'+(s[e.jk] || 0)+'|'+pulls()+'|'+heat(); if(W.sig !== sig){ W.sig = sig; paint(); } } }, 900);
@@ -12158,7 +12256,7 @@ html body #mcLobby2.mkLb .mkEq{width:84%!important}
         if(!C.eq || C.eq.__h !== h){ var t2 = document.createElement('div'); t2.innerHTML = h; var n = t2.firstChild; n.__h = h; if(C.eq && C.eq.parentNode) C.eq.parentNode.replaceChild(n, C.eq); C.eq = n; }
         if(C.eq.parentNode !== s) s.appendChild(C.eq);
         /* özel mod: afiş ucunda renk paleti (kendi afişinde açılır) */
-        if(cb){ if(!C.pal){ C.pal = document.createElement('i'); C.pal.className = 'mkPal'; } C.pal.classList.toggle('me', mine); if(C.pal.parentNode !== s) s.appendChild(C.pal);
+        if(cb){ if(!C.pal){ C.pal = document.createElement('i'); C.pal.className = 'mkPal'; } C.pal.classList.toggle('me', mine); C.pal.classList.toggle('pk', !!(mine && LB.picked === LB.code)); if(C.pal.parentNode !== s) s.appendChild(C.pal);
           if(mine && LB.po){ if(!C.po){ C.po = document.createElement('div'); C.po.className = 'mkPO'; } var ph = poHtml(cb); if(C.po.__h !== ph){ C.po.__h = ph; C.po.innerHTML = ph; } if(C.po.parentNode !== s) s.appendChild(C.po); }
           else if(C.po && C.po.parentNode) C.po.parentNode.removeChild(C.po); }
         else { if(C.pal && C.pal.parentNode) C.pal.parentNode.removeChild(C.pal); if(C.po && C.po.parentNode) C.po.parentNode.removeChild(C.po); }
@@ -12196,7 +12294,7 @@ html body #mcLobby2.mkLb .mkEq{width:84%!important}
   document.addEventListener('click', function(e){
     var t = e.target; if(!t || !t.closest) return; var el = document.getElementById('mcLobby2'); if(!el || !el.contains(t)) return;
     var ex = t.closest('#lbExit'); if(ex && !ex.__ok){ e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation(); lbAsk(el, function(){ ex.__ok = 1; try{ ex.click(); }finally{ ex.__ok = 0; } }); return; }
-    var pc = t.closest('.mkPO [data-pc]'); if(pc){ e.preventDefault(); e.stopPropagation(); if(!pc.classList.contains('tk')){ var cb = lbColBar(), c = cb && cb.querySelector('[data-col="'+pc.getAttribute('data-pc')+'"]'); if(c) c.click(); } LB.po = false; lbDeco(); setTimeout(lbDeco, 120); return; }
+    var pc = t.closest('.mkPO [data-pc]'); if(pc){ e.preventDefault(); e.stopPropagation(); if(!pc.classList.contains('tk')){ var cb = lbColBar(), c = cb && cb.querySelector('[data-col="'+pc.getAttribute('data-pc')+'"]'); if(c) c.click(); LB.picked = LB.code; } LB.po = false; lbDeco(); setTimeout(lbDeco, 120); return; }
     var pal = t.closest('.lbSeat[data-me="1"] .mkPal'); if(pal){ e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation(); lbPalette(); return; }
     if(t.closest('.lbSeat .mkPal, .lbSeat .mkPO')){ e.preventDefault(); e.stopPropagation(); return; }
     if(LB.po && !t.closest('.mkPO, .mkPal')){ LB.po = false; lbDeco(); }
@@ -22944,6 +23042,7 @@ body.mcMatchOn #mcGameOver{display:none!important}
   window.monocityRankReset = function(r, sn){ var sc = season(); if(sn && sn < sc) return RESET[ligOf(r).n] || 0; return r; };
   function rankApply(delta){
     var s = rankState(), old = s.r, nr = Math.max(0, old + delta), prot = false;
+    if(old >= 4000 && delta){ var y0 = Math.floor((old-4000)/150); if(delta > 0) nr = 4000 + (y0+1)*150; else if(y0 > 0) nr = 4000 + (y0-1)*150; }   /* T57: Şampiyonda her galibiyet +1 ★, yenilgi -1 ★ */
     if(s.prot && nr < old){ nr = old; prot = true; }
     if(s.prot) s.prot = false;
     var oL = ligOf(old).n, nL = ligOf(nr).n, first = false;
@@ -39351,7 +39450,7 @@ html body .f25Tk .tq>img.tg{position:absolute!important;top:6px!important;right:
   function zUnowned(){ var Z = curSet(); return ['pawn','dice','board'].filter(function(k){ return !ownsId(Z[k].c, Z[k].id); }); }
   function zOwnedAll(){ var n = 0, Z = curSet(); Object.keys(ZSETS).forEach(function(bk){ var S = ZSETS[bk]; if(S === Z) return; Object.keys(S).forEach(function(k){ if(ownsId(S[k].c, S[k].id)) n++; }); }); return n; }
   function zStart(){ return Math.min(20, zOwnedAll()*4); }   /* sahip olunan her burç ürünü haritada baştan yıldız yakar */
-  var ZPOOL = [ {k:'m2', w:28}, {k:'m5', w:20}, {k:'m10', w:9}, {k:'m20', w:3}, {k:'d5', w:7}, {k:'d10', w:2}, {k:'t1', w:5}, {k:'td', w:9}, {k:'tp', w:9}, {k:'te', w:4}, {k:'tpe', w:4} ];
+  var ZPOOL = [ {k:'m2', w:28}, {k:'m5', w:20}, {k:'m7', w:9}, {k:'m10', w:3}, {k:'d5', w:7}, {k:'d10', w:2}, {k:'t1', w:5}, {k:'td', w:9}, {k:'tp', w:9}, {k:'te', w:4}, {k:'tpe', w:4} ];
   function zPick(){ var t = 0, i; for(i=0;i<ZPOOL.length;i++) t += ZPOOL[i].w; var r = Math.random()*t; for(i=0;i<ZPOOL.length;i++){ r -= ZPOOL[i].w; if(r < 0) return ZPOOL[i].k; } return 'm2'; }
   function zOne(){
     ZS.pulls++; ZS.st++;
@@ -39361,7 +39460,7 @@ html body .f25Tk .tq>img.tg{position:absolute!important;top:6px!important;right:
       grant(it.c, it.id); ZS.st = zStart(); return {set:k, cls:'l', nw:1};
     }
     var p = zPick();
-    if(p.charAt(0) === 'm'){ var v = {m2:2000, m5:5000, m10:10000, m20:20000}[p]; addCur('metro', v); o = {metro:v}; }
+    if(p.charAt(0) === 'm'){ var v = {m2:2000, m5:5000, m7:7000, m10:10000, m20:20000}[p]; addCur('metro', v); o = {metro:v}; }
     else if(p.charAt(0) === 'd'){ var dv = p === 'd5' ? 5 : 10, pk = Math.random() < 0.5 ? 'z' : 'p'; try{ if(window.MONOCITY_PARCA) MONOCITY_PARCA.add(pk, dv); }catch(e){} o = {pz:dv, pk:pk, cls:'r'}; }   /* T33: elmas yerine zar/piyon parçası */
     else if(p === 't1'){ addCur('tickets', 1); o = {tk:1, cls:'r'}; }
     else { var tr = {td:['dice','any'], tp:['pawn','any'], te:['dice','elit'], tpe:['pawn','elit']}[p]; var r = useTrial(tr[0], tr[1]); o = r.metro ? {metro:2000} : {trial:r, cls:'r'}; }
@@ -39471,7 +39570,7 @@ html body .f25Tk .tq>img.tg{position:absolute!important;top:6px!important;right:
   }
   function zRates(){
     var tot = 0; ZPOOL.forEach(function(p){ tot += p.w; }); var pc = function(w){ return (w/tot*(1-ZDROP)*100).toFixed(1).replace('.', ',')+'%'; };
-    var N = {m2:'2.000 Metro', m5:'5.000 Metro', m10:'10.000 Metro', m20:'20.000 Metro', d5:'5 Zar / Piyon Parçası', d10:'10 Zar / Piyon Parçası', t1:'1 Bilet', td:'🎴 Rastgele zar deneme (3 gün)', tp:'🎴 Rastgele piyon deneme (3 gün)', te:'🎴 Elit zar deneme (3 gün)', tpe:'🎴 Elit piyon deneme (3 gün)'};
+    var N = {m2:'2.000 Metro', m5:'5.000 Metro', m7:'7.000 Metro', m10:'10.000 Metro', m20:'20.000 Metro', d5:'5 Zar / Piyon Parçası', d10:'10 Zar / Piyon Parçası', t1:'1 Bilet', td:'🎴 Rastgele zar deneme (3 gün)', tp:'🎴 Rastgele piyon deneme (3 gün)', te:'🎴 Elit zar deneme (3 gün)', tpe:'🎴 Elit piyon deneme (3 gün)'};
     var r = cEl.querySelector('#f25CRes');
     r.innerHTML = '<div class="rb" style="text-align:left"><h3 style="text-align:center">📊 ÖDÜL HAVUZU · '+((burcNow() || {}).n || '')+'</h3><div class="note" style="line-height:1.7"><b style="color:#ffe08a">Zodyak ürünü (piyon / zar / tahta): her çekilişte %'+(ZDROP*100).toFixed(1).replace('.', ',')+' · '+ZPITY+'. yıldızda KESİN</b><br>' +
       ZPOOL.map(function(p){ return N[p.k]+' — '+pc(p.w); }).join('<br>') + '<br><br>Sahip olduğun her Zodyak ürünü yeni burçlarda haritada 4 yıldızı baştan yakar (en çok 20). Set tamamlanınca diğer ödüller devam eder. Deneme kartında sende olmayan ürün çıkar; hepsi sendeyse 2.000 Metro.</div><div style="text-align:center;margin-top:10px"><button type="button" class="btn o" data-a="rok">TAMAM</button></div></div>';
@@ -41108,7 +41207,7 @@ html body.f30Md #mcLobbyUI .mclPlay,html body.f30Md #mcLobbyUI .mclQuick,html bo
     var L = (window.MONOCITY_LIGS || []), li = 0; for(var i = L.length - 1; i >= 0; i--) if(r >= L[i].min){ li = i; break; }
     var lg = L[li] || {n:'Bronz', min:0, k:100}, img = v.img || '';
     try{ var C = window.MONOCITY_RK_CLEAN; if(C && C[lg.n]) img = C[lg.n]; }catch(e){}
-    if(!lg.k){ return {t:(v.t || 'Şampiyon'), img:img, p:100, nx:'En üst lig'}; }
+    if(!lg.k){ return {t:'Şampiyon', img:img, p:100, nx:'', ch:1, y:(v.y || 1)}; }
     var inT = (r - lg.min) % lg.k, left = lg.k - inT, k = v.k || 5, nx;
     if(k > 1) nx = lg.n+' '+RN[k-1]; else nx = (L[li+1] ? L[li+1].n+' V' : 'Şampiyon');
     return {t:(v.t || (lg.n+' '+RN[k])), img:img, p:Math.round(inT / lg.k * 100), nx:nx+"'e "+left+' puan'};
@@ -41121,7 +41220,7 @@ html body.f30Md #mcLobbyUI .mclPlay,html body.f30Md #mcLobbyUI .mclQuick,html bo
   function paint(){
     var bar = document.getElementById('f30Bar'); if(!bar) return;
     var m = getMode(), md = bar.querySelector('.md'), h, lb = inLobbyTxt();
-    if(m === 'rank'){ var R = rankInfo(); h = '<div class="ic">'+(R.img ? '<img alt="" src="'+R.img+'">' : '🏆')+'</div><div class="tx"><b>SIRALI<em>'+String(R.t).toLocaleUpperCase('tr-TR')+'</em></b><div class="br"><i style="width:'+R.p+'%"></i></div><small>'+(lb || R.nx)+'</small></div>'; }
+    if(m === 'rank'){ var R = rankInfo(); h = '<div class="ic">'+(R.img ? '<img alt="" src="'+R.img+'">' : '🏆')+'</div><div class="tx"><b>SIRALI<em>'+String(R.t).toLocaleUpperCase('tr-TR')+'</em></b>'+(R.ch ? '<div class="mkStz">★ '+R.y+'</div>'+(lb ? '<small>'+lb+'</small>' : '') : '<div class="br"><i style="width:'+R.p+'%"></i></div><small>'+(lb || R.nx)+'</small>')+'</div>'; }
     else if(m === 'ozel') h = '<div class="ic"><span class="em">🤖</span></div><div class="tx"><b>ÖZEL</b><small>'+(lb || 'Botlarla / arkadaşlarla · ödül yok')+'</small></div>';
     else if(m === 'eglence') h = '<div class="ic"><span class="em">🎉</span></div><div class="tx"><b>EĞLENCE</b><small>🎲 Ludo · Tavla yakında</small></div>';
     else h = '<div class="ic">'+(zarImg() ? '<img alt="" src="'+zarImg()+'">' : '🎲')+'</div><div class="tx"><b>KLASİK</b><small>'+(lb || 'OYUN KUR · LOBİ')+'</small></div>';
