@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head><script>window.__I=window.__I||[];window.__IN=8;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261026-0330"></script><script src="gorsel_6.js?v=20261026-0330"></script><script src="gorsel_7.js?v=20261026-0330"></script><script src="gorsel_8.js?v=20261026-0330"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
+<head><script>window.__I=window.__I||[];window.__IN=8;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261026-0430"></script><script src="gorsel_6.js?v=20261026-0430"></script><script src="gorsel_7.js?v=20261026-0430"></script><script src="gorsel_8.js?v=20261026-0430"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,interactive-widget=resizes-visual">
 <meta name="theme-color" content="#0a0e26">
@@ -2041,7 +2041,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261026-0330';
+window.MONOCITY_VER = '20261026-0430';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -12199,10 +12199,10 @@ html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmB{padding:0!import
   var TORD = {duz:0, elit:1, special:2, epik:3, pass:4, mistik:5, volk:6, halloween:6, zodyak:7, vip:8, legend:9};
   function cardTag(c){ var TI = window.MONOCITY_TAG_IMG || {}, im = c.querySelector('img.mc5Tag, img.atTagS, img.hwTagS, img.f10Tag, img.tg, img.tgs, img.atTag, img.hwTag');
     if(!im){ var nm = ((c.querySelector('.shopItemName, .diceName') || {}).textContent || '').toLocaleUpperCase('tr-TR'); if(/YAKUT|BUZ|GECE|GALAKS/.test(nm)) return 'special'; if(/ÇÖL|ALTIN|ŞEKER|ORMAN/.test(nm)) return 'elit'; return 'duz'; }
-    var a = (im.getAttribute('alt') || '').toLowerCase(); if(TORD[a] != null) return a; var src = im.getAttribute('src'); for(var k in TI) if(TI[k] === src) return k; return 'duz'; }
+    var a = (im.getAttribute('alt') || '').toLowerCase(); if(TORD[a] != null) return a; var src = im.getAttribute('src'); for(var k in TI) if(TI[k] === src) return /^zd/.test(k) ? 'zodyak' : k; return /^zd|zodyak/.test(a) ? 'zodyak' : 'duz'; }
   setInterval(function(){ var sh = document.getElementById('monocityShop'); if(!sh || !sh.classList.contains('show') || sh.getAttribute('data-shop-cat') !== 'board') return;
     var g = document.getElementById('shopGrid'); if(!g) return; var K = [].slice.call(g.children); if(K.length < 2) return;
-    var A = K.map(function(c, i){ return {c:c, i:i, o:(TORD[cardTag(c)] != null ? TORD[cardTag(c)] : 0)}; }), B = A.slice().sort(function(x, y){ return x.o - y.o || x.i - y.i; });
+    var A = K.map(function(c, i){ return {c:c, i:i, o:(TORD[cardTag(c)] != null ? TORD[cardTag(c)] : 0)}; }), B = A.slice().sort(function(x, y){ return y.o - x.o || x.i - y.i; });
     if(B.every(function(x, i){ return x.c === K[i]; })) return; B.forEach(function(x){ g.appendChild(x.c); }); }, 500);
 
   window.MONOCITY_EVW = { open:open, close:close, paint:function(){ if(W.el && W.el.classList.contains('show')) paint(); } };
@@ -12337,6 +12337,122 @@ html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmB{padding:0!import
      HAZIRLIK: tepsi kategorisi (yürüme / bildirim / tapu)
      ====================================================================== */
   window.monocityPickTrayCat = function(t){ return /👣/.test(t) ? 'walk' : (/🔔/.test(t) ? 'nfx' : (/📜/.test(t) ? 'lmf' : null)); };
+})();
+
+</script>
+<style id="mc-t58-css">
+/* ===== T58 · lobi rank logosu nick altında (tüm modlar) ===== */
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn.filled>*{order:6}
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn.filled>.av{order:1}
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn.filled>b{order:2}
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn.filled>.f12Lg{order:3;position:static!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:.3em!important;max-width:96%!important;margin:.6cqh 0 0!important;padding:.3cqh 1.2em .3cqh .4em!important;border-radius:99px!important;background:rgba(0,0,0,.35)!important;font:900 clamp(8px,3.8cqh,12px) Arial!important;line-height:1.1!important;white-space:nowrap!important;overflow:hidden!important;inset:auto!important;transform:none!important;bottom:auto!important;top:auto!important;left:auto!important;right:auto!important}
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn.filled>.f12Lg img{height:6cqh!important;width:auto!important;flex:0 0 auto!important;margin:0!important}
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn.filled>.f12Lg>*:not(img){min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn.filled>.mkEq{order:4}
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn .mkEq{gap:2cqh 5cqw!important;margin-bottom:19cqh!important}
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn .mkEq .sl{aspect-ratio:1.42!important}
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn.filled>.av{margin-top:3.5cqh!important}
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn.filled>b{margin-top:1.8cqh!important;line-height:1.1!important}
+/* ===== T58 · büyük sohbet: benim mesajım sağda ===== */
+#mcChatBig#mcChatBig.mkCB #cbList .mcCm.mine,#mcChatBig#mcChatBig.mkCB .f27Alt .mcCm.mine{flex-direction:row-reverse!important;justify-content:flex-start!important}
+#mcChatBig#mcChatBig.mkCB #cbList .mcCm.mine .mcCmB,#mcChatBig#mcChatBig.mkCB .f27Alt .mcCm.mine .mcCmB{align-items:flex-end!important}
+#mcChatBig#mcChatBig.mkCB #cbList .mcCm.mine .mcCmN,#mcChatBig#mcChatBig.mkCB .f27Alt .mcCm.mine .mcCmN{flex-direction:row-reverse!important;justify-content:flex-start!important}
+#mcChatBig#mcChatBig.mkCB #cbList .mcCm.mine .mcCmT,#mcChatBig#mcChatBig.mkCB .f27Alt .mcCm.mine .mcCmT{text-align:left!important}
+/* ===== T58 · ana ekran sohbet önizleme: tek satır, son mesaj ===== */
+html body #mcLobbyUI#mcLobbyUI .mclChat #mclChatList>*:not(:last-child){display:none!important}
+html body #mcLobbyUI#mcLobbyUI .mclChat #mclChatList{overflow:hidden!important}
+html body #mcLobbyUI#mcLobbyUI .mclChat #mclChatList>*:last-child{margin:auto 0!important;max-width:100%}
+/* ===== T58 · Legend 10x: deneme kartı taşmasın, butonlar hep görünsün ===== */
+#lgW#lgW .pop.rs{display:flex;flex-direction:column}
+#lgW#lgW .pop.rs .rg{min-height:0;flex:0 1 auto;overflow:auto;align-items:stretch}
+#lgW#lgW .pop.rs .gg2{flex:0 0 auto}
+#lgW#lgW .rcell{min-width:0;justify-content:flex-start}
+#lgW#lgW .rcell .mcTrC{font-size:14px!important;height:46px!important;flex:0 0 auto}
+#lgW#lgW .rcell>b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%;line-height:1.15}
+/* ===== T58 · Zodyak / Efsanevi çark tekrar butonu ===== */
+#f25Cek .mkRr,#mwOv .mkRrW{display:flex;gap:10px;justify-content:center;align-items:center;margin-top:10px}
+#mwOv .mkRrW button{margin:0!important}
+#mwOv .mkRrW button.mkRr{background:linear-gradient(#ffe27a,#f0a020)!important;color:#4a2400!important}
+/* ===== T58 · lobi mini panel: kurucu butonları ===== */
+#mcPP#mcPP .mkHostRow{display:flex;gap:8px;margin:8px 0 2px;order:99}
+#mcPP#mcPP .mkHostRow button{flex:1 1 0;min-width:0!important;width:auto!important;overflow:hidden;text-overflow:ellipsis;font-size:11px!important;border:0;border-radius:9px;padding:8px 4px;font:1000 12px Arial;color:#fff;margin:0;min-height:0;cursor:pointer;white-space:nowrap}
+#mcPP .mkHostRow .hy{background:linear-gradient(180deg,#f5b921,#b7791f);color:#2a1800}
+#mcPP .mkHostRow .ka{background:linear-gradient(180deg,#ef4444,#991b1b)}
+#monocityShop #shopGrid>* img.mkBdTag{display:block!important}
+#f25Cek .rc .v .mcTrC{font-size:13px!important}
+
+</style>
+<script id="mc-t58-js">
+(function(){
+  function toast(m){ try{ if(window.MONOCITY_PROFILE && MONOCITY_PROFILE.toast) return MONOCITY_PROFILE.toast(m); }catch(e){} }
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+  /* ---------- 1) Sürükleyince arka plana "tık" sayılmasın (Yayıncı Bilgisi vb. panel kapanıp profile atmasın) ---------- */
+  var D = null;
+  document.addEventListener('pointerdown', function(e){ D = {t:e.target, x:e.clientX, y:e.clientY}; }, true);
+  function isBack(t){
+    if(!t || t.nodeType !== 1 || t === document.body || t === document.documentElement) return false;
+    var cs = getComputedStyle(t); if(cs.position !== 'fixed' && cs.position !== 'absolute') return false;
+    var r = t.getBoundingClientRect(); return r.width >= innerWidth*0.85 && r.height >= innerHeight*0.85;
+  }
+  document.addEventListener('click', function(e){
+    if(!D || !e.isTrusted || e.detail === 0) return; var d = D; D = null; var t = e.target;
+    var moved = Math.abs(e.clientX - d.x) > 14 || Math.abs(e.clientY - d.y) > 14;
+    if(!moved && t === d.t) return;
+    if(isBack(t) && (moved || (d.t && d.t !== t && t.contains(d.t)))){ e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation(); }
+  }, true);
+
+  /* ---------- 9) Lobi: kurucu → mini panelde Kurucu Yap / Lobiden At ---------- */
+  function ask(txt, yesTxt, yes){
+    var host = document.getElementById('mcLobby2') || document.body;
+    var o = document.getElementById('mkAskL'); if(o) o.remove();
+    o = document.createElement('div'); o.id = 'mkAskL'; if(host === document.body) o.style.position = 'fixed';
+    o.innerHTML = '<div class="bx"><b>'+txt+'</b><div class="bs"><span data-q="n">VAZGEÇ</span><span data-q="y" class="y">'+yesTxt+'</span></div></div>';
+    o.addEventListener('click', function(e){ e.stopPropagation(); var b = e.target.closest('[data-q]'); if(e.target === o || (b && b.getAttribute('data-q') === 'n')){ o.remove(); return; } if(b && b.getAttribute('data-q') === 'y'){ o.remove(); yes(); } });
+    host.appendChild(o);
+  }
+  function lbOpen(){ var l = document.getElementById('mcLobby2'); return !!(l && l.classList.contains('show')); }
+  function hostRow(){
+    var pp = document.getElementById('mcPP'), c = window.__lbHostCtx; if(!pp) return;
+    var has = pp.querySelector('.mkHostRow');
+    if(!c || !pp.classList.contains('show') || !lbOpen()){ if(has) has.remove(); return; }
+    if(has){ var ic0 = pp.querySelector('.f44Ic'); if(ic0 && ic0.nextElementSibling !== has) ic0.after(has); return; }
+    var r = document.createElement('div'); r.className = 'mkHostRow';
+    r.innerHTML = '<button type="button" class="hy" data-lh="host">👑 KURUCU YAP</button><button type="button" class="ka" data-lh="kick">🚫 LOBİDEN AT</button>';
+    var ic = pp.querySelector('.f44Ic'), arr = pp.querySelector('.arr');
+    if(ic) ic.after(r); else if(arr) pp.insertBefore(r, arr); else pp.appendChild(r);
+    try{ if(window.dispatchEvent) window.dispatchEvent(new Event('resize')); }catch(e){}
+  }
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('#mcPP .mkHostRow [data-lh]'); if(!b) return;
+    e.preventDefault(); e.stopPropagation(); var c = window.__lbHostCtx; if(!c) return;
+    var a = b.getAttribute('data-lh'), nm = esc(c.name);
+    try{ if(window.monocityClosePlayerPanel) monocityClosePlayerPanel(); }catch(x){}
+    if(a === 'kick') ask('🚫 '+nm+' lobiden atılsın mı?', 'EVET, AT', function(){ if(c.kick()) toast('🚫 '+c.name+' lobiden atıldı.'); });
+    else ask('👑 Kuruculuk '+nm+' adlı oyuncuya geçsin mi?', 'EVET', function(){ toast('👑 Kurucu devrediliyor…'); c.makeHost(function(err){ if(err){ toast('❌ '+err); return; } toast('👑 Kurucu artık '+c.name+'.'); try{ c.after(); }catch(x){} }); });
+  }, true);
+  (function ppHook(){
+    var pp = document.getElementById('mcPP'); if(!pp) return setTimeout(ppHook, 700);
+    new MutationObserver(function(){ if(!pp.classList.contains('show')){ window.__lbHostCtx = null; var h = pp.querySelector('.mkHostRow'); if(h) h.remove(); return; } hostRow(); }).observe(pp, {childList:true, attributes:true, attributeFilter:['class']});
+  })();
+
+  /* ---------- 2) dar afişte Şampiyon yazısı sığmazsa sadece ★ ---------- */
+  setInterval(function(){ var l = document.getElementById('mcLobby2'); if(!l || !l.classList.contains('show')) return;
+    [].forEach.call(l.querySelectorAll('.lbSeat .f12Lg'), function(f){ var sp = f.querySelector('span') || f.lastElementChild; if(!sp || sp.tagName === 'IMG') return;
+      var t = sp.textContent || '', m = t.match(/^\s*Şampiyon\s*(★.*)$/); if(m && f.scrollWidth > f.clientWidth + 1){ sp.textContent = m[1].trim(); } }); }, 500);
+
+  /* ---------- 8) Mağaza Tahtalar: eksik etiket (Düz/Elit/Special) sağ üst köşeye ---------- */
+  var DUZ = 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 116"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c98d55"/><stop offset=".5" stop-color="#8a5a2e"/><stop offset="1" stop-color="#5a3518"/></linearGradient><linearGradient id="r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".5" stop-color="#b8863a"/><stop offset="1" stop-color="#ffe0a0"/></linearGradient></defs><rect x="8" y="14" width="224" height="88" rx="22" fill="url(#g)" stroke="url(#r)" stroke-width="7"/><path d="M26 40 Q120 26 214 40" stroke="#e7b77d" stroke-width="3" fill="none" opacity=".5"/><path d="M26 82 Q120 92 214 80" stroke="#3b2210" stroke-width="3" fill="none" opacity=".45"/><text x="120" y="78" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="50" fill="#fff6e0" stroke="#3b1f0a" stroke-width="7" paint-order="stroke">Düz</text></svg>');
+  function tierOf(nm){ nm = (nm || '').toLocaleUpperCase('tr-TR'); if(/YAKUT|BUZ|GECE|GALAKS/.test(nm)) return 'special'; if(/ÇÖL|ALTIN|ŞEKER|ORMAN/.test(nm)) return 'elit'; return 'duz'; }
+  setInterval(function(){
+    var sh = document.getElementById('monocityShop'); if(!sh || !sh.classList.contains('show') || sh.getAttribute('data-shop-cat') !== 'board') return;
+    var g = document.getElementById('shopGrid'); if(!g) return; var TI = window.MONOCITY_TAG_IMG || {};
+    [].forEach.call(g.children, function(c){
+      if(c.querySelector('img.mc5Tag, img.atTagS, img.hwTagS, img.f10Tag, img.tg, img.tgs, img.atTag, img.hwTag')) return;
+      var t = tierOf((c.querySelector('.shopItemName, .diceName') || {}).textContent), src = t === 'duz' ? DUZ : TI[t]; if(!src) return;
+      var im = document.createElement('img'); im.className = 'atTagS f10Tag mkBdTag'; im.alt = t; im.src = src; if(getComputedStyle(c).position === 'static') c.style.position = 'relative'; c.appendChild(im);
+    });
+  }, 400);
 })();
 
 </script>
@@ -18468,8 +18584,12 @@ mportant;}
       if(s.classList.contains('empty')){ var f = el.querySelector('#lbFr'); f.classList.remove('flash'); void f.offsetWidth; f.classList.add('flash');
         if(!(S() && S().friends().length)) toast('Arkadaş listen boş. Lobi kodunu paylaşabilirsin: '+API.state().code); return; }
       var u = s.getAttribute('data-uid'), k = s.getAttribute('data-key');
-      if(API.state().role === 'host' && k && !s.getAttribute('data-me')){ seatMenu(s, k, u, s.getAttribute('data-name')); return; }
-      if(u && window.monocityOpenUserProfile) window.monocityOpenUserProfile(u);
+      if(s.getAttribute('data-me')) return;
+      if(!e.target.closest('.av,.f9Pl,.f12SA')) return;
+      var hst = API.state().role === 'host' && k;
+      if(!u){ if(hst) seatMenu(s, k, u, s.getAttribute('data-name')); return; }
+      window.__lbHostCtx = hst ? {uid:u, name:s.getAttribute('data-name') || 'Oyuncu', kick:function(){ return API.kick(k); }, makeHost:function(cb){ API.makeHost(k, cb); }, after:function(){ show(); }} : null;
+      if(window.monocityOpenPlayerPanel) window.monocityOpenPlayerPanel(u, s.querySelector('.av') || s); else if(window.monocityOpenUserProfile) window.monocityOpenUserProfile(u);
     });
     el.querySelector('#lbFrList').addEventListener('click', function(e){
       var b = e.target.closest('button[data-inv]'); if(b){ e.stopPropagation(); invite(b.getAttribute('data-inv')); return; }
@@ -22605,7 +22725,7 @@ body.mcIso #mcIsoHud{display:block}
       if(act === 'nad') return watchAd(function(){ spinN('ad'); });
       if(act === 'lfree') return spinL(1, 'free');
       if(act === 'lad') return watchAd(function(){ spinL(1, 'ad'); });
-      if(act === 'l1') return spinL(1, 'pay');
+      if(act === 'l1' || act === 'l10'){ var ov0 = el.querySelector('#mwOv'); if(ov0) ov0.classList.remove('show'); return spinL(act === 'l1' ? 1 : 10, 'pay'); }
       if(act === 'l10') return spinL(10, 'pay');
       if(act === 'hist') return showHist();
     });
@@ -22679,7 +22799,7 @@ body.mcIso #mcIsoHud{display:block}
     var title = outs.length > 1 ? '✨ 10x ÇEKİLİŞ SONUCU ✨' : (outs[0].cls === 'l' ? '👑 EFSANEVİ ÖDÜL! 👑' : '🎉 KAZANDIN! 🎉');
     var sub = kind === 'l' ? 'Garanti sayacı: '+(S.pity||0)+' / '+PITY : 'Kalan ücretsiz dönüş: '+Math.max(0, (NF + __vipW()) - S.nf);
     var sums = []; if(msum) sums.push('<span>'+ci('metro')+' '+fmtN(msum)+'</span>'); if(dsum) sums.push('<span>'+ci('diamond')+' '+fmtN(dsum)+'</span>'); if(tsum) sums.push('<span>'+ci('ticket')+' '+tsum+'</span>'); if(nw) sums.push('<span>🎁 '+nw+' yeni parça</span>');
-    ov.innerHTML = '<div class="res"><h3>'+title+'</h3><p>'+sub+'</p><div class="grid'+(outs.length === 1 ? ' one' : '')+'">'+outs.map(cell).join('')+'</div>'+(outs.length > 1 ? '<div class="sum">'+sums.join('')+'</div>' : '')+'<button type="button" class="ok" data-a="ok">TAMAM</button></div>';
+    ov.innerHTML = '<div class="res"><h3>'+title+'</h3><p>'+sub+'</p><div class="grid'+(outs.length === 1 ? ' one' : '')+'">'+outs.map(cell).join('')+'</div>'+(outs.length > 1 ? '<div class="sum">'+sums.join('')+'</div>' : '')+(kind === 'l' ? '<div class="mkRrW"><button type="button" class="ok" data-a="ok">TAMAM</button><button type="button" class="ok mkRr" data-a="l'+outs.length+'">'+outs.length+'x ÇEK</button></div>' : '<button type="button" class="ok" data-a="ok">TAMAM</button>')+'</div>';
     ov.classList.add('show'); paint();
   }
   function ago(ts){ var s = (Date.now() - ts)/1000; if(s < 60) return 'az önce'; if(s < 3600) return Math.floor(s/60)+' dk önce'; if(s < 86400) return Math.floor(s/3600)+' sa önce'; return Math.floor(s/86400)+' gün önce'; }
@@ -39491,7 +39611,7 @@ html body .f25Tk .tq>img.tg{position:absolute!important;top:6px!important;right:
       var t = e.target.closest('[data-t]'); if(t){ cTab = t.getAttribute('data-t'); cPaint(); return; }
       var a = e.target.closest('[data-a]'); if(!a || a.disabled) return; var k = a.getAttribute('data-a');
       if(k === 'close') return cClose();
-      if(k === 'z1') return zDo(1);
+      if(k === 'z1' || k === 'z5'){ var rq = cEl.querySelector('#f25CRes'); if(rq) rq.classList.remove('show'); return zDo(k === 'z1' ? 1 : 5); }
       if(k === 'z5') return zDo(5);
       if(k === 'rates') return zRates();
       if(k === 'rok'){ cEl.querySelector('#f25CRes').classList.remove('show'); cPaint(); return; }
@@ -39550,7 +39670,7 @@ html body .f25Tk .tq>img.tg{position:absolute!important;top:6px!important;right:
     else if(o.pz){ var __pi = (window.MONOCITY_PARCA_IMG || {})[o.pk]; v = __pi ? '<img alt="" src="'+__pi+'">' : '🧩'; t = o.pz+' '+(o.pk === 'p' ? 'Piyon' : 'Zar')+' Parçası'; }
     else if(o.dia){ v = ci('diamond'); t = o.dia+' Elmas'; }
     else if(o.tk){ v = ci('ticket'); t = '1 Bilet'; }
-    else if(o.trial){ v = '🎴'; t = o.trial.n; sub = '3 gün deneme'; }
+    else if(o.trial){ v = window.monocityTrialCard ? monocityTrialCard(o.trial.c || 'dice', 'any', 3, o.trial.id) : '🎴'; t = o.trial.n; sub = '3 gün deneme'; }
     else { v = ci('metro'); t = fmt(o.metro)+' Metro'; }
     return '<div class="rc '+(o.cls || '')+'" style="animation-delay:'+(i*0.08)+'s">'+(o.nw ? '<i class="nw">YENİ</i>' : '')+'<div class="v">'+v+'</div><b>'+esc(t)+'</b>'+(sub ? '<small>'+sub+'</small>' : '')+'</div>';
   }
@@ -39559,7 +39679,7 @@ html body .f25Tk .tq>img.tg{position:absolute!important;top:6px!important;right:
     var show = function(){
       var best = outs.some(function(o){ return o.set; }) ? '✨ ZODYAK ÜRÜNÜ! ✨' : '🌌 YILDIZLAR KONUŞTU';
       var r = cEl.querySelector('#f25CRes');
-      r.innerHTML = '<div class="rb"><h3>'+best+'</h3><div class="rg" style="grid-template-columns:repeat('+outs.length+',1fr)">'+outs.map(zCell).join('')+'</div><div style="margin-top:10px"><button type="button" class="btn o" data-a="rok">TAMAM</button></div></div>';
+      r.innerHTML = '<div class="rb"><h3>'+best+'</h3><div class="rg" style="grid-template-columns:repeat('+outs.length+',1fr)">'+outs.map(zCell).join('')+'</div><div class="mkRr"><button type="button" class="btn o" data-a="rok">TAMAM</button><button type="button" class="btn p" data-a="z'+outs.length+'">'+outs.length+'x ÇEK</button></div></div>';
       r.classList.add('show'); cPaint();
     };
     if(skipAnim){ show(); return; }
