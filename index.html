@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head><script>window.__I=window.__I||[];window.__IN=8;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261026-0430"></script><script src="gorsel_6.js?v=20261026-0430"></script><script src="gorsel_7.js?v=20261026-0430"></script><script src="gorsel_8.js?v=20261026-0430"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
+<head><script>window.__I=window.__I||[];window.__IN=8;</script><script src="gorsel_1.js?v=20261022-0400"></script><script src="gorsel_2.js?v=20261022-0400"></script><script src="gorsel_3.js?v=20261022-0400"></script><script src="gorsel_4.js?v=20261022-0615"></script><script src="gorsel_5.js?v=20261026-0500"></script><script src="gorsel_6.js?v=20261026-0500"></script><script src="gorsel_7.js?v=20261026-0500"></script><script src="gorsel_8.js?v=20261026-0500"></script><script>if((window.__IOK||0)<window.__IN){document.addEventListener("DOMContentLoaded",function(){var d=document.createElement("div");d.style.cssText="position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147483647;background:#7f1d1d;color:#fff;font:900 13px Arial;padding:8px 14px;border-radius:12px;border:2px solid #fca5a5";d.textContent="⚠️ Görseller yüklenemedi. İnternetini kontrol edip sayfayı yenile.";document.body.appendChild(d);});}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,interactive-widget=resizes-visual">
 <meta name="theme-color" content="#0a0e26">
@@ -2041,7 +2041,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261026-0430';
+window.MONOCITY_VER = '20261026-0500';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -8114,7 +8114,7 @@ html body .f28Pz .c .tg{right:4px!important;top:4px!important;height:19px!import
     if(on){ var lf = ps.querySelector('.ppLeft'); if(lf){ var r = lf.getBoundingClientRect(); document.documentElement.style.setProperty('--f45L', Math.round(r.right + 4)+'px'); }
       var pm = document.getElementById('p3Menu'); ps.classList.toggle('f45Sub', !!(pm && pm.classList.contains('show'))); }
   }, 150);
-  document.addEventListener('pointerdown', function(e){
+  document.addEventListener('click', function(e){
     var t = e.target && e.target.closest ? e.target.closest('#mcProfileScreen .ppTab, #mcProfileScreen .ppBack') : null; if(!t) return;
     var n = document.getElementById('f7Net'); if(n && n.classList.contains('show')){ var x = n.querySelector('[data-nx]'); if(x) x.click(); else n.classList.remove('show'); }
     var y = document.getElementById('f27Yb'); if(y && getComputedStyle(y).display !== 'none'){ var xb = y.querySelector('.x'); if(xb) xb.click(); }
@@ -11522,7 +11522,7 @@ img.evTk{width:1.55em!important;height:1.1em!important;object-fit:contain;vertic
     var left = Math.max(0, E.end - Date.now()), d = Math.floor(left/DAY), h = Math.floor(left%DAY/3600000);
     return '<div class="mkTd" data-ev="'+ev+'"><div class="hd"><b>'+E.n+' · PREMIUM TEDARİK</b><span>'+(lv ? '⏳ '+(E.monthly ? 'Her ayın 1\'inde yenilenir · ' : '')+d+'g '+h+'sa' : 'Etkinlik aktif değil')+'</span></div><div class="ls">'+rows+'</div>' +
       '<div class="ft"><small>Toplam 15 '+E.tn+' · 1 bilet = 1 ücretsiz çekiliş</small><button type="button" class="all" data-td="a" data-ev="'+ev+'"'+(unclaimed(ev) ? '' : ' disabled')+'>HEPSİNİ AL</button></div></div>'; }
-  function render(ct, ev){ var sTop = 0, o = ct.querySelector('.mkTd .ls'); if(o) sTop = o.scrollTop; ct.innerHTML = html(ev); var n = ct.querySelector('.mkTd .ls'); if(n && sTop) n.scrollTop = sTop; ct.__tdEv = ev; }
+  function render(ct, ev){ var sTop = 0, o = ct.querySelector('.mkTd .ls'); if(o) sTop = o.scrollTop; var xb = null; try{ xb = ct.querySelector(':scope > .x'); }catch(e){} ct.innerHTML = html(ev); if(xb) ct.insertBefore(xb, ct.firstChild); var n = ct.querySelector('.mkTd .ls'); if(n && sTop) n.scrollTop = sTop; ct.__tdEv = ev; }
   document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-td]'); if(!b) return; e.preventDefault(); e.stopPropagation();
     var ev = b.getAttribute('data-ev'), a = b.getAttribute('data-td'), box = b.closest('.mkTd'), ct = box && box.parentNode;
     if(a === 'c') claim(ev, b.getAttribute('data-k')); else if(a === 'a') claim(ev);
@@ -12198,11 +12198,11 @@ html body.f23 #mcLobbyUI#mcLobbyUI .mclChat .mclChatList .mcCmB{padding:0!import
   /* ---------------- mağaza Tahtalar: etiket sırasına göre ---------------- */
   var TORD = {duz:0, elit:1, special:2, epik:3, pass:4, mistik:5, volk:6, halloween:6, zodyak:7, vip:8, legend:9};
   function cardTag(c){ var TI = window.MONOCITY_TAG_IMG || {}, im = c.querySelector('img.mc5Tag, img.atTagS, img.hwTagS, img.f10Tag, img.tg, img.tgs, img.atTag, img.hwTag');
-    if(!im){ var nm = ((c.querySelector('.shopItemName, .diceName') || {}).textContent || '').toLocaleUpperCase('tr-TR'); if(/YAKUT|BUZ|GECE|GALAKS/.test(nm)) return 'special'; if(/ÇÖL|ALTIN|ŞEKER|ORMAN/.test(nm)) return 'elit'; return 'duz'; }
+    if(!im){ var nm = ((c.querySelector('.shopItemName, .diceName') || {}).textContent || '').toLocaleUpperCase('tr-TR'); var bc = ((document.getElementById('monocityShop') || document.body).getAttribute('data-shop-cat') === 'board'); if(bc && /YAKUT|BUZ|GECE|GALAKS/.test(nm)) return 'special'; if(bc && /ÇÖL|ALTIN|ŞEKER|ORMAN/.test(nm)) return 'elit'; return 'duz'; }
     var a = (im.getAttribute('alt') || '').toLowerCase(); if(TORD[a] != null) return a; var src = im.getAttribute('src'); for(var k in TI) if(TI[k] === src) return /^zd/.test(k) ? 'zodyak' : k; return /^zd|zodyak/.test(a) ? 'zodyak' : 'duz'; }
-  setInterval(function(){ var sh = document.getElementById('monocityShop'); if(!sh || !sh.classList.contains('show') || sh.getAttribute('data-shop-cat') !== 'board') return;
+  setInterval(function(){ var sh = document.getElementById('monocityShop'); if(!sh || !sh.classList.contains('show') || !/^(board|dice|pawn)$/.test(sh.getAttribute('data-shop-cat') || '')) return;
     var g = document.getElementById('shopGrid'); if(!g) return; var K = [].slice.call(g.children); if(K.length < 2) return;
-    var A = K.map(function(c, i){ return {c:c, i:i, o:(TORD[cardTag(c)] != null ? TORD[cardTag(c)] : 0)}; }), B = A.slice().sort(function(x, y){ return y.o - x.o || x.i - y.i; });
+    var A = K.map(function(c, i){ return {c:c, i:i, o:(c.classList.contains('mc5Lock') ? -1 : (TORD[cardTag(c)] != null ? TORD[cardTag(c)] : 0))}; }), B = A.slice().sort(function(x, y){ return y.o - x.o || x.i - y.i; });
     if(B.every(function(x, i){ return x.c === K[i]; })) return; B.forEach(function(x){ g.appendChild(x.c); }); }, 500);
 
   window.MONOCITY_EVW = { open:open, close:close, paint:function(){ if(W.el && W.el.classList.contains('show')) paint(); } };
@@ -12380,6 +12380,19 @@ html body #mcLobbyUI#mcLobbyUI .mclChat #mclChatList>*:last-child{margin:auto 0!
 #mcPP .mkHostRow .ka{background:linear-gradient(180deg,#ef4444,#991b1b)}
 #monocityShop #shopGrid>* img.mkBdTag{display:block!important}
 #f25Cek .rc .v .mcTrC{font-size:13px!important}
+/* ===== T58b · sol alt chat: sade nick, dünya ikonuyla aynı hiza ===== */
+html body #mcLobbyUI#mcLobbyUI .mclChat #mclChatList#mclChatList{display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:stretch!important;align-self:stretch!important;overflow:hidden!important}
+html body #mcLobbyUI#mcLobbyUI #mclChatList .mcCm{align-items:center!important;margin:0!important;padding:0!important;min-height:0!important}
+html body #mcLobbyUI#mcLobbyUI #mclChatList .mcCmB,html body #mcLobbyUI#mcLobbyUI #mclChatList .mcCmN{align-items:center!important;margin:0!important;padding:0!important}
+html body #mcLobbyUI#mcLobbyUI #mclChatList b.who.who.f9Pl,html body #mcLobbyUI#mcLobbyUI #mclChatList b.who.who{border:0!important;border-image:none!important;background:none!important;height:auto!important;line-height:1.25!important;padding:0!important;margin:0!important;box-shadow:none!important;font-family:Arial,Helvetica,sans-serif!important;font-weight:1000!important;font-style:normal!important;color:#ffd66e!important;-webkit-text-fill-color:#ffd66e!important;text-shadow:0 1px 2px #000!important;vertical-align:middle!important;letter-spacing:0!important}
+html body #mcLobbyUI#mcLobbyUI #mclChatList b.who.who:before{content:none!important;display:none!important}
+html body #mcLobbyUI#mcLobbyUI #mclChatList .mcCmT{line-height:1.25!important}
+/* ===== T58b · afişte çerçeve ile nick arası ===== */
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn.filled>.av{height:17.5cqh!important;margin-top:3.5cqh!important}
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn.filled>b{margin-top:4.6cqh!important}
+html body #mcLobby2.mkLb #lbSeats .lbSeat.mkBn.filled>.f12Lg{margin-top:1.4cqh!important}
+/* ===== T58b · mağaza zar/piyon: filtre çubuğu kalktı (tahtalar gibi düz) ===== */
+#monocityShop #mcShopFlt{display:none!important}
 
 </style>
 <script id="mc-t58-js">
@@ -12439,7 +12452,22 @@ html body #mcLobbyUI#mcLobbyUI .mclChat #mclChatList>*:last-child{margin:auto 0!
   /* ---------- 2) dar afişte Şampiyon yazısı sığmazsa sadece ★ ---------- */
   setInterval(function(){ var l = document.getElementById('mcLobby2'); if(!l || !l.classList.contains('show')) return;
     [].forEach.call(l.querySelectorAll('.lbSeat .f12Lg'), function(f){ var sp = f.querySelector('span') || f.lastElementChild; if(!sp || sp.tagName === 'IMG') return;
-      var t = sp.textContent || '', m = t.match(/^\s*Şampiyon\s*(★.*)$/); if(m && f.scrollWidth > f.clientWidth + 1){ sp.textContent = m[1].trim(); } }); }, 500);
+      var t = sp.textContent || '', m = t.match(/^\s*Şampiyon\s*(★.*)$/); if(m){ sp.textContent = m[1].trim(); } }); eqSeats(l); }, 300);
+  /* afişler eşit boy (2vs2 / 4 kişilik simetri) */
+  function gapPx(el){ var g = getComputedStyle(el).columnGap || '0'; var v = parseFloat(g) || 0; return /%/.test(g) ? v*el.clientWidth/100 : v; }
+  function eqSeats(l){
+    var S = l.querySelector('#lbSeats'); if(!S || !l.classList.contains('mkLb')) return;
+    var teams = S.querySelectorAll('.mcTeam .sts'), seats = [], w = Infinity, team = teams.length > 0;
+    var clear = function(x){ ['flex','width','max-width','min-width'].forEach(function(k){ x.style.removeProperty(k); }); };
+    if(team){ [].forEach.call(teams, function(t){ var ss = [].filter.call(t.children, function(c){ return c.classList.contains('lbSeat'); }); if(!ss.length) return; seats = seats.concat(ss); w = Math.min(w, (t.clientWidth - gapPx(t)*(ss.length - 1))/ss.length); }); }
+    else { seats = [].filter.call(S.children, function(c){ return c.classList.contains('lbSeat'); }); if(seats.length < 3){ seats.forEach(clear); return; }
+      var other = 0; [].forEach.call(S.children, function(c){ if(!c.classList.contains('lbSeat')) other += c.offsetWidth; });
+      var nItems = S.children.length; w = (S.clientWidth - other - gapPx(S)*(nItems - 1))/seats.length; }
+    if(!seats.length || !isFinite(w) || w <= 0) return;
+    w = Math.floor(Math.min(w, innerHeight*0.62*(team ? 0.56 : 0.62)));
+    seats.forEach(function(x){ var cur = parseFloat(x.style.width) || 0; if(Math.abs(cur - w) < 1) return;
+      x.style.setProperty('flex', '0 0 '+w+'px', 'important'); x.style.setProperty('width', w+'px', 'important'); x.style.setProperty('max-width', w+'px', 'important'); x.style.setProperty('min-width', w+'px', 'important'); });
+  }
 
   /* ---------- 8) Mağaza Tahtalar: eksik etiket (Düz/Elit/Special) sağ üst köşeye ---------- */
   var DUZ = 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 116"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c98d55"/><stop offset=".5" stop-color="#8a5a2e"/><stop offset="1" stop-color="#5a3518"/></linearGradient><linearGradient id="r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".5" stop-color="#b8863a"/><stop offset="1" stop-color="#ffe0a0"/></linearGradient></defs><rect x="8" y="14" width="224" height="88" rx="22" fill="url(#g)" stroke="url(#r)" stroke-width="7"/><path d="M26 40 Q120 26 214 40" stroke="#e7b77d" stroke-width="3" fill="none" opacity=".5"/><path d="M26 82 Q120 92 214 80" stroke="#3b2210" stroke-width="3" fill="none" opacity=".45"/><text x="120" y="78" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="50" fill="#fff6e0" stroke="#3b1f0a" stroke-width="7" paint-order="stroke">Düz</text></svg>');
@@ -12449,11 +12477,14 @@ html body #mcLobbyUI#mcLobbyUI .mclChat #mclChatList>*:last-child{margin:auto 0!
     var g = document.getElementById('shopGrid'); if(!g) return; var TI = window.MONOCITY_TAG_IMG || {};
     [].forEach.call(g.children, function(c){
       if(c.querySelector('img.mc5Tag, img.atTagS, img.hwTagS, img.f10Tag, img.tg, img.tgs, img.atTag, img.hwTag')) return;
-      var t = tierOf((c.querySelector('.shopItemName, .diceName') || {}).textContent), src = t === 'duz' ? DUZ : TI[t]; if(!src) return;
+      var t = tierOf((c.querySelector('.shopItemName, .diceName') || {}).textContent), src = t === 'duz' ? '' : TI[t]; if(!src) return;
       var im = document.createElement('img'); im.className = 'atTagS f10Tag mkBdTag'; im.alt = t; im.src = src; if(getComputedStyle(c).position === 'static') c.style.position = 'relative'; c.appendChild(im);
     });
   }, 400);
 })();
+(function(){ setInterval(function(){ var f = document.getElementById('mcShopFlt'); if(!f) return; var sh = document.getElementById('monocityShop'); if(!sh || !sh.classList.contains('show')) return;
+  var on = f.querySelector('.ch.on'), dot = f.querySelector('.dot.on, .dot.sel, .dot.active');
+  if((on && on.getAttribute('data-t') !== 'all') || dot){ if(dot) dot.click(); var a = f.querySelector('.ch[data-t="all"]'); if(a && !a.classList.contains('on')) a.click(); } }, 700); })();
 
 </script>
 </body>
