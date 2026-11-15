@@ -2059,7 +2059,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261115-1100';
+window.MONOCITY_VER = '20261115-1745';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -18616,6 +18616,11 @@ html body #mcResult .col3{display:grid!important;grid-template-columns:1fr 1fr;g
 html body #mcResult .col3 > h4{grid-column:1/-1}
 html body #mcResult .col3 .p3Exp{padding:.8vh 1.1vh!important}
 html body #mcResult .col3 .p3Exp .t{font-size:2.3vh!important}html body #mcResult .col3 .p3Exp small{font-size:1.7vh!important}
+/* T93 */
+html body .p3Row > .t93R{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:0 0 auto;margin-left:auto}
+html body .p3Row .t93S{display:flex;align-items:center;gap:4px;font:800 10px Arial;color:#8fa0d0;white-space:nowrap}
+html body .p3Row .t93S i{width:7px;height:7px;border-radius:50%;background:#64748b;flex:0 0 auto}
+html body .p3Row .t93S i.on{background:#22c55e;box-shadow:0 0 5px #22c55e}html body .p3Row .t93S i.play{background:#f59e0b}
 
 </style>
 <script id="mc-t76-js">
@@ -19559,7 +19564,7 @@ window.MONOCITY_LUDO_IMG=["data:image/webp;base64,UklGRgg8AABXRUJQVlA4WAoAAAAQAA
     function topList(){
       if(RK.list && Date.now() - RK.t < 300000) return Promise.resolve(RK.list); if(RK.p) return RK.p;
       var db = window.MONOCITY_DB; if(!db || !db.ref) return Promise.resolve([]);
-      RK.p = db.ref('ranks').orderByChild('col').limitToLast(100).once('value').then(function(s){ var a = []; s.forEach(function(c){ var v = c.val() || {}; a.push({u:c.key, p:+v.col || 0}); }); a.sort(function(x, y){ return y.p - x.p; }); RK.list = a; RK.t = Date.now(); RK.p = null; return a; }).catch(function(){ RK.p = null; return []; });
+      RK.p = db.ref('ranks').orderByChild('col').limitToLast(100).once('value').then(function(s){ var a = []; s.forEach(function(c){ var v = c.val() || {}; a.push({u:c.key, p:+v.col || 0}); }); a.sort(function(x, y){ return y.p - x.p; }); return window.monocityLbHideFilter ? monocityLbHideFilter(a) : a; }).then(function(a){ RK.list = a; RK.t = Date.now(); RK.p = null; return a; }).catch(function(){ RK.p = null; return []; });
       return RK.p;
     }
     function rank(uid, pts){ if(!uid || tier(pts).i < 5) return Promise.resolve(0); return topList().then(function(a){ for(var i = 0; i < a.length; i++) if(a[i].u === uid) return i + 1; return 0; }); }
@@ -19731,6 +19736,33 @@ window.MONOCITY_LUDO_IMG=["data:image/webp;base64,UklGRgg8AABXRUJQVlA4WAoAAAAQAA
     }
     var lastCat = null;
     setInterval(function(){ var sh = document.getElementById('monocityShop'); if(!sh || !sh.classList.contains('show')) return; var cat = sh.getAttribute('data-shop-cat'); if(cat !== lastCat){ lastCat = cat; LD.g = null; } apply(false); }, 350);
+  })();
+
+  /* ===== 25: S1 ürünleri Şampiyon sınıfı · listede çevrimiçi / son görülme ===== */
+  (function(){
+    (function rc(){ var RC = window.MONOCITY_TIER_RC; if(!RC) return setTimeout(rc, 800); if(!RC.s1) RC.s1 = RC.sampiyon; })();
+    var PC = {};
+    function stOf(u){
+      var S = window.MONOCITY_SOCIAL; if(S && S.presence && S.presence[u] && S.status) return S.status(u);
+      var c = PC[u]; if(!c || Date.now() - c.t > 30000){ PC[u] = {t:Date.now(), v:c ? c.v : null};
+        try{ MONOCITY_DB.ref('presence/' + u).once('value').then(function(s){ PC[u] = {t:Date.now(), v:(s && s.val()) || 0}; }).catch(function(){}); }catch(e){} }
+      var p = PC[u].v; if(p == null) return null; if(!p) return {c:'off', t:'Çevrimdışı'};
+      var ago = function(t){ return window.monocityAgo && t ? ' · ' + monocityAgo(t) : ''; };
+      if(p.on && p.t && Date.now() - p.t > 180000) return {c:'off', t:'Çevrimdışı' + ago(p.t)};
+      if(!p.on) return {c:'off', t:'Çevrimdışı' + ago(p.ls || p.t)};
+      return p.g ? {c:'play', t:'Oyunda'} : {c:'on', t:'Çevrimiçi'};
+    }
+    setInterval(function(){
+      var me = window.MONOCITY_AUTH && MONOCITY_AUTH.uid;
+      document.querySelectorAll('.p3Row[data-uid]').forEach(function(r){
+        if(!r.getClientRects().length) return; var u = r.getAttribute('data-uid'); if(!u || u === me) return;
+        var w = r.querySelector(':scope > .t93R');
+        if(!w){ var b = r.lastElementChild; if(!b || b.classList.contains('nm')) return; w = document.createElement('div'); w.className = 't93R'; r.replaceChild(w, b); w.appendChild(b); }
+        var st = stOf(u), el = w.querySelector('.t93S'); if(!st){ return; }
+        if(!el){ el = document.createElement('small'); el.className = 't93S'; w.appendChild(el); }
+        var h = '<i class="' + st.c + '"></i>' + st.t; if(el.__h !== h){ el.__h = h; el.innerHTML = h; }
+      });
+    }, 700);
   })();
 })();
 
@@ -25128,8 +25160,9 @@ mportant;}
   };
 
   window.monocityLogout = function(){
+    var __w = Promise.resolve(); try{ if(A.uid){ var __pr = db.ref('presence/'+A.uid); try{ __pr.onDisconnect().cancel(); }catch(e){} __w = __pr.set({on:false, t:Date.now(), ls:Date.now()}).catch(function(){}); } }catch(e){}
     try{ acc().clearLocal(); }catch(e){}
-    var p; try{ p = A.auth.signOut(); }catch(e){}
+    var p = __w.then(function(){ try{ return A.auth.signOut(); }catch(e){} });
     Promise.resolve(p).catch(function(){}).then(function(){ try{ location.reload(); }catch(e){} });
   };
   window.monocityOpenAuth = function(m, note){ view('form'); setMode(m||'login', note); };
@@ -25375,7 +25408,7 @@ mportant;}
   S.relation = relation;
   function status(uid){
     var p = S.presence[uid];
-    if(!p) return {c:'off', t:'Çevrimdışı'}; if(!p.on){ if(p.t && Date.now() - p.t < 60000) return {c:'play', t:'Giriş yapılıyor'}; var ls = p.ls; return {c:'off', t:'Çevrimdışı'+(ls ? ' · '+(window.monocityAgo ? monocityAgo(ls) : '') : '')}; }
+    if(!p) return {c:'off', t:'Çevrimdışı'}; if(p.on && p.t && Date.now() - p.t > 180000) return {c:'off', t:'Çevrimdışı' + (window.monocityAgo ? ' · ' + monocityAgo(p.t) : '')}; if(!p.on){ if(p.t && Date.now() - p.t < 60000) return {c:'play', t:'Giriş yapılıyor'}; var ls = p.ls; return {c:'off', t:'Çevrimdışı'+(ls ? ' · '+(window.monocityAgo ? monocityAgo(ls) : '') : '')}; }
     return p.g ? {c:'play', t:'Oyunda'} : {c:'on', t:'Çevrimiçi'};
   }
   function follow(uid){
@@ -25440,7 +25473,7 @@ mportant;}
         lastG = inGame(); pr.set({on:true, g:lastG, t:Date.now()});
       });
       clearInterval(presTimer);
-      presTimer = setInterval(function(){ if(!me()) return; var g = inGame(), mine = S.presence && S.presence[uid]; if(g !== lastG || !mine || !mine.on){ lastG = g; pr.set({on:true, g:g, t:Date.now()}); } }, 4000);
+      presTimer = setInterval(function(){ if(!me()) return; var g = inGame(), mine = S.presence && S.presence[uid]; if(g !== lastG || !mine || !mine.on || Date.now() - (+mine.t || 0) > 60000){ lastG = g; pr.set({on:true, g:g, t:Date.now()}); } }, 4000);
     }catch(e){}
     /* profilin en guncel hali (kozmetik/seviye) sunucuda olsun */
     try{ if(window.MONOCITY_ACCOUNT_SYNC && acc().raw) window.MONOCITY_ACCOUNT_SYNC(acc().raw()); }catch(e){}
