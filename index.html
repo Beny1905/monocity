@@ -2059,7 +2059,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261115-0330';
+window.MONOCITY_VER = '20261115-0500';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -14834,7 +14834,7 @@ html body #monocityShop .shopContent{left:auto!important}
   function trDay(){ return Math.floor((Date.now() + 3*3600e3)/DAY); }
 
   /* ===================== 1) ETKİNLİKLER: sol menü ===================== */
-  var EVI = {'GÜNLÜK GÖREVLER':'📋', 'ÜCRETSİZ ÖDÜL YOLU':'🎁', 'VOLKAN PASS':'🎫', 'BALKABAĞI PASS':'🎫', 'CADI PASS':'🎫', 'TEDARİK':'📦', 'KÜP GÖREVLERİ':'🧊', 'FİRAVUN ÇEKİLİŞİ':'🏺', 'FİRAVUN PASS':'🎫', 'FACEBOOK BAĞLAMA ÖDÜLÜ':'🔗', 'E-POSTA BAĞLAMA ÖDÜLÜ':'✉️', 'ARKADAŞ DAVET ÖDÜLÜ':'🤝'};
+  var EVI = {'GÜNLÜK GÖREVLER':'📋', 'ÜCRETSİZ ÖDÜL YOLU':'🎁', 'VOLKAN PASS':'🎫', 'BALKABAĞI PASS':'🎫', 'CADI PASS':'🎫', 'TEDARİK':'📦', 'KÜP GÖREVLERİ':'🧊', 'FİRAVUN ÇEKİLİŞİ':'🏺', 'FİRAVUN PASS':'🎫', 'YILBAŞI PASS':'🎫', 'LOVE PASS':'🎫', 'AŞK TAKIMI':'💞', 'KALP BİNGO':'💗', 'FACEBOOK BAĞLAMA ÖDÜLÜ':'🔗', 'E-POSTA BAĞLAMA ÖDÜLÜ':'✉️', 'ARKADAŞ DAVET ÖDÜLÜ':'🤝'};
   function decoEv(){
     var el = document.getElementById('f7Ev'); if(!el || !el.classList.contains('show')) return;
     var grp = '';
@@ -18019,13 +18019,13 @@ html body #mcLobby2 .lbSeat.empty.mcSw .t70Sw{animation:none!important;transitio
   var NAVC = {};
   function navApply(nav){ var grp = null, kids = [], groups = [];
     Array.prototype.forEach.call(nav.children, function(c){ if(c.classList.contains('sec')){ grp = {h:c, k:[]}; groups.push(grp); return; } if(grp) grp.k.push(c); });
-    groups.forEach(function(g){ var arrow = g.h.querySelector('b'); if(!arrow || !/▾|▸/.test(arrow.textContent)) return; var key = g.h.textContent.replace(/[▾▸]/g, '').trim();
+    groups.forEach(function(g){ var arrow = g.h.querySelector('b'); if(!arrow || !/▾|▸/.test(arrow.textContent)) return; var key = g.h.textContent.replace(/[▾▸0-9]/g, '').trim();
       if(NAVC[key] == null) NAVC[key] = !g.k.some(function(x){ return x.classList.contains('on'); });
       var cl = NAVC[key]; g.h.classList.add('t75Gh'); g.h.classList.toggle('t75Cl', cl); arrow.textContent = cl ? '▸' : '▾';
       g.k.forEach(function(x){ x.classList.toggle('t75Hid', cl); }); }); }
   (function navObs(){ var el = document.getElementById('f7Ev'), nav = el && el.querySelector('.nav'); if(!nav) return setTimeout(navObs, 1000); if(nav.__t75) return; nav.__t75 = 1;
     var busy = false; new MutationObserver(function(){ if(busy) return; busy = true; try{ navApply(nav); }catch(e){} busy = false; }).observe(nav, {childList:true});
-    nav.addEventListener('click', function(e){ var h = e.target.closest('.sec.t75Gh'); if(!h) return; var key = h.textContent.replace(/[▾▸]/g, '').trim(); NAVC[key] = !NAVC[key]; navApply(nav); }); navApply(nav); })();
+    nav.addEventListener('click', function(e){ var h = e.target.closest('.sec.t75Gh'); if(!h) return; var key = h.textContent.replace(/[▾▸0-9]/g, '').trim(); NAVC[key] = !NAVC[key]; navApply(nav); }); navApply(nav); })();
 
   /* ======================================================================
      AŞK TAKIMI — arkadaşlarla (en fazla 4) günlük görev puanı topla, ortak ödül yolu
@@ -18498,6 +18498,20 @@ html body.f23 #mcLobbyUI .mclMenu .mclMenuItem .mclBadge{top:calc(1.7*var(--mcu,
 /* T86: hazırlık ekranında Legend bildirim efekti görünsün (background:none kuralı yazıyı şeffaf bırakıyordu) */
 html body #f19Ov .cd .sl span.nfx.mkLgN,html body #f19Ov .tray .it>div span.nfx.mkLgN{background:linear-gradient(180deg,#fff3b0,#ffcf4a 40%,#ff6a00 75%,#7a1d00)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;-webkit-text-stroke:0!important;text-shadow:none!important;filter:drop-shadow(0 0 .25em #ff6a00)}
 html body #f19Ov .cd .sl span.nfx.mkLgN.lg-i,html body #f19Ov .tray .it>div span.nfx.mkLgN.lg-i{background:linear-gradient(180deg,#ffffff,#d6f3ff 40%,#5bc0f8 75%,#0b3b66)!important;-webkit-background-clip:text!important;background-clip:text!important;filter:drop-shadow(0 0 .25em #38bdf8)}
+/* T87: sende olan eşya çıkınca dönen kart (eşya ↔ parça) görünür — kutu boyu 0 kalıyordu */
+html body .mczV:has(> .mczFl),html body .mczV:has(.mczFl){display:inline-block!important;position:relative!important;width:clamp(46px,12vh,86px)!important;height:clamp(46px,12vh,86px)!important;flex:0 0 auto!important;overflow:visible!important}
+html body div.v.mczV:has(.mczFl){display:block!important;margin:0 auto!important}
+html body .mczFl{width:100%!important;height:100%!important}
+html body .mczFl>.f>img,html body .mczFl>.b>img{max-width:88%!important;max-height:78%!important;width:auto!important;height:auto!important;object-fit:contain}
+html body .mczFl .sv{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);font:1000 clamp(7px,1.9vh,10px) Arial;font-style:normal;color:#fff;background:rgba(22,163,74,.9);border-radius:6px;padding:1px 5px;white-space:nowrap}
+/* tek kopya (yeni) eşyada da kutu boyu */
+html body .rcell > .mczV,html body .it > b > .mczV,html body .rg > div > span > .mczV{min-width:clamp(40px,10vh,76px);min-height:clamp(40px,10vh,76px)}
+/* Firavun: "5 BİLET" kartında bilet büyük */
+#msW .t69Pop .wn span img,#msW .t69Pop .wn span svg,#msW .t69Pop .wn span .mcCi{height:clamp(54px,15vh,90px)!important;width:auto!important;max-height:90px!important}
+#mwOv .res .it img.t87Tv{height:clamp(48px,14vh,96px)!important;width:auto!important;max-width:100%!important;object-fit:contain;display:block;margin:0 auto}
+/* T87: Setlerim kartında Zodyak tahtalarına eklenen İKİNCİ etiket dev boyda kartı kaplıyordu → yinelenen etiket gizli, tekli etiket köşede sabit boy */
+html body .it.t71K > img.f10Tag ~ img.f10Tag,html body .it.t71K > img.tg ~ img.mc5Tag,html body .it.t71K > img.mc5Tag ~ img.mc5Tag{display:none!important}
+html body .it.t71K > img.mc5Tag:only-of-type,html body .it.t71K > img.f10Tag.mc5Tag{position:absolute!important;top:6%!important;right:5%!important;left:auto!important;bottom:auto!important;height:clamp(16px,4.6vh,26px)!important;width:auto!important;max-width:46%!important;z-index:6}
 
 </style>
 <script id="mc-t76-js">
@@ -19338,6 +19352,11 @@ html body #f19Ov .cd .sl span.nfx.mkLgN.lg-i,html body #f19Ov .tray .it>div span
         var tot = last ? 1100 : 650; setTimeout(function(){ d.style.transition = 'opacity .35s'; d.style.opacity = '0'; }, tot - 300); setTimeout(function(){ d.remove(); }, tot + 100); }catch(e){}
       return r; };
     for(var k in o) try{ w[k] = o[k]; }catch(e){} w.__t86 = 1; w.__lg = true; w.__mk = true; window.monocityStepFx = w; setTimeout(ringHook, 3000); })();
+
+  /* ---------- 20) Etkinlik menüsü yeniden çizilince kaydırma yeri korunur ---------- */
+  (function navKeep(){ var n = document.querySelector('#f7Ev .nav'); if(!n) return setTimeout(navKeep, 1200); if(n.__t87) return; n.__t87 = 1; var y = 0;
+    n.addEventListener('scroll', function(){ if(n.scrollHeight > n.clientHeight) y = n.scrollTop; }, {passive:true});
+    new MutationObserver(function(){ if(y && Math.abs(n.scrollTop - y) > 2){ n.scrollTop = y; requestAnimationFrame(function(){ if(Math.abs(n.scrollTop - y) > 2) n.scrollTop = y; }); } }).observe(n, {childList:true}); })();
 })();
 
 </script>
@@ -29287,6 +29306,7 @@ body.mcIso #mcIsoHud{display:block}
     grid.innerHTML = '';
     TIER.forEach(function(tr){
       var id = tr[0], price = tr[1], cur = tr[2], o = price === 0 || own.indexOf(id) !== -1, e = eq === id;
+      if(cat === 'board' ? !BT[id] : !CT[id]) return;
       var name = (cat === 'board' ? BT[id].n + ' TAHTA' : CT[id] + ' TEMA');
       var card = document.createElement('div'); card.className = 'shopItem';
       card.innerHTML = '<div class="shopItemName">'+name+'</div><div class="shopItemVisual">'+(cat === 'board' ? prevBoard(id) : prevChat(id))+'</div>' +
@@ -29569,14 +29589,15 @@ body.mcIso #mcIsoHud{display:block}
   var LCOL = ['#1e3a8a','#6d28d9','#1d4ed8','#7e22ce','#0369a1','#9333ea','#0e7490','#b45309'];
   function pick(sl){ var t = 0, i; for(i=0;i<sl.length;i++) t += sl[i].w; var r = Math.random()*t; for(i=0;i<sl.length;i++){ r -= sl[i].w; if(r < 0) return i; } return 0; }
   var __TRN = {dice:'Zar', pawn:'Piyon', board:'Tahta'};
-  function __trGive(c, d){ var L = []; try{ L = (window.monocityTrialCands ? monocityTrialCands(c) : []) || []; }catch(e){} if(!L.length) return ''; var x = L[Math.floor(Math.random()*L.length)], id = x && (x.id || x); try{ if(window.monocityTrialAdd) monocityTrialAdd(c, id, d, 1, true); }catch(e){} var nm = ''; try{ var it = (monocitySetItems(c) || []).filter(function(y){ return y.id === id; })[0]; nm = it ? it.n : ''; }catch(e){} return nm; }
+  function __trGive(c, d){ var L = []; try{ L = (window.monocityTrialCands ? monocityTrialCands(c) : []) || []; }catch(e){} if(!L.length) return ''; var x = L[Math.floor(Math.random()*L.length)], id = x && (x.id || x); try{ if(window.monocityTrialAdd) monocityTrialAdd(c, id, d, 1, true); }catch(e){} try{ var __v = (c === 'board' && window.MONOCITY_BD_IMG && MONOCITY_BD_IMG[id]) || (window.monocityCosImg ? monocityCosImg(c, id) : ''); if(__v) __trV.push(__v); }catch(e){} var nm = ''; try{ var it = (monocitySetItems(c) || []).filter(function(y){ return y.id === id; })[0]; nm = it ? it.n : ''; }catch(e){} return nm; }
+  var __trV = [];
   function doPrize(sl, m, d, w){
-    var i = pick(sl), s = sl[i], out, nm = [];
+    var i = pick(sl), s = sl[i], out, nm = []; __trV = [];
     if(s.pz){ try{ if(window.MONOCITY_PARCA) MONOCITY_PARCA.add(s.k, s.pz*m); }catch(e){} out = { e:(s.k === 'p' ? '♟️' : '🎲'), t:(s.pz*m)+' '+(s.k === 'p' ? 'Piyon' : 'Zar')+' Parçası', cls:'e' }; }
     else if(s.bx){ try{ if(window.monocityBag) monocityBag.add(s.bx, m); }catch(e){} out = { e:(s.bx === 'metro2' ? '⚡' : '⭐'), t:(m > 1 ? m+' ' : '')+(s.bx === 'metro2' ? 'Çifte Metro Kartı' : 'Çifte EXP Kartı'), cls:'r' }; }
     else if(s.tr === 'mix'){ for(var q=0;q<m;q++) ['dice','pawn','board'].forEach(function(c){ var n = __trGive(c, d); if(n) nm.push(n); }); out = { e:'🎁', t:(m > 1 ? m+' ' : '')+'Karışık Deneme Paketi'+(nm.length ? ' · '+nm.join(', ') : '')+' ('+d+' gün)', cls:'l' }; }
     else { for(var q2=0;q2<m;q2++){ var n2 = __trGive(s.tr, d); if(n2) nm.push(n2); } out = { e:({dice:'🎲', pawn:'♟️', board:'🗺️'})[s.tr], t:(m > 1 ? m+' ' : '')+__TRN[s.tr]+' Deneme Paketi'+(nm.length ? ' · '+nm.join(', ') : '')+' ('+d+' gün)', cls:'r' }; }
-    addHist(w, out.e, out.t, out.cls); out.slice = i; return out;
+    addHist(w, out.e, out.t, out.cls); if(__trV.length) out.e = '<img class="t87Tv" alt="" src="'+__trV[0]+'">'; out.slice = i; return out;
   }
   function doNormal(){ return doPrize(NSL, 1, 1, 'n'); }
   function doLegend(){ return doPrize(LSL, 2, 3, 'l'); }
