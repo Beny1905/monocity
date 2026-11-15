@@ -125,7 +125,7 @@ function act(a, r, k, btn){
   else if(ALB[a]){ kind = 'alb'; until = Math.max(Number(G.M[u] && G.M[u].alb) || 0, now) + ALB[a][1]; ups.push(mref.child('alb').set(until));
     if(r.p) ups.push(Promise.all([db.ref('album/'+u+'/'+r.p).remove(), db.ref('albumLikes/'+u+'/'+r.p).remove().catch(function(){}), db.ref('albumCom/'+u+'/'+r.p).remove().catch(function(){})]));
     ti = '🖼️ Fotoğrafın kaldırıldı · '+ALB[a][2]+' albüm yasağı'; tx = 'Albümündeki bir fotoğraf şikayet edildi ve GM tarafından kaldırıldı.\nSebep: '+why+'\n\n'+ALB[a][2]+' boyunca albüme fotoğraf yükleyemezsin.\nHaksız olduğunu düşünüyorsan bir kez İTİRAZ edebilirsin.'; }
-  else if(BAN[a]){ kind = 'ban'; until = a === 'bp' ? PERMA : Math.max(Number(G.M[u] && G.M[u].ban) || 0, now) + BAN[a][1]; ups.push(mref.child('ban').set(until)); ups.push(mref.child('banR').set(String(r.r || 'Kurallara aykırı davranış').slice(0, 80))); ups.push(mref.child('banP').set(hk));
+  else if(BAN[a]){ kind = 'ban'; until = a === 'bp' ? PERMA : Math.max(Number(G.M[u] && G.M[u].ban) || 0, now) + BAN[a][1]; ups.push(mref.child('ban').set(until)); ups.push(db.ref('users/'+u+'/gmSet').set({ts:Date.now(), lbh:1}).catch(function(){})); ups.push(mref.child('banR').set(String(r.r || 'Kurallara aykırı davranış').slice(0, 80))); ups.push(mref.child('banP').set(hk));
     ti = '🔨 Hesabın yasaklandı · '+BAN[a][2]; tx = 'Hesabın GM tarafından '+(a === 'bp' ? 'kalıcı olarak' : BAN[a][2]+' süreyle')+' yasaklandı.\nSebep: '+why+'\nHaksız olduğunu düşünüyorsan bir kez İTİRAZ edebilirsin.'; }
   else if(a === 'warn'){ ti = '⚠️ GM uyarısı'; tx = where+' şikayet edildi ve GM tarafından incelendi.\nSebep: '+why+(r.m ? '\nMesaj: “'+String(r.m).slice(0, 120)+'”' : '')+'\n\nBu bir uyarıdır — tekrarlanırsa sohbet / albüm yasağı uygulanır.\nHaksız olduğunu düşünüyorsan bir kez İTİRAZ edebilirsin.'; }
   else if(a === 'del'){
@@ -139,7 +139,7 @@ function act(a, r, k, btn){
   if(ti) ups.push(mailTo(u, hk, ti, tx, true, a));
   return Promise.all(ups).then(function(){ return k ? db.ref('reports/'+k).remove() : null; }).then(function(){ toast('✅ '+penName(a)+' uygulandı.'); G.sel = null; return reload(); }).catch(function(e){ btn.__busy = 0; toast('❌ İşlem yapılamadı (kurallar güncel mi?).'); console.warn(e); });
 }
-function revert(u, pid, why){ var h = ((G.M[u] && G.M[u].hist) || {})[pid] || {}, mref = db.ref('mod/'+u), ps = [mref.child('hist').child(pid).child('rev').set(Date.now())];
+function revert(u, pid, why){ var h = ((G.M[u] && G.M[u].hist) || {})[pid] || {}, mref = db.ref('mod/'+u), ps = [mref.child('hist').child(pid).child('rev').set(Date.now()), db.ref('users/'+u+'/gmSet/lbh').remove().catch(function(){})];
   var k = h.k || (PEN[h.a] && PEN[h.a][1] ? 'mute' : (ALB[h.a] ? 'alb' : (BAN[h.a] ? 'ban' : null)));
   if(k === 'ban'){ ps.push(mref.child('ban').set(null)); ps.push(mref.child('banR').set(null)); ps.push(mref.child('banP').set(null)); }
   if(k === 'mute') ps.push(mref.child('mute').set(null)); if(k === 'alb') ps.push(mref.child('alb').set(null));
@@ -221,7 +221,7 @@ function plAct(b){ var p = G.P; if(!p) return; var u = p.u, d = p.d, a = b.getAt
     gpSend(u, set, '🛡️ GM rankını ayarladı', parts.join('\n'), '✅ Rank verildi · '+nm); }
   else if(a === 'rs'){ var rs = {}; document.querySelectorAll('[data-rs]').forEach(function(c){ if(c.checked) rs[c.getAttribute('data-rs')] = 1; }); if(!Object.keys(rs).length){ toast('En az bir seçenek işaretle.'); return; } if(rs.bal) rs.bv = Number(num('gpBal') || 0);
     sure(b, function(){ var LL = {bal:'bakiye'+(rs.bal ? ' ('+fmt(rs.bv)+')' : ''), mk:'market eşyaları', ot:'diğer eşyalar', vip:'VIP', rank:'rank ve Ludo puanı', lv:'seviye ve başarılar', log:'harcama kaydı'};
-      gpSend(u, {ts:Date.now(), rs:rs}, '🛡️ GM hesabını sıfırladı', 'Sıfırlananlar: '+Object.keys(rs).filter(function(k){ return LL[k]; }).map(function(k){ return LL[k]; }).join(', '), '♻️ Sıfırlama gönderildi · '+nm); }); }
+      gpSend(u, {ts:Date.now(), rs:rs, lbh:1}, '🛡️ GM hesabını sıfırladı', 'Sıfırlananlar: '+Object.keys(rs).filter(function(k){ return LL[k]; }).map(function(k){ return LL[k]; }).join(', '), '♻️ Sıfırlama gönderildi · '+nm); }); }
   else if(a === 'pen'){ var pa = b.getAttribute('data-a'), r = {u:u, n:nm, t:'gm', r:($('#plR').value || '').trim() || 'GM kararı', m:''}; var go = function(){ act(pa, r, null, b).then(function(){ openPl(u); }); }; if(BAN[pa] || pa === 'del') sure(b, go); else go(); } }
 /* ---------- KULÜP ---------- */
 function pKl(W){ var c = G.C, h = '<div class="card"><label>Kulüp ID</label><div class="row"><input id="klQ" inputmode="numeric" style="flex:1" value="'+esc(G.klQ || '')+'"><button class="b" id="klB">ARA</button></div></div>';
