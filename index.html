@@ -2059,7 +2059,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261115-0500';
+window.MONOCITY_VER = '20261115-0600';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -13877,7 +13877,7 @@ i.nd{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ef4
     };
     if(loc){ var sp = [].slice.call(loc.querySelectorAll('span')).filter(function(x){ return !x.classList.contains('pin'); })[0]; o.loc = sp ? (sp.textContent || '').trim() : ''; o.locE = !sp || sp.classList.contains('empty'); }
     if(cl){ var im = cl.querySelector('img.em'); o.clI = im ? im.src : ''; o.clDim = !!(im && im.classList.contains('dim')); o.clN = tx('#ppClanName'); o.clB = tx('#ppClanBtn'); }
-    var gr = q('.f8V .gr');
+    var gr = q('.f8V .gr.f20Sel');
     if(gr){ var kids = [].slice.call(gr.children).filter(function(c){ return !c.classList.contains('f20Off'); });
       kids.sort(function(a, b){ return (+(a.getAttribute('data-slot') || a.style.order || 0)) - (+(b.getAttribute('data-slot') || b.style.order || 0)); });
       o.rz = kids.slice(0, 4).map(function(c){ return {s:c.getAttribute('data-slot'), c:c.className, h:c.innerHTML}; }); }
@@ -18512,6 +18512,13 @@ html body .rcell > .mczV,html body .it > b > .mczV,html body .rg > div > span > 
 /* T87: Setlerim kartında Zodyak tahtalarına eklenen İKİNCİ etiket dev boyda kartı kaplıyordu → yinelenen etiket gizli, tekli etiket köşede sabit boy */
 html body .it.t71K > img.f10Tag ~ img.f10Tag,html body .it.t71K > img.tg ~ img.mc5Tag,html body .it.t71K > img.mc5Tag ~ img.mc5Tag{display:none!important}
 html body .it.t71K > img.mc5Tag:only-of-type,html body .it.t71K > img.f10Tag.mc5Tag{position:absolute!important;top:6%!important;right:5%!important;left:auto!important;bottom:auto!important;height:clamp(16px,4.6vh,26px)!important;width:auto!important;max-width:46%!important;z-index:6}
+/* T88 */
+html body #mcProfileScreen.p62.f20Wait::after{display:none!important}
+html body #p62 .hd .ln{width:fit-content!important;max-width:100%!important;align-self:flex-start!important}
+html body #mcWheel .grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+html body #mcWheel .grid.one{grid-template-columns:minmax(0,1fr)!important;max-width:min(320px,80vw)!important}
+html body #mcWheel .grid.one .it span{white-space:normal!important;flex-wrap:wrap!important;line-height:1.25!important;padding:0 6px;text-align:center}
+html body #mcWheel .res{overflow-x:hidden!important}
 
 </style>
 <script id="mc-t76-js">
@@ -19357,6 +19364,20 @@ html body .it.t71K > img.mc5Tag:only-of-type,html body .it.t71K > img.f10Tag.mc5
   (function navKeep(){ var n = document.querySelector('#f7Ev .nav'); if(!n) return setTimeout(navKeep, 1200); if(n.__t87) return; n.__t87 = 1; var y = 0;
     n.addEventListener('scroll', function(){ if(n.scrollHeight > n.clientHeight) y = n.scrollTop; }, {passive:true});
     new MutationObserver(function(){ if(y && Math.abs(n.scrollTop - y) > 2){ n.scrollTop = y; requestAnimationFrame(function(){ if(Math.abs(n.scrollTop - y) > 2) n.scrollTop = y; }); } }).observe(n, {childList:true}); })();
+
+  /* ===== 21: profil kulüp satırı titremesin (anında biçimle) ===== */
+  (function(){
+    function es(t){ return String(t).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+    function fmt(){
+      var ln = document.querySelector('#p62 .hd .ln[data-a="clan"]'); if(!ln || ln.__t67s === ln.textContent) return;
+      var src = document.querySelector('#mcProfileScreen #ppClanName'), sp = src && src.querySelector('span'), tg = '', nm = '';
+      if(sp){ tg = sp.textContent.trim(); var c = src.cloneNode(true); c.querySelectorAll('span').forEach(function(z){ z.remove(); }); nm = c.textContent.trim(); }
+      if(tg){ ln.classList.add('t67Cl'); ln.innerHTML = '<i class="tg">'+es(tg)+'</i><span class="nm">'+es(nm)+'</span>'; }
+      else { var im = ln.querySelector('img'); if(im) im.remove(); ln.querySelectorAll('u').forEach(function(u){ if(/^KULÜP ›$/.test(u.textContent.trim())) u.remove(); }); }
+      ln.__t67s = ln.textContent;
+    }
+    (function hook(){ var el = document.getElementById('p62'); if(!el) return setTimeout(hook, 600); if(!el.__t88){ el.__t88 = 1; new MutationObserver(fmt).observe(el, {childList:true, subtree:true}); fmt(); } setTimeout(hook, 3000); })();
+  })();
 })();
 
 </script>
