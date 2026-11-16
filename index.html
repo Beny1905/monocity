@@ -2059,7 +2059,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261116-2100';
+window.MONOCITY_VER = '20261116-2300';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -12450,14 +12450,14 @@ html body #monocityGameUI#monocityGameUI{background:radial-gradient(ellipse at 5
     var teams = S.querySelectorAll('.mcTeam .sts'), seats = [], w = Infinity, team = teams.length > 0;
     var clear = function(x){ ['flex','width','max-width','min-width'].forEach(function(k){ x.style.removeProperty(k); }); };
     if(team){ [].forEach.call(teams, function(t){ var ss = [].filter.call(t.children, function(c){ return c.classList.contains('lbSeat'); }); if(!ss.length) return; seats = seats.concat(ss); w = Math.min(w, (t.clientWidth - gapPx(t)*(ss.length - 1))/ss.length); }); }
-    else { seats = [].filter.call(S.children, function(c){ return c.classList.contains('lbSeat'); }); if(!seats.length) return;
+    else { seats = [].filter.call(S.children, function(c){ return c.classList.contains('lbSeat'); }); var __so = !seats.length; if(__so){ seats = [].slice.call(S.querySelectorAll('.mcSolo > .lbSeat')); if(!seats.length) return; }
       var other = 0; [].forEach.call(S.children, function(c){ if(!c.classList.contains('lbSeat')) other += c.offsetWidth; });
-      var nItems = S.children.length; w = (S.clientWidth - other - gapPx(S)*(nItems - 1))/seats.length; }
+      var nItems = S.children.length; w = (S.clientWidth - other - gapPx(S)*(nItems - 1))/seats.length; if(__so) w = S.clientWidth; }
     if(!seats.length || !isFinite(w) || w <= 0) return;
     /* T74: tüm modlarda aynı afiş ölçüsü (2vs2 boyu) */
-    var hTot = S.clientHeight - Math.round(Math.max(9, Math.min(12, innerHeight*0.024))*1.25 + 4), hh = Math.floor(Math.min(S.clientHeight - Math.round(Math.max(9, Math.min(12, innerHeight*0.024))*1.25 + 4), Math.min(S.clientWidth*0.195, innerHeight*0.62*0.56)/0.43)); w = Math.floor(hh*0.43);
+    var hTot = S.clientHeight - Math.round(Math.max(9, Math.min(12, innerHeight*0.024))*1.25 + 4), hh = Math.floor(Math.min(hTot, Math.min(w, innerHeight*0.62*0.56, S.clientWidth*0.216)/0.43)); w = Math.floor(hh*0.43);
     seats.forEach(function(x){ var cur = parseFloat(x.style.width) || 0, ch = parseFloat(x.style.height) || 0; if(Math.abs(cur - w) < 1 && Math.abs(ch - hh) < 1) return;
-      x.style.setProperty('flex', '0 0 '+w+'px', 'important'); x.style.setProperty('width', w+'px', 'important'); x.style.setProperty('max-width', w+'px', 'important'); x.style.setProperty('min-width', w+'px', 'important'); x.style.setProperty('height', hh+'px', 'important'); x.style.setProperty('box-sizing', 'border-box', 'important'); });
+      x.style.setProperty('flex', '0 0 '+(__so ? hh : w)+'px', 'important'); x.style.setProperty('width', w+'px', 'important'); x.style.setProperty('max-width', w+'px', 'important'); x.style.setProperty('min-width', w+'px', 'important'); x.style.setProperty('height', hh+'px', 'important'); x.style.setProperty('box-sizing', 'border-box', 'important'); });
   }
 
   /* ---------- 8) Mağaza Tahtalar: eksik etiket (Düz/Elit/Special) sağ üst köşeye ---------- */
@@ -18786,6 +18786,18 @@ html body #f19Ov .cd .pl>b{text-align:left!important;margin-left:0!important;mar
 html body #mcLobbyUI #f19Car{translate:-5vw 0!important}
 html body #mcLobbyUI #f23Logo{translate:-5vw 0!important;scale:.92!important}
 html body #mcLobbyUI .mclPanel.mclFr{left:72%!important;width:27.4%!important;translate:0 6vh!important}
+/* T101: Özel 2vs2 — VS yazısı üst satıra, ortada ince şimşek ayracı, afişler uzun */
+html body #mcLobby2#mcLobby2.mcM1 #lbSeats>.mcVs,html body #mcLobby2#mcLobby2.mcM2 #lbSeats .mcVs{flex:0 0 3.2%!important;min-width:18px!important;align-self:stretch!important;position:relative!important;font-size:0!important;color:transparent!important;background:none!important;border:0!important;box-shadow:none!important;margin:0!important;padding:0!important;text-shadow:none!important;animation:none!important;transform:none!important}
+html body #mcLobby2#mcLobby2.mcM1 #lbSeats>.mcVs::before,html body #mcLobby2#mcLobby2.mcM2 #lbSeats .mcVs::before{content:'VS';position:absolute;left:50%;top:0;transform:translateX(-50%);font:1000 clamp(11px,3.4vh,16px) Arial;color:#ffd36b;letter-spacing:1px;text-shadow:0 1px 0 #7a4a00,0 0 8px rgba(255,190,60,.55);line-height:clamp(16px,4.6vh,22px)}
+html body #mcLobby2#mcLobby2.mcM1 #lbSeats>.mcVs::after,html body #mcLobby2#mcLobby2.mcM2 #lbSeats .mcVs::after{content:'';position:absolute;left:50%;width:2px;transform:translateX(-50%);top:clamp(22px,6.5vh,30px);bottom:4%;border-radius:2px;background:linear-gradient(180deg,rgba(255,211,107,.9),rgba(255,211,107,.35));box-shadow:0 0 6px rgba(255,200,80,.55)}
+html body #mcLobby2#mcLobby2.mcM2 #lbSeats .mcTeam>h5{justify-content:center!important;gap:10px!important}
+html body #mcLobby2#mcLobby2.mcM1 #lbSeats>.mcVs{margin:0 4%!important}
+html body #mcLobby2#mcLobby2.mcM1 #lbSeats>.mcVs::after{top:clamp(22px,6.5vh,30px)!important}
+/* T102: afiş içi sabit yuvalar — rank + hazırlık kutucukları her afişte aynı hizada */
+html body #mcLobby2#mcLobby2.mkLb #lbSeats .lbSeat.mkBn.mkBn.filled>.f12Lg{position:absolute!important;top:50%!important;left:0!important;right:0!important;margin:0 auto!important;width:fit-content!important;translate:none!important;transform:none!important;z-index:3}
+html body #mcLobby2#mcLobby2.mkLb #lbSeats .lbSeat.mkBn.mkBn>.mkEq{position:absolute!important;top:57.5%!important;left:0!important;right:0!important;margin:0 auto!important;width:fit-content!important;translate:none!important;z-index:3}
+html body #mcLobby2 #lbSeats .lbSeat.mkBn>.f9Pl{max-width:92%!important;flex-shrink:0!important}
+html body #mcLobby2#mcLobby2 #lbSeats .lbSeat.mkBn>.f9Pl.p-def{height:auto!important;min-height:var(--ph)!important;overflow:visible!important;line-height:1.2!important;padding-bottom:.08em!important}
 
 </style>
 <script id="mc-t76-js">
