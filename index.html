@@ -2059,7 +2059,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261116-0200';
+window.MONOCITY_VER = '20261116-0330';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -9990,7 +9990,7 @@ html body #f7Bag .cd.c48 small{flex:0 0 auto;line-height:1.1}
 
   /* ===================== EVRİM (7. dk, sahibine sıra gelince) ===================== */
   var EV = {}, EVKEY = '', EVMS = 7*60000;
-  function evoMs(){ try{ var v = +localStorage.getItem('mc_lg_evo_test'); if(v > 0) return v; }catch(e){} return EVMS; }
+  function evoMs(){ try{ var s0 = localStorage.getItem('mc_lg_evo_test') || '', m0 = /^t(\d+)$/.exec(s0); if(m0 && Date.now() < +m0[1]) return 30000; if(s0) localStorage.removeItem('mc_lg_evo_test'); }catch(e){} return EVMS; }
   function evolved(i){ return !!EV[i]; }
   window.monocityLgEvolved = evolved;
   function evoTick(){
@@ -10364,7 +10364,7 @@ html body #f7Bag .cd.c48 small{flex:0 0 auto;line-height:1.1}
       else if(a === 'g_50'){ S.pulls += 50; S.bar += 50; while(S.bar >= BAR){ S.bar -= BAR; S.stones++; } save(); }
       else if(a === 'g_st'){ S.stones++; S.jt = (S.jt || 0) + 10; save(); }
       else if(a === 'g_set'){ ['fire','ice'].forEach(function(q){ var IT = LGIT[q]; Object.keys(IT).forEach(function(z){ grant(IT[z].c, IT[z].id); }); }); save(); toast('🎁 Fire + Ice setleri verildi'); }
-      else if(a === 'g_evo'){ try{ if(evoMs() < EVMS) localStorage.removeItem('mc_lg_evo_test'); else localStorage.setItem('mc_lg_evo_test', '30000'); }catch(er){} toast(evoMs() < EVMS ? '⏱️ Evrim testi: 30 sn' : '⏱️ Evrim: 7 dk'); }
+      else if(a === 'g_evo'){ try{ if(evoMs() < EVMS) localStorage.removeItem('mc_lg_evo_test'); else localStorage.setItem('mc_lg_evo_test', 't' + (Date.now() + 30*60000)); }catch(er){} toast(evoMs() < EVMS ? '⏱️ Evrim testi: 30 sn (30 dk sonra kendiliğinden 7 dk olur)' : '⏱️ Evrim: 7 dk (normal)'); }
       else if(a === 'g_rs'){ S = fresh(); save(); }
       res(gmHtml()); hdr(); }
   }
@@ -18723,6 +18723,20 @@ html body .f23L .rw.t96Y .nm .br small{position:absolute;inset:0;display:flex;al
 html body .f23L .rw.t96Y .t96T{display:flex;flex-direction:column;align-items:center;gap:3px;margin-left:auto}
 html body .f23L .rw.t96Y .t96T .tg{margin:0!important}
 html body .f23L .rw.t96Y .t96T .lv{font:1000 13px Arial;color:#fff;text-shadow:0 1px 2px #000}
+/* T96b: rozet yerleşimi */
+html body .n1{display:flex!important;align-items:center!important;min-width:0!important;max-width:100%!important;gap:3px}
+html body .n1>b,html body .n1>.pn{flex:0 1 auto!important;min-width:0!important;width:auto!important;margin-right:0!important}
+html body .n1>.t96B{flex:0 0 auto!important;width:auto!important;margin-left:2px!important}
+html body #mclFrList .mclFrRow .nm{min-width:0!important;overflow:hidden}
+html body #lbFrList .t95F .tx .n1 .t96B{height:22px}
+html body #lbFrList .t95F .tx .pn{width:auto!important;max-width:100%!important;padding:0 10px 0 2.4em!important;text-overflow:ellipsis}
+html body #lbFrList .t95F .rk.no{opacity:.55}
+html body .f23L .rw.t96Y .nm .br small{color:#fff!important;opacity:1!important;filter:none!important;font:900 10px Arial!important;letter-spacing:0!important;text-shadow:0 1px 1px #000!important;-webkit-text-stroke:0!important;background:none!important}
+html body .n1>b{max-width:calc(100% - 24px)!important}
+html body #mclFrList .mclFrRow .nm .n1{overflow:visible}
+html body #mclFrList .mclFrRow .nm{overflow:visible!important}
+html body #mclFrList .mclFrRow .nm .n1>b.f9Pl,html body #mclFrList .mclFrRow .nm .n1>b,html body #f7So .rw .nm .n1>b.f9Pl,html body #f7So .rw .nm .n1>b{max-width:calc(100% - 24px)!important;min-width:0!important;flex:0 1 auto!important}
+html body #mclFrList .mclFrRow .nm .n1{width:100%!important}
 
 </style>
 <script id="mc-t76-js">
@@ -20032,7 +20046,7 @@ window.MONOCITY_REL_BADGE={"sevgili": ["data:image/webp;base64,UklGRgYOAABXRUJQV
         var st = inRoom[u] ? 'Lobide' : (s2.c === 'play' ? playTxt(u) : s2.t);
         var pl = d.cos && d.cos.plate, PI = window.MONOCITY_PLATE_IMG || {}, pu = pl && pl !== 'white' ? PI[pl] : '';
         var nmH = '<div class="n1">' + (pu ? '<div class="pn" data-noi18n="1" style="background-image:url(' + pu + ')">' + es(nm) + '</div>' : '<b class="nk" data-noi18n="1">' + es(nm) + '</b>') + (window.monocityRelBadge ? monocityRelBadge(u) : '') + '</div>';
-        var v = rankOf(u), rk = (v && !v.none && window.monocityLigImg) ? '<div class="rk"><img alt="" src="' + monocityLigImg(v) + '"><small>' + es(window.monocityLigLabel ? monocityLigLabel(v) : (v.t || '')) + '</small></div>' : '<div class="rk"></div>';
+        var v = rankOf(u), vv = (v && !v.none) ? v : {lig:'Bronz', k:5, t:'Bronz V'}, rk = window.monocityLigImg ? '<div class="rk' + (v && !v.none ? '' : ' no') + '"><img alt="" src="' + monocityLigImg(vv) + '"><small>' + es(window.monocityLigLabel ? monocityLigLabel(vv) : (vv.t || '')) + '</small></div>' : '<div class="rk"></div>';
         var sn = sent[u] && Date.now() - sent[u] < 5000;
         var bt = inRoom[u] ? '<button type="button" class="bt lb" disabled>LOBİDE</button>' : (sn ? '<button type="button" class="bt sn" disabled>✓ GİTTİ</button>' : '<button type="button" class="bt" data-inv="' + es(u) + '">' + (sent[u] ? '↻ TEKRAR' : 'DAVET ET') + '</button>');
         return '<div class="lbFrRow t95F ' + c + '" data-uid="' + es(u) + '"><div class="av">' + fav((d.cos && d.cos.frame) || 'white', u) + '<i class="' + c + '"></i></div>' +
@@ -20085,17 +20099,23 @@ window.MONOCITY_REL_BADGE={"sevgili": ["data:image/webp;base64,UklGRgYOAABXRUJQV
       return '<div class="rw t96Y" data-u="' + es(u) + '" style="--k:' + c + '">' + fav + '<div class="nm"><div class="n1"><b>' + es(nm) + '</b>' + (t ? badge(t, p) : '') + '</div><span class="hp">❤️ ' + p + '</span>' +
         '<div class="br"><i style="width:' + pct + '%"></i><small>' + p + ' / ' + nx + '</small></div></div>';
     };
-    /* ana menü arkadaş listesi: ismin sağında rozet */
+    /* ana menü + Sosyal listeleri: rozet ismin (plakanın) hemen sağında, plaka boyunda */
+    function srcOf(h){ return (/src="([^"]+)"/.exec(h || '') || [])[1] || ''; }
+    function place(b, u){
+      var src = srcOf(window.monocityRelBadge(u)), w = b.parentNode && b.parentNode.classList && b.parentNode.classList.contains('n1') ? b.parentNode : null, o = w ? w.querySelector(':scope > .t96B') : null;
+      if(!src){ if(o) o.remove(); return; }
+      if(!w){ w = document.createElement('div'); w.className = 'n1'; b.parentNode.insertBefore(w, b); w.appendChild(b); var nx = w.nextSibling; if(nx && nx.nodeName === 'BR') nx.style.display = 'none'; }
+      if(!o){ o = document.createElement('img'); o.className = 't96B'; o.alt = ''; w.appendChild(o); }
+      if(o.getAttribute('src') !== src) o.setAttribute('src', src);
+      var bh = b.getBoundingClientRect().height, hh = Math.max(15, Math.min(34, Math.round(bh*1.2)));
+      if(o.__h !== hh){ o.__h = hh; o.style.height = hh + 'px'; }
+    }
     setInterval(function(){
-      document.querySelectorAll('#mclFrList .mclFrRow[data-uid]').forEach(function(r){
-        var u = r.getAttribute('data-uid'), h = window.monocityRelBadge(u), nm = r.querySelector('.nm'), b = nm && nm.querySelector('b'); if(!b) return;
-        var o = nm.querySelector('.t96B'), src = (/src="([^"]+)"/.exec(h) || [])[1] || '';
-        if(!src){ if(o) o.remove(); return; }
-        if(o && o.getAttribute('src') === src) return; if(o) o.remove();
-        var w = nm.querySelector(':scope > .n1'); if(!w){ w = document.createElement('div'); w.className = 'n1'; b.parentNode.insertBefore(w, b); w.appendChild(b); }
-        w.insertAdjacentHTML('beforeend', h);
-      });
-    }, 900);
+      document.querySelectorAll('#mclFrList .mclFrRow[data-uid]').forEach(function(r){ var b = r.querySelector('.nm > b, .nm > .n1 > b'); if(b) place(b, r.getAttribute('data-uid')); });
+      document.querySelectorAll('#f7So .rw[data-u]:not(.t96Y)').forEach(function(r){ if(!r.getClientRects().length) return; var b = r.querySelector(':scope > .nm > b, :scope > .nm > .n1 > b'); if(b) place(b, r.getAttribute('data-u')); });
+    }, 800);
+    /* maç bitince hazırlık seçimleri temizlensin (sonraki maça taşınmasın) */
+    setInterval(function(){ var g = document.getElementById('game'); if(!window.__mcPickCosT) return; if(g && getComputedStyle(g).display === 'none' && Date.now() - window.__mcPickCosT > 30000){ window.__mcPickCos = {}; window.__mcPickCosT = 0; } }, 3000);
     /* lobi: dar kartta plaka yazısı küçülerek sığsın (1v1 "Be…") */
     setInterval(function(){
       document.querySelectorAll('#mcLobby2 #lbSeats .lbSeat.filled > b.f9Pl').forEach(function(b){
@@ -20105,6 +20125,32 @@ window.MONOCITY_REL_BADGE={"sevgili": ["data:image/webp;base64,UklGRgYOAABXRUJQV
         b.style.setProperty('text-overflow', 'clip', 'important'); b.__t96k = b.textContent + '|' + b.clientWidth;
       });
     }, 1200);
+  })();
+
+  /* ===== 29: T96 — üst 7 kademedeki zarlar Terazi kalitesinde (yuvarlak köşe, cilalı, iç ışıltı) ===== */
+  (function(){
+    var TOP = /^(lg_fire|lg_ice|at_ates|at_kristal|at_lava|at_kul|hw|hw_bk|hw_cadi|xm|xm_kdz|xm_kirmizi|ms_zar|ms_wzar|lv_zb|lv_zp|mis_kelebek|mis_gunes|mis_ay|rb_kup|zd_terazi|zd_akrep|zd_yay|zd_oglak|vip|vk_kupa|vk_maca|vk_karo|vk_sinek|sp_zar)$/;
+    var GEO = null;
+    function roundGeo(size){
+      if(GEO && GEO.__s === size) return GEO;
+      var g = new THREE.BoxGeometry(size, size, size, 6, 6, 6), pos = g.attributes.position, h = size/2, r = size*0.2, v = new THREE.Vector3(), inner = h - r;
+      for(var i = 0; i < pos.count; i++){ v.fromBufferAttribute(pos, i); var cx = Math.max(-inner, Math.min(inner, v.x)), cy = Math.max(-inner, Math.min(inner, v.y)), cz = Math.max(-inner, Math.min(inner, v.z));
+        var dx = v.x - cx, dy = v.y - cy, dz = v.z - cz, L = Math.sqrt(dx*dx + dy*dy + dz*dz) || 1; pos.setXYZ(i, cx + dx/L*r, cy + dy/L*r, cz + dz/L*r); }
+      g.computeVertexNormals(); g.__s = size; g.__t96 = 1; GEO = g; return g;
+    }
+    function tune(state, skin){
+      var m = state && state.dieMesh; if(!m) return;
+      if(TOP.test(String(skin || ''))){
+        if(!(m.geometry && m.geometry.__t96)){ if(!state.__t96geo) state.__t96geo = m.geometry; var bb = state.__t96geo && state.__t96geo.parameters, w = bb && bb.width ? bb.width : 1; if(m.geometry && m.geometry.parameters && m.geometry.parameters.width) w = m.geometry.parameters.width; try{ m.geometry = roundGeo(w); }catch(e){} }
+        (Array.isArray(m.material) ? m.material : [m.material]).forEach(function(x){ if(!x || x.__t96) return; x.__t96 = 1; if('roughness' in x) x.roughness = 0.22; if('metalness' in x) x.metalness = 0.05; if('emissiveIntensity' in x) x.emissiveIntensity = Math.max(0.5, x.emissiveIntensity || 0); x.needsUpdate = true; });
+      } else if(m.geometry && m.geometry.__t96 && state.__t96geo){ m.geometry = state.__t96geo; }
+    }
+    (function hook(){
+      var o = window.applyDiceSkin; if(typeof o !== 'function' || typeof THREE === 'undefined') return setTimeout(hook, 700);
+      if(o.__t96){ return setTimeout(hook, 2500); }
+      var w = function(state, skin){ var r = o.apply(this, arguments); try{ tune(state, skin); }catch(e){} return r; };
+      for(var k in o) try{ w[k] = o[k]; }catch(e){} w.__t96 = true; window.applyDiceSkin = w; setTimeout(hook, 2500);
+    })();
   })();
 
 })();
@@ -26996,7 +27042,8 @@ body.mcPawnLayerOn #board .cell.mcStep{animation:mcStepGlow .38s ease-out!import
   function owned(){ try{ var a = JSON.parse(localStorage.getItem('mc_owned_fx')||'["white"]'); return Array.isArray(a)&&a.length ? a : ['white']; }catch(e){ return ['white']; } }
   var ownedFx = owned(), equippedFx = 'white';
   try{ equippedFx = localStorage.getItem('mc_equipped_fx') || 'white'; }catch(e){}
-  window.MONOCITY_GET_FX = function(){ return equippedFx; };
+  function __fxSync(){ try{ var v = localStorage.getItem('mc_equipped_fx'); if(v) equippedFx = v; }catch(e){} return equippedFx; }
+  window.MONOCITY_GET_FX = function(){ return __fxSync(); };
   window.MONOCITY_FX_COLOR = function(id){ return FXC[id] || FXC.white; };
   window.monocityEquipFx = function(id){ equip(id); };
 
@@ -27045,7 +27092,7 @@ body.mcPawnLayerOn #board .cell.mcStep{animation:mcStepGlow .38s ease-out!import
   function hookCos(){
     if(typeof window.monocityMyCos !== 'function' || window.monocityMyCos.__fx) return;
     var o = window.monocityMyCos;
-    var w = function(){ var c = o.apply(this, arguments) || {}; c.fx = equippedFx; c.nfx = myNfx(); return c; };
+    var w = function(){ var c = o.apply(this, arguments) || {}; c.fx = __fxSync(); c.nfx = myNfx(); return c; };
     w.__fx = true; window.monocityMyCos = w;
   }
   window.monocityMyCollectionFx = function(){ return ownedFx.slice(); };
@@ -27053,7 +27100,7 @@ body.mcPawnLayerOn #board .cell.mcStep{animation:mcStepGlow .38s ease-out!import
   function wfx(id){ return (id === 'hw' || id === 'xm' || id === 'ms' || id === 'lv' || id === 'at' || id === 'lg_fire' || id === 'lg_ice') ? id : 'white'; }
   function fxOf(p){
     if(p && p.cos && p.cos.fx) return wfx(p.cos.fx);
-    if(p && p.human && !(p.cos)) return wfx(equippedFx);
+    if(p && p.human && !(p.cos)) return wfx(__fxSync());
     return 'white';
   }
   function myNfx(){ try{ return localStorage.getItem('mc_equipped_nfx') || 'white'; }catch(e){ return 'white'; } }
@@ -45251,14 +45298,14 @@ html body #mcProfileScreen.f18P .f18Col .cs{grid-template-columns:repeat(2,1fr)!
     var M = window.__mcPickCos = window.__mcPickCos || {};
     S.uids.forEach(function(u){
       var P = (u === me()) ? S.my : ((S.picks && S.picks[u]) || null); if(!P) return;
-      var o = {}; if(P.bd) o.board = P.bd; if(P.pw) o.pawn = P.pw; if(P.dc) o.dice = P.dc; if(P.tp) o.lmf = P.tp; if(P.wk) o.walk = P.wk; if(P.nf) o.nfx = P.nf; if(!Object.keys(o).length) return;
+      var o = {}; if(P.bd) o.board = P.bd; if(P.pw) o.pawn = P.pw; if(P.dc) o.dice = P.dc; if(P.tp) o.lmf = P.tp; if(P.wk){ o.walk = P.wk; o.fx = P.wk; } if(P.nf) o.nfx = P.nf; if(!Object.keys(o).length) return;
       if(!isBot(u)) M[u] = o; var nm = (u === me()) ? myName() : ((S.info[u] || {}).n); if(nm) M['n:'+nm] = o;
     });
     window.__mcPickCosT = now();
   }
   window.monocityPickCosFor = function(uid, name){ var M = window.__mcPickCos, t = window.__mcPickCosT; if(!M || !t || now() - t > 6*3600*1000) return null; return (uid && M[uid]) || (name && M['n:'+name]) || null; };
   function finish(){
-    pickCosMap();
+    pickCosMap(); try{ applyPicks(); }catch(eAP){}
     closeScreens();
     if(S) saveLv();
     /* T21: botların hazırlıkta seçtiği tahta/piyon/zar oyuna geçer */
