@@ -2059,7 +2059,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261117-0845';
+window.MONOCITY_VER = '20261117-0915';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -20591,7 +20591,7 @@ function smartPlan(s, c, dice, deep){ var L = finals(s, c, dice); if(!L.length) 
   function stg(){ return el.querySelector('.stg'); }
   function fit(){ if(!el) return; var k = Math.min(innerWidth/1000, innerHeight/450); stg().style.transform = 'translate(-50%,-50%) scale(' + k + ')'; }
   function open(){ build(); el.classList.add('show'); fit(); home(); }
-  function close(){ stopAll(); window.__mcNoFx = false; if(el) el.classList.remove('show'); }
+  function close(){ stopAll(); window.__mcNoFx = false; if(el){ el.classList.remove('show'); try{ [].forEach.call(el.querySelectorAll('.ov,.cs'), function(x){ x.remove(); }); }catch(e){} } }
   window.monocityOpenTavla = open;
 
   function topBar(title, right){ return '<div class="top"><button type="button" class="bk" data-a="back">‹ ÇIK</button><span class="ttl">' + title + '</span>' + (right || '') + '</div>'; }
@@ -20633,7 +20633,7 @@ function smartPlan(s, c, dice, deep){ var L = finals(s, c, dice); if(!L.length) 
   }
 
   /* ---------- oyun ---------- */
-  function newG(o){ G = {s:init(), me:0, turn:-1, dice:[], rem:[], staged:[], base:null, phase:'wait', sel:null, sc:[0,0], names:['Sen','Bot'], offs:[], over:false, started:false};
+  function newG(o){ try{ if(el) [].forEach.call(el.querySelectorAll('.ov,.cs'), function(x){ x.remove(); }); }catch(e){} G = {s:init(), me:0, turn:-1, dice:[], rem:[], staged:[], base:null, phase:'wait', sel:null, sc:[0,0], names:['Sen','Bot'], offs:[], over:false, started:false};
     for(var k in o) G[k] = o[k]; if(!G.col) G.col = ['beyaz', 'siyah']; G.th = pickTheme(G.col); return G; }
   function startBot(sk, col){ stopAll(); var mc = PAL[col] ? col : 'beyaz'; newG({bot:true, names:[myName(), '🤖 Bot'], sk:[sk || mySkin(), 'white'], col:[mc, otherCol(mc)]}); G.started = true; render(); setTimeout(function(){ opening(); }, 400); }
   function perm(){ return Math.random() < 0.5 ? [1, 2] : [2, 1]; }
