@@ -52,6 +52,7 @@
   function isBot(i){ var p = G.pl[i]; return !p || p.b || (G.S && G.S.gone && G.S.gone[i]) || (G.dc && G.dc[i]); }
   function hostSeat(){ for(var i = 0; i < G.pl.length; i++){ var p = G.pl[i]; if(p && !p.b && !(G.S.gone && G.S.gone[i]) && !(G.dc && G.dc[i])) return i; } return -1; }
   function amHost(){ return !G.online || hostSeat() === G.me; }
+  EG.amHost = function(){ return !!G && amHost(); };
   EG.avatar = function(p){ if(!p || p.b) return ''; try{ return (window.monocityAvatarSrc && monocityAvatarSrc(p.u === uid() ? '__me' : p.u)) || window.MONOCITY_DEFAULT_AVATAR || ''; }catch(e){ return ''; } };
   /* koltuk kutusu: avatar + isim + bilgi */
   EG.seat = function(S, i, info, cls){ var p = S.pl[i] || {}, a = EG.avatar(p), turn = G && G.mod.turn && G.mod.turn(S) === i && !S.over;
@@ -281,7 +282,7 @@
     switch(k){
       case 'tavla': return '<svg width="150" height="100" viewBox="0 0 150 100"><rect x="2" y="2" width="146" height="96" rx="8" fill="#5a3315" stroke="#2c1606" stroke-width="3"/><rect x="10" y="9" width="60" height="82" fill="#e5c58e"/><rect x="80" y="9" width="60" height="82" fill="#e5c58e"/><g fill="#9a2a20"><path d="M10 9 l5 34 l5-34z M30 9 l5 34 l5-34z M50 9 l5 34 l5-34z M80 91 l5-34 l5 34z M100 91 l5-34 l5 34z M120 91 l5-34 l5 34z"/></g><g fill="#2f4a3a"><path d="M20 9 l5 34 l5-34z M40 9 l5 34 l5-34z M60 9 l5 34 l5-34z M90 91 l5-34 l5 34z M110 91 l5-34 l5 34z M130 91 l5-34 l5 34z"/></g><circle cx="25" cy="80" r="7" fill="#fff" stroke="#999"/><circle cx="25" cy="66" r="7" fill="#fff" stroke="#999"/><circle cx="125" cy="18" r="7" fill="#222"/><circle cx="125" cy="32" r="7" fill="#222"/><rect x="88" y="52" width="22" height="22" rx="4" fill="#fff" transform="rotate(12 99 63)"/><circle cx="94" cy="58" r="2.4" fill="#111"/><circle cx="104" cy="68" r="2.4" fill="#111"/><circle cx="99" cy="63" r="2.4" fill="#111"/></svg>';
       case 'ludo': return '<svg width="96" height="96" viewBox="0 0 104 104"><rect width="104" height="104" rx="8" fill="#fff"/><rect width="40" height="40" fill="#ef4444"/><rect x="64" width="40" height="40" fill="#22c55e"/><rect y="64" width="40" height="40" fill="#3b82f6"/><rect x="64" y="64" width="40" height="40" fill="#facc15"/><path d="M40 40 L52 52 L40 64z" fill="#ef4444"/><path d="M40 40 L52 52 L64 40z" fill="#22c55e"/><path d="M64 40 L52 52 L64 64z" fill="#facc15"/><path d="M40 64 L52 52 L64 64z" fill="#3b82f6"/><g fill="#fff"><circle cx="13" cy="13" r="6"/><circle cx="27" cy="27" r="6"/><circle cx="77" cy="13" r="6"/><circle cx="91" cy="27" r="6"/><circle cx="13" cy="77" r="6"/><circle cx="27" cy="91" r="6"/><circle cx="77" cy="91" r="6"/><circle cx="91" cy="77" r="6"/></g></svg>';
-      case 'tb': return '<div class="hb" style="width:54px;height:54px;left:18%;top:18%;background:#facc15"><span>27</span></div><div class="hb" style="width:62px;height:62px;left:44%;top:30%;background:#22c55e"><span>90</span></div><div class="hb" style="width:44px;height:44px;left:26%;top:56%;background:#3b82f6"><span>7</span></div>';
+      case 'tb': return '<svg viewBox="6 22 190 114" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="max-width:96%;max-height:96%"><g transform="rotate(-7 80 70)"><rect x="12" y="26" width="140" height="66" rx="6" fill="#fff7e6" stroke="#b45309" stroke-width="2.5"/><rect x="12" y="26" width="140" height="11" rx="5" fill="#dc2626"/><text x="82" y="34.5" font-size="8" font-weight="900" fill="#fff" text-anchor="middle" font-family="Arial">TOMBALA</text><rect x="15" y="40" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="22" y="51" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">3</text><rect x="30" y="40" width="14" height="15" fill="#e5d3b0" stroke="#d6b26e" stroke-width=".6"/><rect x="45" y="40" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="52" y="51" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">24</text><circle cx="52" cy="47.5" r="6" fill="#dc2626" opacity=".85"/><rect x="60" y="40" width="14" height="15" fill="#e5d3b0" stroke="#d6b26e" stroke-width=".6"/><rect x="75" y="40" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="82" y="51" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">45</text><rect x="90" y="40" width="14" height="15" fill="#e5d3b0" stroke="#d6b26e" stroke-width=".6"/><rect x="105" y="40" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="112" y="51" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">61</text><circle cx="112" cy="47.5" r="6" fill="#dc2626" opacity=".85"/><rect x="120" y="40" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="127" y="51" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">78</text><rect x="135" y="40" width="14" height="15" fill="#e5d3b0" stroke="#d6b26e" stroke-width=".6"/><rect x="15" y="57" width="14" height="15" fill="#e5d3b0" stroke="#d6b26e" stroke-width=".6"/><rect x="30" y="57" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="37" y="68" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">15</text><rect x="45" y="57" width="14" height="15" fill="#e5d3b0" stroke="#d6b26e" stroke-width=".6"/><rect x="60" y="57" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="67" y="68" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">33</text><circle cx="67" cy="64.5" r="6" fill="#dc2626" opacity=".85"/><rect x="75" y="57" width="14" height="15" fill="#e5d3b0" stroke="#d6b26e" stroke-width=".6"/><rect x="90" y="57" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="97" y="68" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">52</text><rect x="105" y="57" width="14" height="15" fill="#e5d3b0" stroke="#d6b26e" stroke-width=".6"/><rect x="120" y="57" width="14" height="15" fill="#e5d3b0" stroke="#d6b26e" stroke-width=".6"/><rect x="135" y="57" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="142" y="68" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">86</text><rect x="15" y="74" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="22" y="85" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">7</text><rect x="30" y="74" width="14" height="15" fill="#e5d3b0" stroke="#d6b26e" stroke-width=".6"/><rect x="45" y="74" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="52" y="85" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">28</text><rect x="60" y="74" width="14" height="15" fill="#e5d3b0" stroke="#d6b26e" stroke-width=".6"/><rect x="75" y="74" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="82" y="85" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">49</text><rect x="90" y="74" width="14" height="15" fill="#e5d3b0" stroke="#d6b26e" stroke-width=".6"/><rect x="105" y="74" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="112" y="85" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">67</text><circle cx="112" cy="81.5" r="6" fill="#dc2626" opacity=".85"/><rect x="120" y="74" width="14" height="15" fill="#e5d3b0" stroke="#d6b26e" stroke-width=".6"/><rect x="135" y="74" width="14" height="15" fill="#fde68a" stroke="#d6b26e" stroke-width=".6"/><text x="142" y="85" font-size="8.5" font-weight="900" fill="#7c2d12" text-anchor="middle" font-family="Arial">90</text></g><path d="M150 62 C132 70 128 112 140 124 C150 132 178 132 186 122 C196 108 190 72 172 62 Z" fill="#4c0519" stroke="#fbbf24" stroke-width="2.5"/><path d="M150 62 C156 56 168 56 172 62" fill="none" stroke="#fbbf24" stroke-width="3"/><path d="M147 60 L175 60" stroke="#fde68a" stroke-width="2"/><ellipse cx="162" cy="60" rx="14" ry="4" fill="#7f1d1d"/><path d="M146 80 C150 76 156 78 158 82" stroke="#9f1239" stroke-width="2" fill="none" opacity=".7"/><circle cx="118" cy="116" r="11" fill="#d6a868" stroke="#8b5a2b" stroke-width="2"/><circle cx="118" cy="116" r="7.5" fill="none" stroke="#a16207" stroke-width=".8"/><text x="118" y="119.6" font-size="10" font-weight="900" fill="#451a03" text-anchor="middle" font-family="Arial">27</text><circle cx="146" cy="124" r="11" fill="#d6a868" stroke="#8b5a2b" stroke-width="2"/><circle cx="146" cy="124" r="7.5" fill="none" stroke="#a16207" stroke-width=".8"/><text x="146" y="127.6" font-size="10" font-weight="900" fill="#451a03" text-anchor="middle" font-family="Arial">90</text><circle cx="100" cy="128" r="11" fill="#d6a868" stroke="#8b5a2b" stroke-width="2"/><circle cx="100" cy="128" r="7.5" fill="none" stroke="#a16207" stroke-width=".8"/><text x="100" y="131.6" font-size="10" font-weight="900" fill="#451a03" text-anchor="middle" font-family="Arial">7</text></svg>';
       case 'okey': return '<div class="hr">' + T(16, 'sm') + T(48, 'sm') + T(78, 'sm') + T(104, 'sm') + '</div>';
       case 'o101': return '<div class="hn" style="top:4%">101</div><div class="hr" style="margin-top:26%">' + T(16, 'sm') + T(18, 'sm') + T(20, 'sm') + '</div>';
       case 'pisti': return '<div class="hr fan">' + C(23) + C(10) + C(36) + '</div>';
@@ -298,7 +299,13 @@
       HUB.el.addEventListener('click', function(e){ var t = e.target.closest('[data-h]'); if(!t) return; var a = t.getAttribute('data-h');
         if(a === 'x'){ HUB.el.classList.remove('show'); return; }
         if(a === 'tab'){ HUB.tab = t.getAttribute('data-v'); paintHub(); return; }
-        if(a === 'g'){ var k = t.getAttribute('data-k'); HUB.el.classList.remove('show'); openGame(k); } }); }
+        if(a === 'opt'){ e.stopPropagation(); var c0 = t.closest('.hC'), k0 = c0.getAttribute('data-k'), m0 = EG.mods[k0], o0 = {}; o0[t.getAttribute('data-o')] = +t.getAttribute('data-v'); HUB.el.classList.remove('show'); openGame(k0, o0); return; }
+        if(a === 'g'){ var k = t.getAttribute('data-k'), m = EG.mods[k];
+          if(m && m.opts && m.opts.length){ if(t.classList.contains('fl')) return; HUB.el.querySelectorAll('.hC.fl').forEach(function(x){ x.classList.remove('fl'); x.innerHTML = x.__f; });
+            t.__f = t.innerHTML; t.classList.add('flp'); setTimeout(function(){ t.classList.add('fl'); var op = m.opts[0];
+              t.innerHTML = '<div class="bk"><div class="bt">' + c2n(k) + '</div>' + op.v.map(function(v){ return '<button type="button" data-h="opt" data-o="' + op.k + '" data-v="' + v[0] + '">' + v[1] + '</button>'; }).join('') + '</div>'; }, 170);
+            setTimeout(function(){ t.classList.remove('flp'); }, 360); return; }
+          HUB.el.classList.remove('show'); openGame(k); } }); }
     paintHub(); HUB.el.classList.add('show'); return true; };
   function paintHub(){ var on = friendsOn();
     var h = '<div class="hTop"><button type="button" class="hBk" data-h="x">‹ GERİ</button><span class="hIc">🎲</span><span class="hTt">EĞLENCE</span><span class="hOn"><i></i>' + on + ' arkadaş çevrimiçi</span></div>' +
@@ -306,11 +313,12 @@
     CARDS.forEach(function(c){ if(HUB.tab !== 'all' && c.cat !== HUB.tab) return; var ok = c.ok || EG.mods[c.k];
       h += '<div class="hC' + (ok ? '' : ' lk') + '" data-h="g" data-k="' + c.k + '" style="--g:' + c.c + '"><div class="pp">👤 ' + c.p + '</div>' + (ok ? '<div class="ok">OYNA</div>' : '') + '<div class="art">' + art(c.k) + '</div><div class="nm">' + c.n + '</div></div>'; });
     HUB.el.innerHTML = h + '</div>'; }
-  function openGame(k){
+  function c2n(k){ var c = CARDS.filter(function(x){ return x.k === k; })[0]; return c ? c.n : k; }
+  function openGame(k, o){
     if(k === 'tavla'){ clearEg(function(){ if(window.monocityTavlaLobby) monocityTavlaLobby(); else if(window.monocityOpenTavla) monocityOpenTavla(); }); return; }
     if(k === 'ludo'){ clearEg(function(){ if(window.__mcOpenFun){ __mcOpenFun(); setTimeout(function(){ var c = document.querySelector('#f31Fun .gr .c.lu'); if(c) c.dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true})); }, 30); } else if(window.monocityOpenLudo) monocityOpenLudo(); }); return; }
     if(!EG.mods[k]){ toast('🎉 Yakında geliyor!'); return; }
-    egLobby(k); }
+    egLobby(k, o); }
   window.__egHubBack = function(){ EG.hub(); };
   window.monocityEgHub = function(){ return EG.hub(); };
 
@@ -318,16 +326,16 @@
   var LB = {code:null, eg:null, egb:0, offs:[], lastGo:null, mxSent:null};
   function canOnline(){ var API = LAPI(); return !!(DB() && uid() && API && (!API.available || API.available())); }
   function clearEg(cb){ try{ var st = LAPI() && LAPI().state(); if(st && st.code && !st.entered && st.role === 'host' && DB()){ DB().ref('rooms/' + st.code + '/eg').remove(); DB().ref('rooms/' + st.code + '/meta/mx').remove(); } }catch(e){} cb && cb(); }
-  function egLobby(k){ var m = EG.mods[k];
-    if(!canOnline()){ EG.local(k, {}); return; }
+  function egLobby(k, o0){ var m = EG.mods[k], oo = o0 || (m.defOpt ? m.defOpt() : {});
+    if(!canOnline()){ EG.local(k, oo); return; }
     var API = LAPI(), st = API.state();
     var go = function(){ var code = API.state().code; if(!code) return; var R = function(p){ return DB().ref('rooms/' + code + '/' + p); };
       R('tv').remove().catch(function(){}); R('lu').remove().catch(function(){});
       R('egb').set(0).catch(function(){});
-      R('eg').set({g:k, o:m.defOpt ? m.defOpt() : {}, ts:Date.now()}).catch(function(){});
+      R('eg').set({g:k, o:oo, ts:Date.now()}).catch(function(){});
       R('cfg').set({mod:'ozel', tur:'4', para:4, zar:1, ucr:0, thb:'tr'}).catch(function(){});
       if(k === 'tb') R('meta/mx').set(7).catch(function(){}); else R('meta/mx').remove().catch(function(){});
-      LB.eg = {g:k, o:m.defOpt ? m.defOpt() : {}}; LB.code = null;
+      LB.eg = {g:k, o:oo}; LB.code = null;
       setTimeout(function(){ try{ if(window.monocityOpenLobby) monocityOpenLobby(); }catch(e){} }, 150); };
     if(st && st.code && !st.entered && st.role === 'host') go();
     else { if(st && st.code) try{ API.leave(); }catch(e){} API.create(function(err){ if(err){ toast('❌ Lobi kurulamadı: ' + err); return; } go(); }); }
@@ -406,6 +414,15 @@
   function lbAsk(t, yes){ var o = document.getElementById('egLbAsk'); if(o) o.remove(); o = document.createElement('div'); o.id = 'egLbAsk';
     o.innerHTML = '<div class="bx"><p>' + t + '</p><div class="row"><button type="button" class="n">HAYIR</button><button type="button" class="y">EVET</button></div></div>'; document.body.appendChild(o);
     o.addEventListener('click', function(e){ if(e.target.closest('.y')){ o.remove(); yes(); } else if(e.target.closest('.n') || e.target === o) o.remove(); }); }
+  /* oyun seçenekleri (101: katlamalı/katlamasız) başlamadan önce sorulur */
+  function askOpts(m, cur, cb){ if(!m || !m.opts || !m.opts.length){ cb(cur || {}); return; }
+    var o = {}; var d = m.defOpt ? m.defOpt() : {}; m.opts.forEach(function(op){ o[op.k] = (cur && cur[op.k] != null) ? cur[op.k] : d[op.k]; });
+    var w = document.createElement('div'); w.className = 'egAsk'; w.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:rgba(2,6,16,.72);display:flex;align-items:center;justify-content:center';
+    var draw = function(){ w.innerHTML = '<div style="background:#0f172a;border:2px solid #fbbf24;border-radius:16px;padding:16px 18px;min-width:280px;text-align:center;color:#fff;font-weight:800"><div style="font-size:18px;color:#fbbf24;margin-bottom:10px">' + m.name + '</div>' +
+      m.opts.map(function(op){ return '<div style="display:flex;gap:8px;justify-content:center;margin:6px 0">' + op.v.map(function(v){ var on = String(o[op.k]) === String(v[0]); return '<button type="button" data-k="' + op.k + '" data-v="' + v[0] + '" style="padding:10px 14px;border-radius:10px;font-weight:900;border:2px solid ' + (on ? '#fbbf24' : '#334155') + ';background:' + (on ? '#78350f' : '#1e293b') + ';color:#fff">' + v[1] + '</button>'; }).join('') + '</div>'; }).join('') +
+      '<div style="font-size:11.5px;color:#94a3b8;margin:4px 0 10px">Katlamalı: biri açınca sonraki en az onun 1 fazlasıyla açar (çiftte 1 çift fazla)</div><div style="display:flex;gap:8px;justify-content:center"><button type="button" data-x="no" style="padding:10px 14px;border-radius:10px;border:0;background:#334155;color:#fff;font-weight:900">İPTAL</button><button type="button" data-x="go" style="padding:10px 18px;border-radius:10px;border:0;background:linear-gradient(#fbbf24,#d97706);color:#1c1003;font-weight:900">BAŞLAT</button></div></div>'; };
+    draw(); w.addEventListener('click', function(e){ var b = e.target.closest('button'); if(!b) return; e.stopPropagation(); if(b.dataset.k){ o[b.dataset.k] = +b.dataset.v; draw(); return; } w.remove(); if(b.dataset.x === 'go') cb(o); }); document.body.appendChild(w); }
+  EG.askOpts = askOpts;
   function egStart(){ var st = LAPI().state(); if(!st || st.role !== 'host'){ toast('⏳ Oyunu lobi kurucusu başlatır.'); return; }
     var k = LB.eg.g, m = EG.mods[k], mem = members(), nb = LB.egb, tot = mem.length + nb, nm = NAMES[k] || m.name;
     var nw = mem.slice(1).filter(function(x){ return !x.ready; }); if(nw.length){ toast('⏳ Herkes HAZIR olmadan başlatamazsın: ' + nw.map(function(x){ return x.n; }).join(', ')); return; }
@@ -545,6 +562,11 @@
   '#egHub .hC{position:relative;border-radius:16px;overflow:hidden;border:2px solid rgba(214,170,92,.75);box-shadow:0 8px 18px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.25);background:var(--g);cursor:pointer;min-height:110px}',
   '#egHub .hC .art{position:absolute;left:0;right:0;top:0;bottom:calc(7*var(--mcu,1vh));display:flex;align-items:center;justify-content:center;overflow:hidden}#egHub .hC .art svg{max-width:80%;max-height:80%}',
   '#egHub .hC .nm{position:absolute;left:0;right:0;bottom:0;height:calc(7*var(--mcu,1vh));min-height:26px;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.65));display:flex;align-items:center;justify-content:center;font:1000 calc(2.9*var(--mcu,1vh)) Arial;text-shadow:0 2px 3px #000;border-top:1px solid rgba(255,255,255,.18)}',
+  '#egHub .hC.flp{animation:egFlp .36s ease-in-out}@keyframes egFlp{50%{transform:perspective(600px) rotateY(90deg)}}',
+  '#egHub .hC.fl .bk{position:absolute;inset:0;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:8%;padding:10%;background:rgba(10,8,30,.55)}',
+  '#egHub .hC.fl .bt{text-align:center;font:1000 calc(2.6*var(--mcu,1vh)) Arial;color:#ffd36b;text-shadow:0 2px 0 #000}',
+  '#egHub .hC.fl .bk button{border:2px solid #ffd36b;border-radius:12px;padding:6% 4%;font:1000 calc(2.3*var(--mcu,1vh)) Arial;color:#fff;background:linear-gradient(180deg,#7c3aed,#4c1d95);box-shadow:0 4px 0 #2e1065}',
+  '#egHub .hC.fl .bk button+button{background:linear-gradient(180deg,#b91c1c,#7f1d1d);box-shadow:0 4px 0 #450a0a}',
   '#egHub .hC .pp{position:absolute;left:8px;top:8px;padding:3px 8px;border-radius:11px;background:rgba(0,0,0,.55);font:900 calc(1.9*var(--mcu,1vh)) Arial;z-index:2}',
   '#egHub .hC .ok{position:absolute;right:8px;top:8px;padding:3px 9px;border-radius:11px;background:linear-gradient(180deg,#4ade80,#16a34a);font:1000 calc(1.8*var(--mcu,1vh)) Arial;z-index:2;box-shadow:0 0 10px rgba(74,222,128,.6)}',
   '#egHub .hC.lk .art,#egHub .hC.lk .nm{filter:grayscale(.75) brightness(.6)}#egHub .hC.lk{border-color:rgba(160,160,170,.45)}',
@@ -943,14 +965,15 @@
     function prize(S){ return S.c1 < 0 ? 1 : (S.c2 < 0 ? 2 : 3); }
     function can(S, i){ var p = prize(S), d = rowsDone(S, i); return p === 1 ? d >= 1 : (p === 2 ? d >= 2 : d >= 3); }
     var PN = {1:'1. ÇİNKO', 2:'2. ÇİNKO', 3:'TOMBALA'};
-    EG.reg({key:'tb', name:'TOMBALA', ic:'🎱', ptxt:'2–8 kişi', min:2, max:8, noTimer:true,
-      init:function(S){ S.cd = []; for(var i = 0; i < S.n; i++) S.cd.push(card(S)); S.ord = EG.shuffle(S, EG.range(90).map(function(x){ return x + 1; })); S.di = 0; S.dn = {}; S.c1 = -1; S.c2 = -1; S.tb = -1; S.lastD = Date.now() + 1500; S.key = S.rs + ':' + S.n; },
+    EG.reg({key:'tb', name:'TOMBALA', ic:'🎟️', ptxt:'2–8 kişi', min:2, max:8, noTimer:true,
+      init:function(S){ S.cd = []; for(var i = 0; i < S.n; i++) S.cd.push(card(S)); S.ord = EG.shuffle(S, EG.range(90).map(function(x){ return x + 1; })); S.di = 0; S.dn = {}; S.c1 = -1; S.c2 = -1; S.tb = -1; S.lastD = Date.now() + 1500; S.oto = true; S.key = S.rs + ':' + S.n; },
       sub:function(S){ return 'Çekilen ' + S.di + '/90'; },
       turn:function(){ return -1; },
-      tick:function(S, now){ if(S.di < 90 && now - S.lastD > 4000) return {d:1}; return null; },
+      tick:function(S, now){ if(S.oto && S.di < 90 && now - S.lastD > 3000) return {d:1}; return null; },   /* oto çekme: 3 sn */
       act:function(S, by, a){
         if(a.d){ if(S.di >= 90) return false; var v = S.ord[S.di++]; S.dn[v] = 1; S.last = v; S.lastD = Date.now(); S.fx = 'tick'; if(AUTO && MK.key === S.key) MK.m[v] = 1;
           if(S.di >= 90 && S.tb < 0){ S.over = {w:[], draw:true, txt:'Sayılar bitti'}; } return true; }
+        if(a.oto != null){ S.oto = !!a.oto; S.lastD = Date.now(); return true; }
         if(a.cl){ var p = prize(S); if(a.cl !== p || !can(S, by)) return false;
           if(p === 1) S.c1 = by; else if(p === 2) S.c2 = by; else S.tb = by; S.log = '🎉 ' + EG.name(S, by) + ' ' + PN[p] + '!'; S.fx = 'win';
           if(p === 3){ S.over = {w:[by], txt:EG.name(S, by) + ' TOMBALA yaptı!', html:'<table><tr><td>1. Çinko</td><td><b>' + EG.esc(EG.name(S, S.c1)) + '</b></td></tr><tr><td>2. Çinko</td><td><b>' + EG.esc(EG.name(S, S.c2)) + '</b></td></tr><tr><td>Tombala</td><td><b>' + EG.esc(EG.name(S, S.tb)) + '</b></td></tr></table>'}; }
@@ -971,6 +994,8 @@
         h += '<div style="position:absolute;left:410px;top:52px;display:flex;gap:6px">' + rec.map(function(v){ return '<span style="width:38px;height:38px;border-radius:50%;background:#1e3a8a;border:2px solid #93c5fd;display:flex;align-items:center;justify-content:center;font:1000 16px Arial">' + v + '</span>'; }).join('') + '</div>';
         /* ödüller */
         h += '<div style="position:absolute;right:16px;top:14px;display:flex;flex-direction:column;gap:4px;font:900 13px Arial;background:rgba(0,0,0,.45);border:1.5px solid rgba(214,170,92,.6);border-radius:12px;padding:8px 12px">' + [1, 2, 3].map(function(p){ var w = p === 1 ? S.c1 : (p === 2 ? S.c2 : S.tb); return '<div style="color:' + (w >= 0 ? '#4ade80' : (prize(S) === p ? '#ffd36b' : '#9fb0cf')) + '">' + PN[p] + ': ' + (w >= 0 ? EG.esc(EG.name(S, w)) : '—') + '</div>'; }).join('') + '</div>';
+        if(EG.amHost()) h += '<div style="position:absolute;left:410px;top:98px;display:flex;gap:6px;z-index:3"><button type="button" class="bt g sm" data-x="dr"' + (S.di >= 90 ? ' disabled' : '') + '>👝 TAŞ ÇEK</button><button type="button" class="bt ' + (S.oto ? 'g' : 's') + ' sm" data-x="ot">OTO ÇEK: ' + (S.oto ? 'AÇIK' : 'KAPALI') + '</button></div>';
+        else h += '<div style="position:absolute;left:410px;top:104px;font:800 12px Arial;color:#cbd5e1">👝 Taşları oyunu kuran çekiyor · oto ' + (S.oto ? 'açık (3 sn)' : 'kapalı') + '</div>';
         if(S.log) h += '<div class="msg" style="left:620px;top:130px">' + S.log + '</div>';
         /* kartım */
         var g = S.cd[me], cells = '';
@@ -982,6 +1007,8 @@
         return h; },
       click:function(S, me, x, ui){ var k = x.getAttribute('data-x'), v = +x.getAttribute('data-v');
         if(k === 'm'){ if(!S.dn[v]){ EG.toast('Bu sayı daha çekilmedi'); return null; } MK.m[v] = !MK.m[v]; return true; }
+        if(k === 'dr'){ if(!EG.amHost()) return null; return {d:1}; }
+        if(k === 'ot'){ if(!EG.amHost()) return null; return {oto:S.oto ? 0 : 1}; }
         if(k === 'au'){ AUTO = !AUTO; try{ localStorage.setItem('eg_tb_auto', AUTO ? '1' : '0'); }catch(e){} return true; }
         if(k === 'cl'){ if(!can(S, me)){ EG.toast('Henüz ' + PN[prize(S)].toLowerCase() + ' yok'); return null; } return {cl:prize(S)}; }
         return null; }
@@ -1070,7 +1097,7 @@
       bb.push('<button type="button" class="egRb' + (canDraw ? ' g' : '') + '" data-x="dk"' + (canDraw ? '' : ' disabled') + '>🀫 TAŞ ÇEK</button>');
       bb.push('<button type="button" class="egRb" data-x="ss">SERİ DİZ</button>');
       bb.push('<button type="button" class="egRb" data-x="sc">ÇİFT DİZ</button>');
-      if(is101){ var ia = S.turn === me && S.phase === 'discard' && S.op[me] && !S.opNow && S.h[me].some(function(t){ return S.tb.some(function(g){ return canAdd(S, g, t); }); }); bb.push('<button type="button" class="egRb' + (ia ? ' g' : '') + '" data-x="ia"' + (ia ? '' : ' disabled') + '>TAŞLARI İŞLE</button>'); }
+      if(is101){ var ia = S.turn === me && S.phase === 'discard' && S.op[me] && !S.opNow && S.h[me].some(function(t){ return S.tb.some(function(g){ return canAdd(S, g, t) || swapIdx(S, g, t) >= 0; }); }); bb.push('<button type="button" class="egRb' + (ia ? ' g' : '') + '" data-x="ia"' + (ia ? '' : ' disabled') + '>TAŞLARI İŞLE</button>'); }
       return h + '</div><div class="egRbs">' + bb.join('') + '</div>'; }
     var CXY = {t:'left:90px;top:96px', l:'left:136px;top:96px', r:'right:90px;top:8px', b:'right:90px;top:172px'};
     function corners(S, me, is101){ var h = '';
@@ -1095,7 +1122,7 @@
       if(dst.k === 'at'){ if(S.turn !== me || S.phase !== 'discard') return null; if(S.must){ EG.toast('Önce elini açmalısın'); return null; } return {t:v}; }
       if(dst.k === 'fin'){ if(S.turn !== me || S.phase !== 'discard') return null; if(mod.key === 'okey'){ if(winWith(S, S.h[me], v)) return {f:v}; } else if(S.op[me] && S.h[me].length === 1) return {t:v}; EG.toast('Elin henüz bitmiyor'); return null; }
       if(dst.k === 'gap'){ ui.sel = v; var f2 = document.createElement('i'); f2.setAttribute('data-x', 'gap'); f2.setAttribute('data-v', dst.v); return mod.click(S, me, f2, ui); }
-      if(dst.k === 'g'){ if(mod.key === 'o101' && S.turn === me && S.op[me] && !S.opNow){ var gg = S.tb[+dst.v]; if(gg){ var sd = canAdd(S, gg, v, dst.sd) || canAdd(S, gg, v); if(sd) return {is:v, g:+dst.v, sd:sd}; EG.toast('Bu taş bu pere uymuyor'); return null; } }
+      if(dst.k === 'g'){ if(mod.key === 'o101' && S.turn === me && S.op[me] && !S.opNow){ var gg = S.tb[+dst.v]; if(gg){ var sd = canAdd(S, gg, v, dst.sd) || canAdd(S, gg, v); if(sd) return {is:v, g:+dst.v, sd:sd}; if(swapIdx(S, gg, v) >= 0) return {sw:v, g:+dst.v}; EG.toast('Bu taş bu pere uymuyor'); return null; } }
         ui.sel = v; var f = document.createElement('i'); f.setAttribute('data-x', 'g'); f.setAttribute('data-v', dst.v); return mod.click(S, me, f, ui); }
       return null; }
     /* ---------------- OKEY ---------------- */
@@ -1173,6 +1200,11 @@
         if(!J){ if(f[0] !== g.c) return false; eOk = eOk && (endN === 14 ? 1 : endN) === f[1]; sOk = sOk && g.s - 1 === f[1]; }
         if(sd === 's') return sOk ? 's' : false; if(sd === 'e') return eOk ? 'e' : false; return eOk ? 'e' : (sOk ? 's' : false); }
       return false; }
+    /* okey alma: masadaki perde okeyin yerini tutan gerçek taşı koyup okeyi ele al */
+    function swapIdx(S, g, t){ if(!g || !g.t || isJ(S, t)) return -1; var f = face(S, t);
+      if(g.k === 'run'){ if(f[0] !== g.c) return -1; for(var i = 0; i < g.t.length; i++) if(isJ(S, g.t[i])){ var n = g.s + i; if(n === 14) n = 1; if(n === f[1]) return i; } return -1; }
+      if(g.k === 'set'){ if(f[1] !== g.n || g.cols.indexOf(f[0]) >= 0) return -1; for(var j = 0; j < g.t.length; j++) if(isJ(S, g.t[j])) return j; } return -1; }
+    function doSwap(S, h, t, g){ var i = swapIdx(S, g, t); if(i < 0) return null; var j = g.t[i]; g.t[i] = t; h.splice(h.indexOf(t), 1); if(g.k === 'set') g.cols.push(face(S, t)[0]); h.push(j); return j; }
     function gaps(g){ if(g.k === 'set') return {s:false, e:g.sz < 4}; if(g.k === 'run'){ var endN = g.s + g.L; return {s:g.s > 1, e:endN <= 14 && !(endN === 14 && g.s === 1)}; } return {s:false, e:false}; }
     function isle(S, h, t, g, side){ h.splice(h.indexOf(t), 1); if(g.k === 'set'){ g.t.push(t); g.sz++; if(!isJ(S, t)) g.cols.push(face(S, t)[0]); } else if(side === 's'){ g.t.unshift(t); g.s--; g.L++; } else { g.t.push(t); g.L++; } }
     function hval(S, h){ var v = 0; h.forEach(function(t){ v += isJ(S, t) ? S.ok[1] : tval(S, t); }); return v; }
@@ -1190,8 +1222,8 @@
       sub:function(S){ return 'El ' + S.hn + '/' + S.hmax; },
       turn:function(S){ return S.turn; },
       act:function(S, by, a){ if(S.wait){ if(!a.nh) return false; next101(S); return true; } if(by !== S.turn) return false; var h = S.h[by];
-        if(a.ia){ if(!S.op[by] || S.opNow || S.phase !== 'discard') return false; var n0 = 0, ch = true; while(ch){ ch = false; for(var q1 = 0; q1 < h.length && !ch; q1++){ if(isJ(S, h[q1]) && h.length > 1) continue; for(var q2 = 0; q2 < S.tb.length; q2++){ var sd0 = canAdd(S, S.tb[q2], h[q1]); if(sd0){ isle(S, h, h[q1], S.tb[q2], sd0); n0++; ch = true; break; } } } }
-          if(!n0) return false; S.log = EG.name(S, by) + ' ' + n0 + ' taş işledi'; S.fx = 'hit'; if(!h.length) end101(S, by, false); return true; }
+        if(a.ia){ if(!S.op[by] || S.opNow || S.phase !== 'discard') return false; var n0 = 0, nsw = 0, ch = true; for(var w1 = h.length - 1; w1 >= 0; w1--){ for(var w2 = 0; w2 < S.tb.length; w2++){ if(h[w1] != null && doSwap(S, h, h[w1], S.tb[w2]) != null){ nsw++; break; } } } while(ch){ ch = false; for(var q1 = 0; q1 < h.length && !ch; q1++){ if(isJ(S, h[q1]) && h.length > 1) continue; for(var q2 = 0; q2 < S.tb.length; q2++){ var sd0 = canAdd(S, S.tb[q2], h[q1]); if(sd0){ isle(S, h, h[q1], S.tb[q2], sd0); n0++; ch = true; break; } } } }
+          if(!n0 && !nsw) return false; S.log = EG.name(S, by) + (nsw ? ' ' + nsw + ' okey aldı' : '') + (n0 ? ' ' + n0 + ' taş işledi' : ''); S.fx = 'hit'; if(!h.length) end101(S, by, false); return true; }
         if(S.phase === 'draw'){ if(a.dk){ if(!S.deck.length){ end101(S, -1, false); return true; } h.push(S.deck.pop()); S.phase = 'discard'; S.opNow = false; S.nt = h[h.length - 1]; S.ntBy = by; S.ntK = (S.ntK || 0) + 1; S.an = [{t:1, c:null, from:'deck', to:'nt:' + by}]; return true; }
           if(a.dp){ var p = S.dis[prev(by)]; if(!p.length) return false; var t = p[p.length - 1];
             if(!S.op[by]){ var hh = h.concat([t]), bo = bestOpen(S, hh), pc = pairList(S, hh).length; if(bo.v < S.bar.s && pc < S.bar.c) return false; S.must = true; }
@@ -1199,7 +1231,12 @@
         if(a.op){ if(S.op[by]) return false;
           if(a.op === 's'){ var b = bestOpen(S, h); if(b.v < S.bar.s) return false; var R = realize(S, h, b.g); R.groups.forEach(function(g){ g.o = by; S.tb.push(g); }); S.h[by] = R.rest; S.op[by] = 's'; S.opv[by] = b.v; if(S.kat) S.bar.s = b.v + 1; S.log = '📂 ' + EG.name(S, by) + ' ' + b.v + ' ile açtı'; }
           else { var P = pairList(S, h); if(P.length < S.bar.c) return false; var rest = h.slice(); P.forEach(function(pp){ pp.forEach(function(t){ rest.splice(rest.indexOf(t), 1); }); S.tb.push({k:'pair', o:by, t:pp}); }); S.h[by] = rest; S.op[by] = 'c'; S.opv[by] = P.length + ' çift'; if(S.kat) S.bar.c = P.length + 1; S.log = '📂 ' + EG.name(S, by) + ' ' + P.length + ' çift açtı'; }
-          S.must = false; S.opNow = true; S.fx = 'hit'; return true; }
+          S.must = false; S.opNow = false; S.fx = 'hit'; return true; }   /* eli İLK açan o turda işleyemez, sonradan açanlar işleyebilir */
+        if(a.np){ if(!S.op[by] || S.opNow || S.phase !== 'discard') return false; var nb0 = bestOpen(S, h), ng = 0, npr = 0, hr = h;
+          if(nb0.g && nb0.g.length){ var RR = realize(S, h, nb0.g); RR.groups.forEach(function(g){ g.o = by; S.tb.push(g); ng++; }); hr = RR.rest; }
+          var PP = pairList(S, hr); PP.forEach(function(pp){ pp.forEach(function(t){ hr.splice(hr.indexOf(t), 1); }); S.tb.push({k:'pair', o:by, t:pp}); npr++; });
+          if(!ng && !npr) return false; S.h[by] = hr; h = hr; S.log = '📂 ' + EG.name(S, by) + ' yeni ' + (ng ? ng + ' per ' : '') + (npr ? npr + ' çift ' : '') + 'açtı'; S.fx = 'hit'; if(!h.length) end101(S, by, false); return true; }
+        if(a.sw != null){ if(!S.op[by] || S.opNow || S.phase !== 'discard') return false; var gw = S.tb[a.g]; if(!gw || h.indexOf(a.sw) < 0) return false; var jw = doSwap(S, h, a.sw, gw); if(jw == null) return false; S.log = '🃏 ' + EG.name(S, by) + ' okeyi aldı!'; S.nt = jw; S.ntBy = by; S.ntK = (S.ntK || 0) + 1; S.fx = 'hit'; return true; }
         if(a.is != null){ if(!S.op[by] || S.opNow) return false; var g = S.tb[a.g]; if(!g || h.indexOf(a.is) < 0) return false; var side = canAdd(S, g, a.is, a.sd); if(!side) return false;
           isle(S, h, a.is, g, side);
           S.log = EG.name(S, by) + ' taş işledi'; if(!h.length){ end101(S, by, false); } return true; }
@@ -1211,6 +1248,7 @@
         if(S.phase === 'draw'){ var t = topDis(S, prev(i)); if(t != null){ if(S.op[i]){ if(S.tb.some(function(g){ return canAdd(S, g, t); })) return {dp:1}; }
             else { var hh = h.concat([t]); if(bestOpen(S, hh).v >= S.bar.s && bestOpen(S, h).v < S.bar.s) return {dp:1}; } } return S.deck.length ? {dk:1} : (t != null && S.op[i] ? {dp:1} : {dk:1}); }
         if(!S.op[i]){ var b = bestOpen(S, h); if(b.v >= S.bar.s) return {op:'s'}; var pc = pairList(S, h).length; if(pc >= S.bar.c && pc >= 5) return {op:'c'}; }
+        if(S.op[i] && !S.opNow){ for(var k0 = 0; k0 < h.length; k0++) for(var g0 = 0; g0 < S.tb.length; g0++) if(swapIdx(S, S.tb[g0], h[k0]) >= 0) return {sw:h[k0], g:g0}; }
         if(S.op[i] && !S.opNow && h.length > 1){ for(var k = 0; k < h.length; k++) for(var g = 0; g < S.tb.length; g++) if(canAdd(S, S.tb[g], h[k]) && !(isJ(S, h[k]) && h.length > 2)) return {is:h[k], g:g}; }
         if(S.must) return null;
         return {t:worst(S, h, function(t){ return S.tb.some(function(g){ return canAdd(S, g, t); }); })}; },
@@ -1228,6 +1266,7 @@
         if(S.log) h += '<div class="msg" style="top:218px;left:520px">' + S.log + '</div>';
         var mine = S.turn === me, h2 = S.h[me], key = h2.slice().sort().join(',') + ':' + S.hn;
         if(VC.k !== key){ VC.k = key; VC.v = bestOpen(S, h2).v; VC.p = pairList(S, h2).length; }
+        if(mine && S.phase === 'discard' && S.op[me] && !S.opNow && !S.wait){ var nbx = bestOpen(S, S.h[me]), npx = pairList(S, S.h[me]).length; if((nbx.g && nbx.g.length) || npx) h += '<div style="position:absolute;left:50%;top:228px;transform:translateX(-50%);z-index:6"><button type="button" class="bt g sm" data-x="np" style="box-shadow:0 0 14px #4ade80">📂 PER AÇ' + (nbx.g && nbx.g.length ? ' · ' + nbx.g.length + ' per' : '') + (npx ? ' · ' + npx + ' çift' : '') + '</button></div>'; }
         if(mine && S.phase === 'discard' && !S.op[me] && !S.wait) h += '<div style="position:absolute;left:50%;top:228px;transform:translateX(-50%);display:flex;gap:10px;z-index:6"><button type="button" class="bt g sm" data-x="ops"' + (VC.v >= S.bar.s ? ' style="box-shadow:0 0 14px #4ade80"' : ' disabled') + '>📂 SERİ AÇ (' + VC.v + ')</button><button type="button" class="bt g sm" data-x="opc"' + (VC.p >= S.bar.c ? ' style="box-shadow:0 0 14px #4ade80"' : ' disabled') + '>ÇİFT AÇ (' + VC.p + ')</button></div>';
         if(!S.op[me]) h += '<div class="cnt" style="right:150px;top:200px;font-size:11px;background:' + (VC.v >= S.bar.s || VC.p >= S.bar.c ? '#15803d' : 'rgba(0,0,0,.7)') + '">Elin ' + VC.v + ' · ' + VC.p + ' çift</div>';
         h += rack2(S, me, ui, true);
@@ -1240,11 +1279,11 @@
         if(S.turn !== me) return null;
         if(S.phase === 'draw'){ if(k === 'dk') return {dk:1}; if(k === 'dp'){ if(!S.op[me]){ var t = topDis(S, prev(me)), hh = S.h[me].concat([t]); if(bestOpen(S, hh).v < S.bar.s && pairList(S, hh).length < S.bar.c){ EG.toast('Yandan almak için o taşla elini açabilmelisin'); return null; } } return {dp:1}; } return null; }
         if(k === 'ops') return {op:'s'}; if(k === 'opc') return {op:'c'};
-        if(k === 'ia') return {ia:1};
-        if(k === 'gap'){ var pr = String(x.getAttribute('data-v')).split(':'); if(ui.sel == null){ EG.toast('Önce ıstakadan bir taş seç'); return null; } if(!S.op[me] || S.opNow){ EG.toast(S.opNow ? 'Açtığın elde işleme yapılamaz' : 'İşlemek için önce elini açmalısın'); return null; } if(!canAdd(S, S.tb[+pr[0]], ui.sel, pr[1])){ EG.toast('Bu taş buraya uymuyor'); return null; } return {is:ui.sel, g:+pr[0], sd:pr[1]}; }
+        if(k === 'ia') return {ia:1}; if(k === 'np') return {np:1};
+        if(k === 'gap'){ var pr = String(x.getAttribute('data-v')).split(':'); if(ui.sel == null){ EG.toast('Önce ıstakadan bir taş seç'); return null; } if(!S.op[me] || S.opNow){ EG.toast(S.opNow ? 'Eli ilk açan, açtığı elde işleme yapamaz' : 'İşlemek için önce elini açmalısın'); return null; } if(!canAdd(S, S.tb[+pr[0]], ui.sel, pr[1])){ EG.toast('Bu taş buraya uymuyor'); return null; } return {is:ui.sel, g:+pr[0], sd:pr[1]}; }
         if(k === 'fin' && ui.sel != null){ if(S.op[me] && S.h[me].length === 1) return {t:ui.sel}; EG.toast('Elin henüz bitmiyor'); return null; }
         if(k === 'at' && ui.sel != null) return {t:ui.sel};
-        if(k === 'g'){ if(ui.sel == null){ EG.toast('Önce rafından bir taş seç'); return null; } if(!S.op[me]){ EG.toast('İşlemek için önce elini açmalısın'); return null; } if(S.opNow){ EG.toast('Açtığın elde işleme yapılamaz'); return null; } if(!canAdd(S, S.tb[v], ui.sel)){ EG.toast('Bu taş bu gruba uymuyor'); return null; } return {is:ui.sel, g:v}; }
+        if(k === 'g'){ if(ui.sel == null){ EG.toast('Önce rafından bir taş seç'); return null; } if(!S.op[me]){ EG.toast('İşlemek için önce elini açmalısın'); return null; } if(S.opNow){ EG.toast('Eli ilk açan, açtığı elde işleme yapamaz'); return null; } if(!canAdd(S, S.tb[v], ui.sel)){ if(swapIdx(S, S.tb[v], ui.sel) >= 0) return {sw:ui.sel, g:v}; EG.toast('Bu taş bu gruba uymuyor'); return null; } return {is:ui.sel, g:v}; }
         if(k === 'at' && ui.sel != null) return {t:ui.sel};
         return null; }
     });
