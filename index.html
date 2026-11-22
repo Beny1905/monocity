@@ -2059,7 +2059,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261122-0620';
+window.MONOCITY_VER = '20261122-0800';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -21225,7 +21225,7 @@ function smartPlan(s, c, dice, deep){ var L = finals(s, c, dice); if(!L.length) 
 })();
 </script>
 
-<script src="oyunlar.js?v=20261122-0620"></script>
+<script src="oyunlar.js?v=20261122-0800"></script>
 </body>
 
 <style id="monocity-wide-v53-user-final">
@@ -51066,7 +51066,7 @@ html body.f30Md #mcLobbyUI .mclPlay,html body.f30Md #mcLobbyUI .mclQuick,html bo
     var m = getMode(), md = bar.querySelector('.md'), h, lb = inLobbyTxt();
     if(m === 'rank'){ var R = rankInfo(); h = '<div class="ic">'+(R.img ? '<img alt="" src="'+R.img+'">' : '🏆')+'</div><div class="tx"><b>SIRALI<em>'+String(R.t).toLocaleUpperCase('tr-TR')+'</em></b>'+(R.ch ? '<div class="mkStz">★ '+R.y+'</div>'+(lb ? '<small>'+lb+'</small>' : '') : '<div class="br"><i style="width:'+R.p+'%"></i></div><small>'+(lb || R.nx)+'</small>')+'</div>'; }
     else if(m === 'ozel') h = '<div class="ic"><span class="em">🤖</span></div><div class="tx"><b>ÖZEL</b><small>'+(lb || 'Botlarla / arkadaşlarla · ödül yok')+'</small></div>';
-    else if(m === 'eglence') h = '<div class="ic"><span class="em">🎉</span></div><div class="tx"><b>EĞLENCE</b><small>🎲 Ludo · 🎯 Tavla</small></div>';
+    else if(m === 'eglence') h = '<div class="ic"><span class="em">🎉</span></div><div class="tx"><b>EĞLENCE</b><small>🎲 12 oyun · masa & kart</small></div>';
     else h = '<div class="ic">'+(zarImg() ? '<img alt="" src="'+zarImg()+'">' : '🎲')+'</div><div class="tx"><b>KLASİK</b><small>'+(lb || 'OYUN KUR · LOBİ')+'</small></div>';
     h = '<span class="ar l" data-f="prev">‹</span>'+h+'<span class="ar r" data-f="next">›</span><div class="dt">'+MODES.map(function(x){ return '<i class="'+(x === m ? 'on' : '')+'"></i>'; }).join('')+'</div>';
     if(h === lastSig) return; lastSig = h;
