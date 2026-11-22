@@ -2059,7 +2059,7 @@ body.v24KeyboardOpen{overflow:hidden!important}
 </style>
 
 <script id="mc-pwa">
-window.MONOCITY_VER = '20261122-0400';
+window.MONOCITY_VER = '20261122-0620';
 (function(){
   'use strict';
   if(!/^https?:$/.test(location.protocol)) return;
@@ -20955,7 +20955,7 @@ function smartPlan(s, c, dice, deep){ var L = finals(s, c, dice); if(!L.length) 
     + '<div class="lmL">ZAR</div><div class="lmR">' + [[1, '🎲', 'TEK ZAR'], [2, '🎲🎲', 'ÇİFT ZAR']].map(function(x){ return '<button type="button" data-f31m="nd" data-v="' + x[0] + '" class="' + (LM.nd === x[0] ? 'on' : '') + '"><i>' + x[1] + '</i>' + x[2] + '</button>'; }).join('') + '</div>'
     + '<button type="button" class="lmGo" data-f31m="go">LOBİ KUR ›</button>'; }
   function miniAct(d, b){ var a = b.getAttribute('data-f31m'), m = d.querySelector('.f31Lm');
-    if(a === 'back'){ miniHide(d); return; }
+    if(a === 'back'){ miniHide(d); if(window.__egHubBack){ d.classList.remove('show'); __egHubBack(); } return; }
     if(a === 'md'){ LM.mode = b.getAttribute('data-v'); try{ localStorage.setItem('mc_lm_mode', LM.mode); }catch(e){} miniPaint(m); return; }
     if(a === 'nd'){ LM.nd = +b.getAttribute('data-v'); try{ localStorage.setItem('mc_lm_nd', String(LM.nd)); }catch(e){} miniPaint(m); return; }
     if(a === 'go'){ if(!window.monocityLudoLobby){ toast('❌ Ludo yüklenemedi'); return; } d.classList.remove('show'); miniHide(d);
@@ -21050,11 +21050,12 @@ function smartPlan(s, c, dice, deep){ var L = finals(s, c, dice); if(!L.length) 
   function esc(t){ return String(t == null ? '' : t).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function toast(m){ try{ if(window.MONOCITY_PROFILE && MONOCITY_PROFILE.toast) return MONOCITY_PROFILE.toast(m); }catch(e){} }
   function nick(u){ var s = S(), d = s && s.users && s.users[u]; return (d && d.nickname) || 'Arkadaşın'; }
-  var MODE = {tv:'TAVLA', lu:'LUDO', klasik:'KLASİK', rank:'RANK', ozel:'ÖZEL'};
+  var MODE = {tv:'TAVLA', lu:'LUDO', klasik:'KLASİK', rank:'RANK', ozel:'ÖZEL', tb:'TOMBALA', okey:'OKEY', o101:'101 OKEY', pisti:'PİŞTİ', batak:'BATAK', koz:'KOZ MAÇA', pis7:'PİS YEDİLİ', papaz:'PAPAZ KAÇTI', blof:'BLÖF', bj:'21'};
   function vis(e){ return !!(e && e.getClientRects().length && getComputedStyle(e).display !== 'none'); }
 
   /* ---------- benim lobi modum ---------- */
   window.__mcLbMode = function(){
+    var eg = window.__egCur && __egCur(); if(eg) return eg;
     var l = document.getElementById('mcLobby2');
     if(window.__tlForce === 'tv' || (l && l.classList.contains('mcTvLb'))) return 'tv';
     if(window.__tlForce === 'lu' || (l && l.classList.contains('mcLuLb'))) return 'lu';
@@ -21066,6 +21067,7 @@ function smartPlan(s, c, dice, deep){ var L = finals(s, c, dice); if(!L.length) 
     if(st && st.code && !st.entered && st.status !== 'playing') return {c:st.code, h:st.hostUid || (st.role === 'host' ? me() : ''), k:__mcLbMode()};
     var tv = document.getElementById('mcTv'); if(tv && tv.classList.contains('show') && tv.querySelector('.bd')) return {g:'tv'};
     var lb = document.getElementById('luBd'); if(vis(lb)) return {g:'lu'};
+    var eg2 = document.getElementById('egG'); if(eg2 && eg2.classList.contains('show') && window.__EG && __EG.G()) return {g:__EG.G().k};
     return null;
   }
 
@@ -21192,7 +21194,7 @@ function smartPlan(s, c, dice, deep){ var L = finals(s, c, dice); if(!L.length) 
     var nm = v.n || d.nickname || 'Oyuncu';
     var mk = v.m || (rq ? __mcLbMode() : 'klasik'), md = MODE[mk] || 'KLASİK';
     var warn = !rq && L().inLobby() ? '<small>⚠️ Katılırsan şu anki lobinden çıkarsın</small>' : '';
-    var SUF = {tv:"'da", lu:"'da", klasik:"'te", rank:"'ta", ozel:"'de"};
+    var SUF = {tv:"'da", lu:"'da", klasik:"'te", rank:"'ta", ozel:"'de", tb:"'da", okey:"'de", o101:"'de", pisti:"'de", batak:"'ta", koz:"'da", pis7:"'de", papaz:"'da", blof:"'te", bj:"'de"};
     var tx = rq ? '<em>' + md + '</em> lobine katılmak istiyor.' : '<em>' + md + '</em>' + (SUF[mk] || "'de") + ' yer alman için seni davet etti.';
     el.innerHTML = '<div class="bx"><div class="hd">' + (rq ? 'KATILMA İSTEĞİ' : 'DAVET') + '</div>' +
       '<div class="md"><div class="av"><img class="a" alt="" src="' + esc(src) + '">' + (fr ? '<img class="f" alt="" src="' + esc(fr) + '">' : '') + '</div>' +
@@ -21223,6 +21225,7 @@ function smartPlan(s, c, dice, deep){ var L = finals(s, c, dice); if(!L.length) 
 })();
 </script>
 
+<script src="oyunlar.js?v=20261122-0620"></script>
 </body>
 
 <style id="monocity-wide-v53-user-final">
@@ -23008,7 +23011,7 @@ mportant;}
         if(meta && meta.status==='closed'){ done('Bu lobi kapatılmış.'); return; }
         db.ref('rooms/'+code+'/guests').once('value').then(function(gsnap){
           var guestsObj = gsnap.val() || {};
-          if(Object.keys(guestsObj).length >= MAX_COOP_GUESTS){ done('Oda dolu (en fazla ' + MAX_COOP_GUESTS + ' misafir).'); return; }
+          if(Object.keys(guestsObj).length >= ((meta && meta.mx) || MAX_COOP_GUESTS)){ done('Oda dolu (en fazla ' + MAX_COOP_GUESTS + ' misafir).'); return; }
           setCoopName(guestName);
           coopLeave(); // önceki bir odadan kalan durum varsa temizle
           coop.code = code; coop.role = 'guest';
@@ -23171,12 +23174,12 @@ mportant;}
     start: function(){ coopHostStartGame(); },
     onChange: function(fn){ lobbyListeners.push(fn); },
     state: function(){
-      var entries = sortedGuestEntries(coop.guests || {}).slice(0, MAX_COOP_GUESTS).map(function(e){
+      var entries = sortedGuestEntries(coop.guests || {}).slice(0, (window.__egMax ? __egMax() : MAX_COOP_GUESTS)).map(function(e){
         var g = (coop.guests||{})[e.key] || {}; e.uid = g.uid || null; e.cos = g.cos || null; e.me = (e.key === coop.myGuestKey); return e; });
       return { code: coop.code, role: coop.role, entered: !!coop.entered, ready: !!coop.ready,
         hostName: (coop.meta && coop.meta.hostName) || (coop.role==='host' ? getCoopName() : 'Host'),
         hostUid: (coop.meta && coop.meta.hostUid) || (coop.role==='host' && window.MONOCITY_AUTH ? window.MONOCITY_AUTH.uid : null),
-        guests: entries, max: MAX_COOP_GUESTS + 1, status: (coop.meta && coop.meta.status) || null };
+        guests: entries, max: (window.__egMax ? __egMax() : MAX_COOP_GUESTS) + 1, status: (coop.meta && coop.meta.status) || null };
     }
   };
 
@@ -51082,7 +51085,7 @@ html body.f30Md #mcLobbyUI .mclPlay,html body.f30Md #mcLobbyUI .mclQuick,html bo
   setInterval(function(){ var s = document.getElementById('mcSetup'); if(s && s.classList.contains('f30Pre') && !s.classList.contains('show')) s.classList.remove('f30Pre'); }, 400);
   function openPlay(){
     var pre = getMode(), ok = false;
-    if(pre === 'eglence'){ openFun(); return; }
+    if(pre === 'eglence'){ if(window.monocityEgHub && monocityEgHub()) return; openFun(); return; }
     if(pre === 'rank' && !inLobbyTxt() && window.monocityRankQuick){ monocityRankQuick(); return; }
     try{ if(typeof window.monocityOpenLobby === 'function' && window.monocityOpenLobby()) ok = true; }catch(e){}
     if(!ok){ try{ if(typeof openGameNameSetup === 'function') openGameNameSetup(); }catch(e){} }
@@ -51097,6 +51100,7 @@ html body.f30Md #mcLobbyUI .mclPlay,html body.f30Md #mcLobbyUI .mclQuick,html bo
       d.addEventListener('click', function(e){ if(e.target === d || e.target.closest('.x')){ d.classList.remove('show'); return; } var cc = e.target.closest('.c'); if(cc){ if(cc.classList.contains('lu') && window.monocityOpenLudo){ d.classList.remove('show'); monocityOpenLudo(); } else if(cc.classList.contains('tv') && window.monocityOpenTavla){ d.classList.remove('show'); monocityOpenTavla(); } else toast('🎉 Yakında geliyor!'); } }); }
     d.classList.add('show');
   }
+  window.__mcOpenFun = openFun;
   /* ⚡ balon */
   var QS = null;
   function noMM(){ try{ return localStorage.getItem('mc_no_mm') === '1' || (navigator.webdriver && localStorage.getItem('mc_mm_test') !== '1'); }catch(e){ return false; } }
