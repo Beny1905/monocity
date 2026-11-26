@@ -939,7 +939,7 @@
             var tag = H.r && showRes ? RES[H.r] + (H.d ? ' ×2' : '') : (act ? (multi ? (j + 1) + '. EL · OYNANIYOR' : 'OYNUYOR') : (H.st === 'play' ? (multi ? (j + 1) + '. EL · SIRADA' : '⏳ SIRADA') : STT[H.st] || ''));
             var tc = showRes && H.r === 'w' ? '#15803d' : (showRes && H.r === 'l' ? '#7f1d1d' : (act ? '#15803d' : '#334155'));
             h += '<div style="position:absolute;left:' + hx + 'px;top:' + (act ? 150 : 172) + 'px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:3px;' + (!act && H.st === 'play' ? 'opacity:.65' : '') + '"><div style="display:flex' + (act ? ';filter:drop-shadow(0 0 10px #4ade80)' : '') + '">' + H.c.map(function(x, k){ return EG.card(x, act ? '' : 'sm', ' style="margin:0 -11px"' + (k === H.c.length - 1 && act ? ' data-last' : '')); }).join('') + '</div>' +
-              '<div class="cnt" style="position:static;font-size:13px' + (act ? ';background:#15803d' : '') + '">' + v + '</div><div class="cnt" style="position:static;font-size:10px;background:' + tc + '">' + tag + '</div></div>'; });
+              '<div class="cnt" style="position:static;font-size:13px' + (act ? ';background:#15803d' : '') + '">' + ((function(vv){ return vv.soft && vv.t < 21 && H.st === 'play' ? (vv.t - 10) + ' / ' + vv.t : vv.t; })(val(H.c))) + '</div><div class="cnt" style="position:static;font-size:10px;background:' + tc + '">' + tag + '</div></div>'; });
           h += EG.plate(S, i, [['Kupa', '🏆' + wnShow[i], 'y']], '', 'left:' + cx + 'px;bottom:4px;transform:translateX(-50%)').replace('data-seat=', (c && c.i === i ? 'data-on="1" ' : '') + 'data-seat=');
         }
         h += '<div data-deck style="position:absolute;left:760px;top:30px">' + EG.back('sm') + '</div>';
